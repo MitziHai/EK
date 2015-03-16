@@ -1,0 +1,167 @@
+3.13.2015
+  Fixes 
+    - Fixed damage random 3 can target the same card more than once
+    - Reflection alters snipe damage
+    - Destroy ability not working correctly with reflection
+    - On Death Destroy ability not targeting correct card on death when card dies due to guard damage
+    - Added Viscid Ooze and Necroflayer to card list
+  Enhancements
+    - Log output now includes players names    
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - scroll dot sometimes goes haywire
+    - obstinancy should allow player to finish turn and opponent turn to happen before death
+  Possible Bugs Check these:
+    - KW resets and buff/rune carry overs
+    - Need to check who wins in EK if both players run out of cards (GW vs GW example)
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - progress completion counter in "find best deck" mode is completely bogus; ignore what ever number it says, it will finish eventually
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it wont be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Disable ESC from closing the app
+    - Tabs to move from one object to another
+    - in cards search box up/down keys shoudl scroll between cards
+
+
+
+3.9.2015
+  Fixes
+    - Fixed obstinancy healing rather than damaging player.
+    - Fixed if prayer brings player above 0 after obstiancy player continues
+    - Added card Astral Sentinel
+    - Renamed Card Egyptian King to Pharaoh
+    - Fixed bug with rune abilities causing match to end abruptly (introduced with checking cards abilities vs level...fixed in new way)
+    - Fixed bug causing Elite cards not to load
+    - Fixed bug where rune abilities could stay on a card when reanimated
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - scroll dot sometimes goes haywire
+    - obstinancy should allow player to finish turn and opponent turn to happen before death
+  Possible Bugs Check these:
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - progress completion counter in "find best deck" mode is completely bogus; ignore what ever number it says, it will finish eventually
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it wont be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+
+3.8.2015
+  Fixes
+    - Level 0 cards can not be specified
+    - Cards abilties all work even when level not high enough to activate
+    - revival not applying correct boost
+    - revival not properly reset after turn
+    - fixed log note around laceration and chain attack
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - scroll dot sometimes goes haywire
+    - obstinancy should allow player to finish turn and opponent turn to happen before death
+  Possible Bugs Check these:
+    - KW resets
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - players should go down to exactly 0 when hit by cards and go into negative health when damaged by curse. Sim currently does not do this
+    - sim currently does not let a player keep playing if they die to damage and then are healed to above zero before end of turn
+     - mouse wheel occasionally ignored in lists
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - progress completion counter in "find best deck" mode is completely bogus; ignore what ever number it says, it will finish eventually
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it wont be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+
+3.7.2015
+  Fixes:
+    - Fixed Divine Protection not stacking with two divine proection cards next to each other
+    - Fixed Divine Protection not adding hp (but adding buff) to damaged cards
+    - Added log message for plague weaking opponents cards
+    - Fixed reflection changing damage for Plague to reflected damage
+    - Fixed Fire God affecting immune creatures
+    - Fixed fire god and combustion stacking properly
+    - Fixed trap applying damage when card has reflection
+    - Fixed Card with ability that affects multiple cards dies before all cards effected stops applying effect
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+  Known bugs
+    - KW probably not resetting all cards and player info properly (arctic guard carry over for example)
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+
+3.5.2015
+  Fixes:
+    - Fixed Mineral ability (Shield) not implemented for Rune
+    - Fixed Wicked Leach logging card leaching and card leached note
+    - Fixed Runes go off even if no targets (opponents for attack, and non-healable if own)
+    - Fixed healing log of how much healing is actually done
+    - Fixed log so healing with immunity says healing not damage
+    - Fixed log so trap with immunity says trap not damage
+    - Fix Magic shield reducing mana corruption damage (didn't fix it properly last time)
+    - Fixed Damage Random 2 to actually do random 2 (2nd target was often the 1st target)
+    - Removed End Turn log to shrink log file
+    - Added end of match status
+  Enhancement Requests:
+    - Move best deck to new tab
+  Known Bugs:
+    - KW probably not resetting all cards and player info properly (arctic guard carry over for example)
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+
+3.4.2015
+  Fixes:
+    - Fixed rune activation count increasing when runes not activated.
+    - Fixed Magic Shield reducing Mana Corruption Damage
+    - Added additional logging information
+  Known Bugs:
+    - KW probably not resetting all cards and player info properly (arctic guard carry over for example)
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+
+3.3.2015b
+  Fixes:
+    - Fixed Lightning actually applying ES damage and shocking cards
+    - Fixed Thunder Shield not activating till more than 2 forest cards were in play
+    - Fixed Show Kingdom War Results Simming and Number of Lives calculation  (see notes below) 
+    - Fixed Results graph for DI find best deck.
+  Notes:
+    - Show Kingdom War Results: For each run this will sim 1 time until player 1 dies 
+      (so 1000 runs is simming 1000 lives for player 1). This can cause this mode to have very long sims!
+  Known Bugs:
+    - KW probably not resetting all cards and player info properly (arctic guard carry over for example)
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo
+    - Results tab doesn't make sense for KW and Arena Matches
+
+3.3.2015
+  Fixes:
+    - Fixed Hot Chase and Vendetta only affecting cards during attack, now affecting players
+    - Fixed Clean Sweep on reduction damage to added cards through effects (not also through cards going below 0 hp)
+    - Fixed Error with Feast of Blood causing match to end
+    - Fixed error with QS:Teleport removing incorrect card from hand
+    - Added ':' key to entering cards in deck
+    - Added 'Ent/Ret' key to entering cards in deck
+  Known bugs:
+    - Results Tab not showing correct results for DI sims with best deck, but deck editor tab still is showing correct results
+    - KW results not working
+
