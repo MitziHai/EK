@@ -5731,3 +5731,101 @@ Rune: Thunder Shield (4)
 Rune: Red Valley (4)
 Rune: Spring Breeze (4)
 
+[HB]JW 3-16
+75
+Skeleton King (10)
+Armored Turkey (10)
+Armored Turkey (10)
+Armored Turkey (10)
+Armored Turkey (10)
+Armored Turkey (10)
+Balrog Sentry (10)
+Whitewing Pope (10)
+Tundra Rider (10)
+
+[GoW]Shadowj 3-16
+89
+Celestial Touchstone-res1 (15)
+Whitewing Pope-res1 (14)
+Tundra Rider (10)
+Whitewing Pope (10)
+Arctic Cephalid-res1 (14)
+Tundra Rider (10)
+Behemoth (10)
+Behemoth (10)
+Behemoth (10)
+Tundra Rider (10)
+
+[MoD]Sydney 3-16
+81
+Celestial Touchstone-res1 (15)
+Aranyani-res1 (15)
+Crystal Emperor-res1 (15)
+Ice Dragon-trp2 (15)
+Taiga General-res1 (15)
+Astral Sentinel-pry2 (10)
+Tundra Rider (10)
+Tundra Rider (10)
+Leprechaun (10)
+
+[WoN]EpicGod 3-16
+77
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Astral Sentinel (10)
+
+[GoW] Will 3-16
+74
+Necroflayer-tc4 (12)
+Dharmanian (10)
+Tundra Rider (10)
+Tundra Rider (10)
+Celestial Touchstone (10)
+Whitewing Pope (10)
+Arctic Lich (10)
+Astral Sentinel-cl1 (10)
+Dharmanian (10)
+
+[GoW] Wolf 3-16
+84
+Behemoth (10)
+Behemoth (10)
+Behemoth (10)
+Behemoth (10)
+Jack Frost-trp2 (15)
+Tundra Rider (10)
+Tundra Rider (10)
+Whitewing Pope (10)
+Whitewing Pope (10)
+Whitewing Pope (10)
+
+[GoW] Mighty 3-16
+83
+Astral Sentinel (10)
+Crimson Phoenix-res1 (15)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Crimson Phoenix (10)
+Viscid Ooze (10)
+Viscid Ooze (10)
+Viscid Ooze (10)
+
+WoN Poziomek 3-16
+72
+Astral Sentinel (10)
+Arctic Lich-dge4 (12)
+Ice Dragon-cl2 (12)
+Whitewing Pope (10)
+Ice Dragon (10)
+Ice Dragon (10)
+Thunder Dragon (10)
+Fire Kirin-res1 (10)
+Celestial Touchstone-reg1 (11)
+
