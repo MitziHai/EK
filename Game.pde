@@ -128,9 +128,36 @@ class Game implements Runnable
         for( int i = 0; i < p1.inPlay.size(); ++ i )
         {
           play1 += "\n      "+p1.inPlay.get(i);
-          if( i < p2.inPlay.size()-1 )
+          Card c = p1.inPlay.get(i);
+          boolean add_comma = false;
+          play1 += "[";
+          for (int j = 0; j < 6; j++) {// 6 is size of status array
+            if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
+              if (add_comma) play1 += ", ";
+              play1 += statusNames[j];
+              add_comma = true;
+            } 
+          }
+          if (c.burn > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "burning-" + c.burn;
+              add_comma = true;
+          }
+          if (c.poison > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "poisoned-" + c.poison;
+              add_comma = true;
+          }
+          if (c.ward > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "ward-" + c.ward;
+              add_comma = true;
+          }
+          play1 += "]";
+          if( i < p1.inPlay.size()-1 )
             play1 += ",";
         }
+
         String deck2 = "";
         for( int i = 0; i < p2.deck.size(); ++ i )
         {
@@ -156,8 +183,34 @@ class Game implements Runnable
         for( int i = 0; i < p2.inPlay.size(); ++ i )
         {
           play2 += "\n      "+p2.inPlay.get(i);
+          Card c = p2.inPlay.get(i);
+          boolean add_comma = false;
+          play2 += "[";
+          for (int j = 0; j < 6; j++) {// 6 is size of status array
+            if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
+              if (add_comma) play2 += ", ";
+              play2 += statusNames[j];
+              add_comma = true;
+            } 
+          }
+          if (c.burn > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "burning-" + c.burn;
+              add_comma = true;
+          }
+          if (c.poison > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "poisoned-" + c.poison;
+              add_comma = true;
+          }
+          if (c.ward > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "ward-" + c.ward;
+              add_comma = true;
+          }
+          play2 += "]";
           if( i < p2.inPlay.size()-1 )
-            play2 += ", ";
+            play2 += ",";
         }
         
         println("");
@@ -172,7 +225,7 @@ class Game implements Runnable
         println("   Hand  (" + p1.hand.size() + "): " + hand1);
         println("   Grave (" + p1.grave.size() + "): " + grave1);
         println("   Play  (" + p1.inPlay.size() + "): " + play1);
-        print("   Runes (" + p1.numRunes + ") " );
+        print("   Runes (" + p1.numRunes + "): " );
         for (int i = 0; i < p1.numRunes; ++ i) {
           if ((i+1) == p1.numRunes) print(p1.runes[i].type.name + " (" + p1.runes[i].level + ") [Uses Left:" + p1.runes[i].remainingUses + "]");
           else print(p1.runes[i].type.name + " (" + p1.runes[i].level + ") [Uses Left:" + p1.runes[i].remainingUses + "], ");
@@ -185,7 +238,7 @@ class Game implements Runnable
         println("   Hand  (" + p2.hand.size() + "): " + hand2);
         println("   Grave (" + p2.grave.size() + "): " + grave2);
         println("   Play  (" + p2.inPlay.size() + "): " + play2);
-        print("   Runes (" + p2.numRunes + ") " );
+        print("   Runes (" + p2.numRunes + "): " );
         for (int i = 0; i < p2.numRunes; ++ i) {
           if ((i+1) == p2.numRunes) print(p2.runes[i].type.name + " (" + p2.runes[i].level + ") [Uses Left:" + p2.runes[i].remainingUses + "]");
           else print(p2.runes[i].type.name + " (" + p2.runes[i].level + ") [Uses Left:" + p2.runes[i].remainingUses + "], ");
@@ -252,8 +305,34 @@ class Game implements Runnable
         for( int i = 0; i < p1.inPlay.size(); ++ i )
         {
           play1 += "\n      "+p1.inPlay.get(i);
-          if( i < p2.inPlay.size()-1 )
-            play1 += ", ";
+          Card c = p1.inPlay.get(i);
+          boolean add_comma = false;
+          play1 += "[";
+          for (int j = 0; j < 6; j++) {// 6 is size of status array
+            if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
+              if (add_comma) play1 += ", ";
+              play1 += statusNames[j];
+              add_comma = true;
+            } 
+          }
+          if (c.burn > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "burning-" + c.burn;
+              add_comma = true;
+          }
+          if (c.poison > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "poisoned-" + c.poison;
+              add_comma = true;
+          }
+          if (c.ward > 0) {
+              if (add_comma) play1 += ", ";
+              play1 += "ward-" + c.ward;
+              add_comma = true;
+          }
+          play1 += "]";
+          if( i < p1.inPlay.size()-1 )
+            play1 += ",";
         }
         String deck2 = "";
         for( int i = 0; i < p2.deck.size(); ++ i )
@@ -280,8 +359,34 @@ class Game implements Runnable
         for( int i = 0; i < p2.inPlay.size(); ++ i )
         {
           play2 += "\n      "+p2.inPlay.get(i);
+          Card c = p2.inPlay.get(i);
+          boolean add_comma = false;
+          play2 += "[";
+          for (int j = 0; j < 6; j++) {// 6 is size of status array
+            if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
+              if (add_comma) play2 += ", ";
+              play2 += statusNames[j];
+              add_comma = true;
+            } 
+          }
+          if (c.burn > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "burning-" + c.burn;
+              add_comma = true;
+          }
+          if (c.poison > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "poisoned-" + c.poison;
+              add_comma = true;
+          }
+          if (c.ward > 0) {
+              if (add_comma) play2 += ", ";
+              play2 += "ward-" + c.ward;
+              add_comma = true;
+          }
+          play2 += "]";
           if( i < p2.inPlay.size()-1 )
-            play2 += ", ";
+            play2 += ",";
         }
         
         
@@ -297,7 +402,7 @@ class Game implements Runnable
         println("   Hand  (" + p1.hand.size() + "): " + hand1);
         println("   Grave (" + p1.grave.size() + "): " + grave1);
         println("   Play  (" + p1.inPlay.size() + "): " + play1);
-        print("   Runes (" + p1.numRunes + ") " );
+        print("   Runes (" + p1.numRunes + "): " );
         for (int i = 0; i < p1.numRunes; ++ i) {
           if ((i+1) == p1.numRunes) print(p1.runes[i].type.name + " (" + p1.runes[i].level + ") [Uses Left:" + p1.runes[i].remainingUses + "]");
           else print(p1.runes[i].type.name + " (" + p1.runes[i].level + ") [Uses Left:" + p1.runes[i].remainingUses + "], ");
@@ -309,7 +414,7 @@ class Game implements Runnable
         println("   Hand  (" + p2.hand.size() + "): " + hand2);
         println("   Grave (" + p2.grave.size() + "): " + grave2);
         println("   Play  (" + p2.inPlay.size() + "): " + play2);
-        print("   Runes (" + p2.numRunes + ") " );
+        print("   Runes (" + p2.numRunes + "): " );
         for (int i = 0; i < p2.numRunes; ++ i) {
           if ((i+1) == p2.numRunes) print(p2.runes[i].type.name + " (" + p2.runes[i].level + ") [Uses Left:" + p2.runes[i].remainingUses + "]");
           else print(p2.runes[i].type.name + " (" + p2.runes[i].level + ") [Uses Left:" + p2.runes[i].remainingUses + "], ");

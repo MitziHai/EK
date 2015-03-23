@@ -381,7 +381,7 @@ class RunSim implements Runnable
     for ( int i = 0; i < deckp1.numRunes; ++ i )
       if ( ( ( 1 << i ) & r ) > 0 )
         d.runes[ d.numRunes ++ ] = deckp1.runes[ i ];
-        
+    d.name = deckp1.name;
     return d;
   }
 
@@ -599,7 +599,8 @@ class RunSim implements Runnable
       player2.runes[ i ] = new Rune( d2.runes[ i ].type, d2.runes[ i ].level );
     }
     player2.numRunes = d2.numRunes;
-
+    player1.name = d1.name;
+    player2.name = d2.name;
     long startTime = System.currentTimeMillis();
     long patience = 1000 * 60 * 60;
 

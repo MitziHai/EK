@@ -189,7 +189,7 @@ class Rune
           
           case A_DAMNATION:
             if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            op.attacked(20*3*op.playSize(), op, true);
+            op.attacked(20*l*op.playSize(), op, true);
             break;
           
           case A_ELECTRIC_SHOCK:
@@ -352,19 +352,12 @@ class Rune
         if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
         for( Card c : current.inPlay )
         {
+//          if (type.ability == AType.A_EVASION && type.abilityWhen == ON_ATTACKED_SPELL) println("GOT HERE 2");
           c.abilityL[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ] = type.abilityL[ level ];
           c.abilities[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ++ ] = type.ability;
+
         }
       }
-    }
-    if( activate )
-    {
-       //if( debug > 2 ) println( this + " activated." );
-    }
-    else
-    {
-      //++ remainingUses;
-      //if( debug > 2 ) println( this + " not activated." );
     }
   }
 }
@@ -388,7 +381,7 @@ void loadRunes()
   groupAbilMap.put( AType.A_GROUP_CONCENTRATION, new AbilityWhen( AType.A_CONCENTRATION, ON_ATTACK_CARD ) ); 
   groupAbilMap.put( AType.A_GROUP_WARPATH, new AbilityWhen( AType.A_WARPATH, ON_ATTACK_CARD ) ); 
   groupAbilMap.put( AType.A_GROUP_DODGE, new AbilityWhen( AType.A_DODGE, ON_ATTACKED ) ); 
-  groupAbilMap.put( AType.A_GROUP_EVASION, new AbilityWhen( AType.A_EVASION, ON_ATTACKED ) ); 
+  groupAbilMap.put( AType.A_GROUP_EVASION, new AbilityWhen( AType.A_EVASION, ON_ATTACKED_SPELL ) ); 
   
   runesMap.put( "Coldwave", new RuneType( "Coldwave", 3, 1, RType.R_COLDWAVE, TUNDRA, AType.A_NOVA_FROST, 1, 2, 3, 4, 5, PLAYER_DECK, 0, 2, true ) );
   runesMap.put( "Fire Fist",  new RuneType( "Fire Fist", 3, 1, RType.R_FIRE_FIST, MOUNTAIN, AType.A_FIREBALL, 3, 4, 5, 6, 7, OPPONENT_IN_PLAY, ANY, 2, true ) );

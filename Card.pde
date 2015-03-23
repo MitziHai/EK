@@ -261,7 +261,7 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when2 = NEVER; 
     break;
   case A_EVASION: 
-    when = BEFORE_ATTACK; 
+    when = ON_ATTACKED_SPELL; 
     when2 = NEVER; 
     break;
   case A_EXILE: 
@@ -835,6 +835,7 @@ class Card
   int subtractHealth( Player own, Player op, int h )
   {
     boolean wasDead = dead;
+    if (ward > 0 && h > 0 && debug > 2) println("       " + min(h, ward) + " damage mitigated by " + toStringNoHp() + "'s ward");
     int dmg = max( 0, h - ward );
     ward -= ( h - dmg );
     dmg = min( dmg, hpCurr );
@@ -957,15 +958,27 @@ class Card
       println("     " + attacker.toStringNoHp() + " bloodsucker ability heals for " + ((int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff ) - attacker.hpCurr) + ". Remaining hp: " + (int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff ) + " / " + attacker.hpBuff);
     attacker.hpCurr = (int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff );
     // Counterattack and retaliate damage stored and applied to attacker after bloodsucker healing.
-    if( dmgTaken > 0 )
+    if( dmgTaken > 0)
     {
-      int nowPos = pos; // Position can change part way through retaliate if the retaliate kills a desperation destroy card which kills a goddess of order which reanimates it
+      int nowPos = attacker.pos; // Position can change part way through retaliate if the retaliate kills a desperation destroy card which kills a goddess of order which reanimates it - change to attacker position
       for ( int i = nowPos - 1, j = 0; i <= nowPos + 1; ++ i, ++j )
       {
-        if ( i >= 0 && i < op.board.length && op.board[ i ] != null && !op.board[ i ].dex && retaliate[ j ] > 0 )
+        if ( i >= 0 && i < op.board.length && op.board[ i ] != null && retaliate[ j ] > 0 )
         {
-          if (debug > 2) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
-          op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
+          boolean dex = false;
+          for ( int k = 0; k < op.board[ i ].abilityNum[BEFORE_ATTACK]; ++ k ) {
+            AType a = op.board[ i ].abilities[ BEFORE_ATTACK ][ k ];
+            switch (a) { 
+              case A_DEXTERITY:
+                dex = true;
+              break;
+            }
+          }
+          if (!dex) {
+            if (debug > 2) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
+            op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
+          }
+          else if (debug > 2) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
         }
       }
       atk += craze;
@@ -986,9 +999,190 @@ class Card
     }
     return dmgTaken;
   }
+  
+/*
+Abilities: Immunity, Resist, Reflection, Magic Shield
+Attacks: Frozen, Shocked, Trapped, Confused, Sick, Lacerated, Corrupt, Heal, Heal Mist, Dstroy, No_immune, No_reflect, poisoned, fire, blood, noe
+
+Statuses: FROZEN, SHOCKED, TRAPPED, CONFUSED, SICK, LACERATED
+Seperate Variables: BURNED, POISON, immune, resist, 
+
+  FROZEN: Blizzard (all), Iceball (Random 1), Nova Frost (Random 3)
+  SHOCKED: Chain Lightning (Random 3), Electric Shock (All), Thunderbolt (Random 1)
+  TRAPPED: Seal (All), Trap (Random 1, 2 or 3 depending on level)
+  CONFUSED: Confusion (Random 1), 
+  SICK: Used for summing sickness (card reanimated cant attack)
+  LACERATED: Used for lacerated card status
+  CORRUPT: Mana Corruption (Random 1)
+  HEAL: Regeneration (All), (NOTE: Heal, QS_Heal, D_Heal all do not call attacked spell)
+  HEALING MIST: HealMist (self and 2 adjacent...doesn't call attacked spell)
+  DESTROY: Destroy (Random 1, Does 99,999,999 damage)
+  NO_IMMUNE: Devils Blade (Lowest 1), Snipe (Lowest 1), Dual Snipe (Lowest 2)
+  NO_REFLECT: Plague (Damage, All), Blight (Damage, Attacked Opponent, does not use attacked spell)
+  POISONED: Toxic Clouds (All), Smog (Random 3), Venom (Random 1)
+  FIRE: Firestorm (All), Self Destruct (Opponent and 2 adjacent), 
+  BLOOD: Bite (Random 1), Feast of Blood (All), 
+  NONE: NONE...IS THIS USED???
+*/
 
   // own is player owning this card, opponent is attacker
   int attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
+  {
+    dmgTaken = 0;
+    if ( immune || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune or damage is snipe or Devils Blade, or mana corruption
+    {
+      if ( effect == NO_IMMUNE )
+      {
+        dmgTaken = subtractHealth( own, op, dmg );
+        if (debug > 2) println("       " + dmg + " unavoidable damage  to " + toStringNoHp());
+      }
+      else if (effect == CORRUPT)  // Mana Corruption deals chance * dmg damage to card
+      {
+        dmgTaken = subtractHealth( own, op, dmg * (immune ? chance : 1) );
+        if( debug > 2 ) println("       Mana corruption dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
+      }
+      else if (debug > 2) // all other damages should be prevented by immunity
+      {
+        if (effect == TRAPPED)
+          println("       Immunity prevented trap to " +  toStringNoHp() );
+        else if( effect == CONFUSED )
+          println("       Immunity prevented confused to " + toStringNoHp() );
+        else if( effect == DESTROY )
+          println("       Immunity prevented destroy to " + toStringNoHp() );
+        else if (effect == HEAL)
+          println("       Immunity prevented " + dmg + " healing to " +  toStringNoHp() );
+        else if (effect == HEAL)
+          println("       Immunity prevented " + dmg + " healing to " +  toStringNoHp() );
+        else  // FROZEN, SHOCKED, NO_REFLECT, POISONED, FIRE, BLOOD
+          println("       Immunity prevented " + dmg + " damage to " +  toStringNoHp() );
+      }
+
+      if ( raddi.checked && !own.isP1 )
+        op.merit += dmgTaken;
+
+      return dmgTaken;
+    }
+    else if (effect == DESTROY) {  // Abilities affected by resistance
+      if( resist ) {
+        if (debug > 2) println("         Resist prevented Destroy on " + toStringNoHp() );
+      } 
+      else {
+        dmgTaken = subtractHealth( own, op, dmg);
+        if (debug > 2) println("       Destroyed " + toStringNoHp() );
+      }
+      return dmgTaken;
+    }
+    else if (effect == HEAL) {  // abilities affected by Laceration
+      if( status[ LACERATED ] )
+      {
+        if( debug > 2 ) println("       Healed of " + dmg + " failed on lacerated card " + toStringNoHp() );
+      }
+      else
+      {
+        if( debug > 2 ) println("       Healed " + (min( hpBuff, hpCurr + dmg ) - hpCurr) + " to " + toStringNoHp() );
+        hpCurr = min( hpBuff, hpCurr + dmg );
+      }
+      return 0;
+    }
+    else if (effect == NO_REFLECT) {  // abilities that are not affected by reflection and/or magic shield
+      if (debug > 2) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
+
+      dmgTaken = subtractHealth( own, op, dmg );
+
+      if ( raddi.checked && !own.isP1 )
+        op.merit += dmgTaken;
+
+      return dmgTaken;
+    }
+    else if (effect == POISONED) {  // abilities that are not affected by reflection and/or magic shield
+      if( debug > 2 ) println("       Applied " + chance + " poison to " + toStringNoHp() );
+      poison += chance;
+
+      dmgTaken = subtractHealth( own, op, dmg );
+
+      if ( raddi.checked && !own.isP1 )
+        op.merit += dmgTaken;
+
+      return dmgTaken;
+    }
+      
+    // Find out if there is magic shield or reflective abilities on targeted card
+    int magic_shield = 0;
+    int reflective = 0;
+    boolean evasion = false;
+    for ( int i = 0; i < abilityNum[ON_ATTACKED_SPELL]; ++ i ) {
+      AType a = abilities[ ON_ATTACKED_SPELL ][ i ];
+      switch (a) { 
+        case A_MAGIC_SHIELD:
+          magic_shield = max(magic_shield,abilityL[ON_ATTACKED_SPELL][i]);
+        break;
+        case A_REFLECTION:
+          reflective = max(reflective,abilityL[ON_ATTACKED_SPELL][i]);;
+        break;
+        case A_EVASION:
+          evasion = true;
+        break;
+      }
+    }
+    if (effect == TRAPPED || effect == CONFUSED) {  // abilities affected by evasion but not by magic shield and/or reflection
+      if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
+      else if (random( 0, 100 ) <= chance) {
+        if( debug > 2 ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
+        status[ effect ] = true;
+      }
+      else if (debug > 2) println("       " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
+      return 0;
+    }
+    else if (reflective > 0) {
+      dmgTaken = 30*reflective;
+      attacker.subtractHealth( op, own, dmgTaken );
+      if( debug > 3 ) {
+        println( "     " + toStringNoHp() + "'s Reflection");
+        println("         Reflected " + dmgTaken + " damage to " + attacker.toStringNoHp() );
+      }
+
+      if ( raddi.checked && !op.isP1 )
+        own.merit += dmgTaken;
+
+      dmgTaken = 0;
+
+      return dmgTaken;
+
+    }
+    else { // no reflection
+      if (magic_shield > 0) { // reduce damage if there was magic shield
+        dmg = min(dmg, 160 - 10 * magic_shield);
+        if (debug > 2) println( "       " + toStringNoHp() + "'s Magic Shield reduces damage to maximum of " + (160 - 10*magic_shield));
+      }
+      dmgTaken = subtractHealth( own, op, dmg );
+      
+      if (debug > 2) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
+
+      if (effect == FROZEN || effect == SHOCKED) {
+        if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
+        else if (random( 0, 100 ) <= chance) {
+          if( debug > 2 ) println("         " + statusNames[effect] + " applied to " + toStringNoHp() );
+          status[ effect ] = true;
+        }
+        else if (debug > 2) println("         " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
+      }
+
+      if (effect == BLOOD) {
+        if (debug > 2) println( "       " + attacker.toStringNoHp() + " heals " + (min( attacker.hpCurr + dmgTaken, attacker.hpBuff ) - attacker.hpCurr) + " from Feast of Blood");
+        attacker.hpCurr = min( attacker.hpCurr + dmgTaken, attacker.hpBuff );
+      }
+
+      if ( raddi.checked && !own.isP1 )
+        op.merit += dmgTaken;
+
+      return dmgTaken;
+
+    }
+  }
+  
+
+  // own is player owning this card, opponent is attacker
+  int old_attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
   {
     if ( immune || effect == NO_IMMUNE )
     {
@@ -1117,6 +1311,7 @@ class Card
       int l = abilityL[ when ][ i ];
       if ( when == BEFORE_ATTACK )
       {
+        if (!dead) 
         switch( a )
         {
         case A_ADVANCED_STRIKE:
@@ -1192,11 +1387,11 @@ class Card
           damageAll( own, op, 25*l, SHOCKED, 35 );
           break;
 
-        case A_EVASION:
-          if( debug > 3 ) println( "     Evasion");
-          evasion = true;
-          break;
-
+//       case A_EVASION:
+//          if( debug > 3 ) println( "     Evasion");
+//         evasion = true;
+//          break;
+//
         case A_EXILE:
           if ( op.board[ pos ] != null && !op.board[ pos ].resist )
           {
@@ -1215,8 +1410,8 @@ class Card
         case A_FEAST_OF_BLOOD:
           if( debug > 3 ) println( "     Feast of Blood");
           int hpAdd = damageAll( own, op, 20*l, BLOOD, 0 );
-          if (debug > 3) println( "       " + toStringNoHp() + " heals " + (min( hpCurr + hpAdd, hpBuff ) - hpCurr) + " from Feast of Blood");
-          hpCurr = min( hpCurr + hpAdd, hpBuff );
+//          if (debug > 3) println( "       " + toStringNoHp() + " heals " + (min( hpCurr + hpAdd, hpBuff ) - hpCurr) + " from Feast of Blood");
+//          hpCurr = min( hpCurr + hpAdd, hpBuff );
           break;
 
         case A_FIRE_GOD:
@@ -1342,7 +1537,6 @@ class Card
           {
             Card toReanim = own.graveReanim.get( ( int )random( 0, own.graveReanim.size() ) );
             if( debug > 3 ) println( "     Reanimation targetting " + toReanim.toStringNoHp());
-            if( debug > 3 ) println( "     Reanimation");
             own.removeFromGrave( toReanim );
             own.addToPlay( toReanim );
             toReanim.status[ SICK ] = true;
@@ -1360,8 +1554,8 @@ class Card
           for ( int j = 0; j < l && !own.grave.isEmpty(); ++ j )
           {
             int k = (int)random( own.graveSize() );
-            if( debug > 3 ) println( "     Reincarnation targetting " + own.grave);            
             Card c = own.removeFromGrave( k );
+            if( debug > 3 ) println( "     Reincarnation targetting " + c.toStringNoHp());            
             c.resetAll(own);
             //println("reincarn " + c + " " + c.hpCurr + " " + c.dead);
             own.deck.add( c ); //
@@ -1713,7 +1907,8 @@ class Card
           }
           else
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + "'s Ice Shield reduces damage to " + (190 - 10 * l));
+            if( debug > 3 && dmgMax > 190 - 10 * l) println( "       " + toStringNoHp() + "'s Ice Shield reduces damage to " + (190 - 10 * l));
+            else if (debug > 3)  println( "       " + toStringNoHp() + "'s Ice Shield no affect as damage is less than reduced to number");
             dmgMax = min( dmgMax, 190 - 10 * l );
           }
           break;
@@ -1724,12 +1919,9 @@ class Card
           break;
 
         case A_RETALIATION:
-          if( !attacker.dex )
-          {
-            if( debug > 3 ) println( "     " + toStringNoHp() + " Retaliation for " + (20*l));
-            for ( int j = 0; j < 3; ++ j )
-              retaliate[ j ] += 20 * l;
-          }
+          if( debug > 3 ) println( "     " + toStringNoHp() + " Retaliation for " + (20*l));
+          for ( int j = 0; j < 3; ++ j )
+            retaliate[ j ] += 20 * l;
           break;
 
         case A_WICKED_LEECH:
@@ -1895,6 +2087,8 @@ class Card
             op.removeFromHand( longest );
             op.addToGrave( longest );
           }
+          else if (longest == null && debug > 3) println( "     QS: Teleport no targets");     
+          else if (debug > 3) println( "     QS: Teleport targetting " + longest.toStringNoHp() + " fails due to target having resistance/immunity");     
           break;
 
         case A_OBSTINACY:
@@ -2142,7 +2336,6 @@ class Card
             {
               Card toReanim = own.graveReanim.get( ( int )random( 0, own.graveReanim.size() ) );
               if( debug > 3 ) println( "     D: Reanimation targetting " + toReanim.toStringNoHp());
-              if( debug > 3 ) println( "     D: Reanimation");
               own.removeFromGrave( toReanim );
               own.addToPlay( toReanim );
               toReanim.status[ SICK ] = true;
@@ -2350,7 +2543,7 @@ class Card
       Card c = target.board[ i ];
       if ( c != null && !c.dead )
         ret += c.attackedSpell( target, own, dmg, this, effect, chance );
-      //if( dead ) return ret;  Cards continue their spell attacks even if died
+      if( dead && effect == BLOOD) return ret; //Cards continue their spell attack even if died except for feast of blood
     }
     return ret;
   }
@@ -2359,11 +2552,13 @@ class Card
   {
     int ret = 0;
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
-    for ( int i = 0; i < target.playSize(); ++ i )
+    for ( int i = 0; i < 10; ++ i )
     {
       int dmg = (int)random( dmgMin, dmgMax );
-      ret += target.inPlay.get( i ).attackedSpell( target, own, dmg, this, effect, chance );
-      //if( dead ) return ret; Cards continue their spell attack even if died
+      Card c = target.board[ i ];
+      if ( c != null && !c.dead )
+        ret += c.attackedSpell( target, own, dmg, this, effect, chance );
+      if( dead && effect == BLOOD) return ret; //Cards continue their spell attack even if died except for feast of blood
     }
     return ret;
   }
@@ -2378,9 +2573,10 @@ class Card
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 3, target.playSize() ); ++ i )
     {
-      int index = list[(int)random(0, target.playSize() - i - 1)];// -1  needed
+      int index = (int)random(0, target.playSize() - i ); //list[(int)random(0, target.playSize() - i - 1)];
+      targets.add( target.inPlay.get( list[index] ) );
+      
       list[index] = list[target.playSize()-i -1 ];
-      targets.add( target.inPlay.get( index ) );
     }
     for ( Card c : targets )
     {
@@ -2398,9 +2594,10 @@ class Card
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 3, target.playSize() ); ++ i )
     {
-      int index = list[(int)random(0, target.playSize() - i - 1)];// -1  needed
-      list[index] = list[target.playSize()-i -1];
-      targets.add( target.inPlay.get( index ) );
+      int index = (int)random(0, target.playSize() - i ); //list[(int)random(0, target.playSize() - i - 1)];
+      targets.add( target.inPlay.get( list[index] ) );
+      
+      list[index] = list[target.playSize()-i -1 ];
     }
     for ( Card c : targets )
     {
@@ -2481,19 +2678,22 @@ class Card
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     Card lowest1 = null;
     Card lowest2 = null;
+    int dmgDone = 0;
     for ( int i = 0; i < target.playSize(); ++ i )
     {
-      if ( lowest1 == null || target.inPlay.get(i).hpCurr < lowest1.hpCurr )
+      if ( lowest1 == null || target.inPlay.get(i).hpCurr < lowest1.hpCurr) 
       {
         lowest2 = lowest1;
         lowest1 = target.inPlay.get(i);
       }
+      else if (lowest2 == null || target.inPlay.get(i).hpCurr < lowest2.hpCurr)
+        lowest2 = target.inPlay.get(i);       
     }
     if ( lowest1 != null )
-      return lowest1.attackedSpell( target, own, dmg, this, effect, chance );
+      dmgDone = lowest1.attackedSpell( target, own, dmg, this, effect, chance );
     if ( lowest2 != null )
-      return lowest2.attackedSpell( target, own, dmg, this, effect, chance );
-    return 0;
+      dmgDone += lowest2.attackedSpell( target, own, dmg, this, effect, chance );
+    return dmgDone;
   }
   
   String toStringNoHp()
