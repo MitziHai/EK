@@ -736,6 +736,8 @@ class Card
   AType evo;
   int evoLevel;
   int morale;
+  
+  int totalGlitchCount = 0;
 
   Card targets[] = new Card[ 10 ];
   int targetNum = 0;
@@ -829,6 +831,7 @@ class Card
       status[ i ] = false;
     alreadySealed = false;
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
+    totalGlitchCount = 0;
     System.arraycopy( abilityNumOrig, 0, abilityNum, 0, abilityNumOrig.length );
   }
 
@@ -982,6 +985,7 @@ class Card
         }
       }
       atk += craze;
+      totalGlitchCount += craze;
       if (!immune && combustion > 0 && !combust[combustion]) {
         burn += 25*combustion;
         combust[combustion] = true;
@@ -2514,7 +2518,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
         c.atk += amount;
       else if( c.atk > c.atkBuff )
       {
+        int used = min(-amount, c.totalGlitchCount);
+        c.totalGlitchCount = max(0, c.totalGlitchCount - used );
+        amount = -max(-amount - used, 0);
         c.atk = max( c.atk+amount, c.atkBuff );
+        c.atkBuff = c.atk;
       }
     }
   }
