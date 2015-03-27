@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorCompletionService;
 import java.nio.*;
 
-int debug = 0; //1 = turns, 2 = cards, 3 = runes
+int debug = 0; 
 boolean evoTab = true;
 
 long numMatch = 10000;
@@ -68,6 +68,7 @@ long totalroundsMin;
 long totalroundsMax;
 long totalWinMax;
 long totalWinMin;
+//String WorstLog;
 PGraphics pg = new PGraphics();
 boolean control = false;
 boolean pressC = false;
@@ -173,13 +174,13 @@ class RunSim implements Runnable
     for ( int i = 0; i < deckp1.numCards; ++ i )
     {
       // For each unique card in duplicate list.
-      for ( int j = 0; j < 50; ++ j )
+      for ( int j = 0; j < deckp1.numCards; ++ j )
       {
         // If this is an empty duplicate slot, then this card is thus far unique. Add it to its own list.
         if ( duplicatesCards[ j ][ 0 ] == null )
         {
           duplicatesCards[ j ][ duplicatesCount[ j ] ++ ] = deckp1.cards[ i ];
-          if( deckList[ 0 ].current.contains( i ) )
+          if( deckp1.cards[ i ].selected )
             ++ duplicatesSelected[ j ]; 
           break;
         }
@@ -187,97 +188,139 @@ class RunSim implements Runnable
         else if ( duplicatesCards[ j ][ 0 ].toString().equals( deckp1.cards[ i ].toString() ) )
         {
           duplicatesCards[ j ][ duplicatesCount[ j ] ++ ] = deckp1.cards[ i ];
-          if( deckList[ 0 ].current.contains( i ) )
+          if( deckp1.cards[ i ].selected )
             ++ duplicatesSelected[ j ]; 
           break;
         }
       }
     }
     
+    for ( int i = 0; i < deckp1.numRunes; ++ i )
+    {
+      if (deckp1.runes[i].selected) selectedRunes |= 1<<i;
+    }
+    
+   
     // Estimate the number of deck combinations as sum of n choose k for k = 10-3 to 10
     double iterMax = 1;
     int cTotal = 0;
+    int iterRunes = 1;
     if ( multideck )
     {
-      for ( int i = 0; i < 50; ++ i )
+      for ( int i = 0; i < deckp1.numCards; ++ i )
       {
             //println("Max Iterations: " + iterMax + "\n");
             //println("Duplicates Count: " + duplicatesCount[ i ] + "\n");
             //println("Max Iterations: " + iterMax + "\n");
         if(duplicatesCount[ i ]>0)
         {
-          iterMax *= (1+duplicatesCount[ i ]);
+          iterMax *= (1+(duplicatesCount[ i ] - duplicatesSelected[i]));
         }
       }
-      -- iterMax;
+      for ( int i = 0; i < deckp1.numRunes; ++ i )
+      {
+        if (deckp1.runes[i].selected) selectedRunes |= 1<<i;
+        iterMax *= 2 - (deckp1.runes[i].selected ? 1 : 0);
+        iterRunes *= 2;
+      }
+      //-- iterMax;
     }
           //  println("Max Iterations: " + iterMax + "\n");
 
-    // For combinations of runes containing 1 to 4 runes:
-    for ( int i = multideck ? min(4,deckp1.numRunes) : 0; i <= ( multideck ? ( max( 0, min(4,deckp1.numRunes) ) ) : 0 ); ++ i )
-    {
-      // Initialize variables for iterating n choose k using Gosper's trick for runes.
-      kR = i;
-      int cR = (1 << kR)-1;
-      boolean cardsDone = false;
-
-      if( multideck )
-        duplicatesUsed[ 0 ] = 1;
-      else
-      {
-        for( int j = 0; j < min( 10, deckp1.numCards ); ++ j )
-          duplicatesUsed[ j ] = duplicatesCount[ j ];
-      }
-
-      // For each card combination:
-      while ( !cardsDone )
-      {
-        ++ iterCount;
-        //println(Arrays.toString(duplicatesUsed));
-        // Check if card count for this deck is valid.
-        int cardCount = 0;
-        for( int j = 0; j < deckp1.numCards; ++ j )
-          cardCount += duplicatesUsed[ j ];
-        
-        if( cardCount <= 10 && cardCount >= min( deckp1.numCards - 3, 7 ) )
-        {
-          // Check if all selected cards are present.
-          boolean selectedPresent = true;
-          for( int j = 0; j < deckp1.numCards && selectedPresent; ++ j )
-          {
-            selectedPresent = duplicatesUsed[ j ] >= duplicatesSelected[ j ];
-          }
-          if( selectedPresent )
-          {
-            cR = (1 << min(4, deckp1.numRunes))-1;
-            // For each rune combination:
-            while ( cR < (1<<nR) )
-            {
-              // If combination includes all selected cards, construct the deck and simulate games for that deck.
-              //if( ( ( selectedCards & cC ) == selectedCards ) && ( ( selectedRunes & cR ) == selectedRunes ) )
-              {
-                Deck testDeck = constructDeck( duplicatesUsed, duplicatesCards, cR );
-                if( testDeck.cost <= playerDeckCost ) // PLAYER 1 DECK COST HERE
-                {
-                  float score = iterate( testDeck, deckp2, bestScore, multideck );
-                  if ( score > bestScore )
-                  {
-                    bestScore = score;
-                    System.arraycopy( duplicatesUsed, 0, duplicatesUsedBest, 0, duplicatesUsed.length );
-                    bestR = cR;
-                    resultsBest = resultsTracked;
-                    //println("HERE size: " + resultsTracked.size());
-                  }
-                  resultsTracked = new ArrayList< Result >();
-                }
-                else if( !multideck )
-                {
-                  listresult.listItems.clear();
-                  listresult.listItems.add( "Error: player 1 deck cost exceeded." );
-                }
-              }
+    int cR = 0; 
     
-              // Only show completion by number of completed deck combinations for multisim mode.
+    boolean cardsDone = false;
+
+    if( multideck )
+    {
+      duplicatesUsed[ 0 ] = 1;  
+      String s = "" + (iterCount/(double)iterMax*100);
+      listresult.listItems.clear();
+      listresult.listItems.add( "Working... Completion: " + s.substring(0, min(s.length(), 5)) + " %" );
+    }
+    else
+    {
+      //WorstLog = "";
+      for( int j = 0; j < min( 10, deckp1.numCards ); ++ j )
+        duplicatesUsed[ j ] = duplicatesCount[ j ];
+    }
+      // For each card combination:
+    while ( !cardsDone )
+    {
+      //println(Arrays.toString(duplicatesUsed));
+      // Check if card count for this deck is valid.
+      int cardCount = 0;
+      for( int j = 0; j < deckp1.numCards; ++ j )
+        cardCount += duplicatesUsed[ j ];
+      
+      if( cardCount <= 10 && cardCount >= min( deckp1.numCards - 3, 7 ) )
+      {
+        // Check if all selected cards are present.
+        boolean selectedPresent = true;
+        for( int j = 0; j < deckp1.numCards && selectedPresent; ++ j )
+        {
+          selectedPresent = duplicatesUsed[ j ] >= duplicatesSelected[ j ];
+        }
+        if( selectedPresent ) // if we have all selected cards
+        {
+          cR = 0; // start with no runes selected
+          if (!multideck) cR = (1 << nR) -1; //unless we are not doing multi deck
+          // For each rune combination:
+          while ( cR < (1<<nR) )
+          {
+            // If combination includes all selected runes, construct the deck and simulate games for that deck.
+            if(  ( selectedRunes & cR ) == selectedRunes  )
+            {
+              iterCount++;
+              Deck testDeck = constructDeck( duplicatesUsed, duplicatesCards, cR );
+              if( testDeck.cost <= playerDeckCost ) // PLAYER 1 DECK COST HERE
+              {
+                String decklist = "";
+                float score = iterate( testDeck, deckp2, bestScore, multideck);
+                if (checkMultisimResults.checked) {
+                  println("");
+                  String str = "----- Deck #" + iterCount + " -----";
+                  println("--------------------" + str + " --------------------");
+                  for (int i=0;i<testDeck.numCards;i++) println("     " + testDeck.cards[i].toString());
+                  for (int i=0;i<testDeck.numRunes;i++) println("     " + testDeck.runes[i].toString());
+                  println("     ----------------- Stats -----------------");
+                  println("Score (MPM/Win Percentage) for this deck: " + nfc((float)score,2));
+                  if (raddi.checked){
+                    println("     Avg Merit: " + nfc((float)totalmeritAvg,2) + "\tMax Merit: " + nfc((float)totalmeritMax,0) + "\tMin Merit: " + nfc((float)totalmeritMin,0));
+                    println("     Avg Rounds: " + nfc((float)totalroundsAvg,2) + "\t\tMax Rounds: " + nfc((float)totalroundsMax,0) + "\t\tMin Rounds: " + nfc((float)totalroundsMin,0));
+                    int counter = 0;
+                    int barValues1[] = new int[ 10 ];
+                    int barValues2[] = new int[ 10 ];
+                    double meritPerBar = ((totalmeritMax - totalmeritMin)/10);
+                    double roundsPerBar = ((totalroundsMax - totalroundsMin)/10);
+                    for( Result res : resultsTracked )
+                    {
+                      ++ counter;
+                      ++ barValues1[ min( (int)((res.score - totalmeritMin)/ meritPerBar), 9 ) ];
+                      ++ barValues2[ min( (int)((res.rounds - totalroundsMin) / roundsPerBar), 9 ) ];
+                    }
+                    println("     Merit                   \t\tRounds");
+                    for (int i=0; i< 10; i ++)
+                    {
+                      println("     [" + nfc((float)(totalmeritMin+i*meritPerBar),0) + "-" + nfc((float)(totalmeritMin+(i+1)*meritPerBar),0) + "] - " + nfc(barValues1[i]*100.0/((float)counter),2) + "%\t[" + nfc((float)(totalroundsMin+i*roundsPerBar),0) + "-" + nfc((float)(totalroundsMin+(i+1)*roundsPerBar),0) + "] - " + nfc(barValues2[i]*100.0/((float)counter),2) + "%");
+                    }
+                  }
+                }
+                if ( score > bestScore )
+                {
+                  bestScore = score;
+                  System.arraycopy( duplicatesUsed, 0, duplicatesUsedBest, 0, duplicatesUsed.length );
+                  bestR = cR;
+                  resultsBest = resultsTracked;
+                  //println("HERE size: " + resultsTracked.size());
+                }
+                resultsTracked = new ArrayList< Result >();
+              }
+              else if( !multideck )
+              {
+                listresult.listItems.clear();
+                listresult.listItems.add( "Error: player 1 deck cost exceeded." );
+              }
               if ( multideck )
               {
                 synchronized( listresult )
@@ -287,38 +330,52 @@ class RunSim implements Runnable
                   listresult.listItems.add( "Working... Completion: " + s.substring(0, min(s.length(), 5)) + " %" );
                 }
               }
-    
-              // Go to next combination of runes using Gosper's trick.
-              if ( cR > 0 )
-              {
-                int a = cR&-cR;
-                int b = cR+a;
-                cR = (cR^b)/4/a|b;
-              }
-              else
-                break;
             }
+    
+            // Only show completion by number of completed deck combinations for multisim mode.
+            int runesIn = 0;
+            do
+            {
+              cR++;
+              int a = cR;
+              while(a > 0 )
+              {
+                runesIn += a & 1;
+                a >>= 1;
+              }
+            }
+            while (cR < (1 << nR) && runesIn > 4);
+            // Go to next combination of runes using Gosper's trick.
+//            if ( cR > 0 )
+//            {
+//              int a = cR&-cR;
+ //             int b = cR+a;
+  //            cR = (cR^b)/4/a|b;
+   //         }
+     //       else
+       //       break;
           }
         }
+      }
         // Go to next combination of cards.
         // Increment duplicatesUsed[ 0 ] by one. If greater than duplicatesCount[ 0 ], carry over. Repeat until no carry.
-        boolean carry = false;
-        int index = 0;
-        do
+      boolean carry = false;
+      int index = 0;
+      do
+      {
+        ++ duplicatesUsed[ index ];
+        ++ cardCount;
+        if (cardCount > 10) iterMax--;
+        carry = (duplicatesUsed[ index ] > duplicatesCount[ index ] || cardCount > 10 );
+        if ( carry )
         {
-          ++ duplicatesUsed[ index ];
-          ++ cardCount;
-          carry = (duplicatesUsed[ index ] > duplicatesCount[ index ] || cardCount > 10 );
-          if ( carry )
-          {
-            cardCount -= duplicatesUsed[ index ];
-            duplicatesUsed[ index ] = 0;
-            ++ index;
-          }
-        } 
-        while ( carry && index < 50 );
-        cardsDone = index == 50;
-      }
+          cardCount -= duplicatesUsed[ index ];
+          duplicatesUsed[ index ] = 0;
+          ++ index;
+        }
+      } 
+      while ( carry && index < deckp1.numCards );
+      cardsDone = index == deckp1.numCards;
     }
     if( resultText.length() > 1 )
     {
@@ -674,6 +731,7 @@ class RunSim implements Runnable
 
     // Display result.
     float score = 0;
+    //if (debug > 0) println(WorstLog);
     if ( radall.checked )
     {
       score = ((100*totalwin/(float)numMatch));

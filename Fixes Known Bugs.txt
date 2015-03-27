@@ -1,5 +1,13 @@
-3.18.2015
-  Enhacements
+3.27.2015
+  Enhancements 
+    - Find best deck working properly with Runes and with cards
+    - Counter for progression in find best deck working much better (can't easily remove combinations with more than 10 cards from count so it's still off but not as bad)
+    - Added a setting! (you can print out all the decks and their corresponding MPM by checking a box on the setting screen now)
+  Fixes
+    - Fixed counterattack damage not being applied to merit in demon invasion simulations
+
+3.23.2015
+  Enhancements
     - Added status to card state during between turn updates.
     - Added ward damage mitigation message to log
   Fixes
@@ -8,8 +16,8 @@
         Should fix things but may have introduced new bugs.
     - Fixed spelling of Hecate
     - Fixed damage random 3 once and for all
-    - Fixed recincarnation message seemingly targeting more than 1 card
-    - Added message to log for telportation with no targets and target has resistance/immunity
+    - Fixed reincarnation message seemingly targeting more than 1 card
+    - Added message to log for teleportation with no targets and target has resistance/immunity
     - Fixed retaliation on clean sweep targeting attacker adjacent cards vs attacked adjacent cards
     - Fixed cards with additional abilities done before attack do not happen if card dies due to reflection (current ability finishes)
     - Burning soul doing fixed 60 dmg / card rather than level dependent
@@ -19,9 +27,9 @@
     - Fixed dexterity not working when card was adjacent to attacking card
   Known bugs
     - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
-    - Retliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
     - scroll dot sometimes goes haywire
-    - obstinancy should allow player to finish turn and opponent turn to happen before death
+    - obstinacy should allow player to finish turn and opponent turn to happen before death
   Possible Bugs Check these:
     - KW resets and buff/rune carry overs
     - Need to check who wins in EK if both players run out of cards (GW vs GW example)
@@ -30,19 +38,20 @@
   Enhancement Requests 
     - Move best deck to new tab
     - Add search function for abilities
-    - progress completion counter in "find best deck" mode is completely bogus; ignore what ever number it says, it will finish eventually
     - mouse drag to re-arrange the order of items in the player decks and the saved deck list
     - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
     - search field for saved decks list
     - left/right arrow key support to move cursor in text fields
     - automated regression tests to verify functionality of every rune and ability
-    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it wont be within a week)
-    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, clear saved decks list, ignore player deck cost maximum
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it won’t be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
     - update help text for new graphing mode and other new features
     - CTRL-Z to undo last change
     - Disable ESC from closing the app
     - Tabs to move from one object to another
-    - in cards search box up/down keys shoudl scroll between cards 
+    - in cards search box up/down keys should scroll between cards 
     - Add proper costs for evolved cards
  
 
