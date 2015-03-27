@@ -229,6 +229,7 @@ TextField numberRuns;
 Control labelc[] = new Control[2];
 Checkbox checkMultisim;
 Checkbox checkMultisimResults;
+Checkbox checkWorstBattleLogResults;
 ListBox evoList;
 TextField textEvo;
 
@@ -253,6 +254,8 @@ Control labelCardCost;
 Control labelCardTime;
 Control labelCardAttack;
 Control labelCardHealth;
+Control labelMultiSim;
+Control labelSingleSim;
 Button autofillCard;
 Button abilityClear;
 TextField textAutofill1;
@@ -413,8 +416,15 @@ void setupUI()
   radkw.setStart = radall;
   checkMultisim = new Checkbox( "Find best deck (slow)", 16, line.y+24*4+2, 240, 24, 0 );
   uiDeck.add( checkMultisim );
-  checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+10, 240, 24, 0 );
+
+  labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
+  uiSettings.add(labelMultiSim);
+  checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+40, 240, 24, 0 );
   uiSettings.add( checkMultisimResults );
+//  labelSingleSim = new Control( "Single Sim Additional Options", 16, uiTop+100, 240, 24, 0 );
+//  uiSettings.add(labelSingleSim);
+//  checkWorstBattleLogResults = new Checkbox( "Print Worst DI Deck Battle Log to Logfile", 16, uiTop+130, 240, 24, 0 );
+//  uiSettings.add( checkWorstBattleLogResults );
   numberRuns = new TextField("10000", 272, line.y+24, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;

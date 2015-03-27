@@ -17,6 +17,7 @@ class Game implements Runnable
   long roundsMin = 9999999999L;
   long roundsMax = 0;
   long winStreak = 0;
+  String MyLog;
 
   Player p1;
 

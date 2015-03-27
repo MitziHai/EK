@@ -1,10 +1,10 @@
+3.27.2015
   Enhancements 
     - Find best deck working properly with Runes and with cards
     - Counter for progression in find best deck working much better (can't easily remove combinations with more than 10 cards from count so it's still off but not as bad)
     - Added a setting! (you can print out all the decks and their corresponding MPM by checking a box on the setting screen now)
   Fixes
     - Fixed counterattack damage not being applied to merit in demon invasion simulations
-
 
 3.23.2015
   Enhancements

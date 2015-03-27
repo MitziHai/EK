@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorCompletionService;
 import java.nio.*;
 
-int debug = 0; //1 = turns, 2 = cards, 3 = runes
+int debug = 0; 
 boolean evoTab = true;
 
 long numMatch = 10000;
@@ -68,6 +68,7 @@ long totalroundsMin;
 long totalroundsMax;
 long totalWinMax;
 long totalWinMin;
+//String WorstLog;
 PGraphics pg = new PGraphics();
 boolean control = false;
 boolean pressC = false;
@@ -239,6 +240,7 @@ class RunSim implements Runnable
     }
     else
     {
+      //WorstLog = "";
       for( int j = 0; j < min( 10, deckp1.numCards ); ++ j )
         duplicatesUsed[ j ] = duplicatesCount[ j ];
     }
@@ -274,13 +276,35 @@ class RunSim implements Runnable
               if( testDeck.cost <= playerDeckCost ) // PLAYER 1 DECK COST HERE
               {
                 String decklist = "";
-                float score = iterate( testDeck, deckp2, bestScore, multideck );
+                float score = iterate( testDeck, deckp2, bestScore, multideck);
                 if (checkMultisimResults.checked) {
                   println("");
-                  println("--------------- Deck #" + iterCount + " ---------------");
+                  String str = "----- Deck #" + iterCount + " -----";
+                  println("--------------------" + str + " --------------------");
                   for (int i=0;i<testDeck.numCards;i++) println("     " + testDeck.cards[i].toString());
                   for (int i=0;i<testDeck.numRunes;i++) println("     " + testDeck.runes[i].toString());
-                  println("MPM for this deck: " + score);
+                  println("     ----------------- Stats -----------------");
+                  println("Score (MPM/Win Percentage) for this deck: " + nfc((float)score,2));
+                  if (raddi.checked){
+                    println("     Avg Merit: " + nfc((float)totalmeritAvg,2) + "\tMax Merit: " + nfc((float)totalmeritMax,0) + "\tMin Merit: " + nfc((float)totalmeritMin,0));
+                    println("     Avg Rounds: " + nfc((float)totalroundsAvg,2) + "\t\tMax Rounds: " + nfc((float)totalroundsMax,0) + "\t\tMin Rounds: " + nfc((float)totalroundsMin,0));
+                    int counter = 0;
+                    int barValues1[] = new int[ 10 ];
+                    int barValues2[] = new int[ 10 ];
+                    double meritPerBar = ((totalmeritMax - totalmeritMin)/10);
+                    double roundsPerBar = ((totalroundsMax - totalroundsMin)/10);
+                    for( Result res : resultsTracked )
+                    {
+                      ++ counter;
+                      ++ barValues1[ min( (int)((res.score - totalmeritMin)/ meritPerBar), 9 ) ];
+                      ++ barValues2[ min( (int)((res.rounds - totalroundsMin) / roundsPerBar), 9 ) ];
+                    }
+                    println("     Merit                   \t\tRounds");
+                    for (int i=0; i< 10; i ++)
+                    {
+                      println("     [" + nfc((float)(totalmeritMin+i*meritPerBar),0) + "-" + nfc((float)(totalmeritMin+(i+1)*meritPerBar),0) + "] - " + nfc(barValues1[i]*100.0/((float)counter),2) + "%\t[" + nfc((float)(totalroundsMin+i*roundsPerBar),0) + "-" + nfc((float)(totalroundsMin+(i+1)*roundsPerBar),0) + "] - " + nfc(barValues2[i]*100.0/((float)counter),2) + "%");
+                    }
+                  }
                 }
                 if ( score > bestScore )
                 {
@@ -707,6 +731,7 @@ class RunSim implements Runnable
 
     // Display result.
     float score = 0;
+    //if (debug > 0) println(WorstLog);
     if ( radall.checked )
     {
       score = ((100*totalwin/(float)numMatch));
