@@ -32,6 +32,7 @@ Deck deckFromUI( int p )
         d.runes[ d.numRunes ++ ] = r;
         deckList[ p ].listItems.set( i, r.toString() );
       }
+      if (deckList[p].current.contains (i)) r.selected = true;
     }
     else if( d.numCards < 50 )
     {
@@ -47,6 +48,7 @@ Deck deckFromUI( int p )
         d.cards[ d.numCards ++ ] = c;
         deckList[ p ].listItems.set( i, c.toString() );
       }
+      if (deckList[p].current.contains (i)) c.selected = true;
     }
   }
   d.level = (int)textLevel[ p ].lastNum;

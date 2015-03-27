@@ -717,6 +717,7 @@ class Card
   Card attacker;
   float bloodsuck;
   int retaliate[] = new int[ 3 ];
+  boolean selected = false;
   boolean dead = false;
   boolean reflective = false;
   boolean magicshield = false;
@@ -976,6 +977,7 @@ class Card
           }
           if (!dex) {
             if (debug > 2) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
+            if (raddi.checked && own.isP1) own.merit += retaliate[j]; 
             op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
           }
           else if (debug > 2) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 

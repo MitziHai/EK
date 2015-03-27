@@ -228,6 +228,7 @@ ListBox listresult;
 TextField numberRuns;
 Control labelc[] = new Control[2];
 Checkbox checkMultisim;
+Checkbox checkMultisimResults;
 ListBox evoList;
 TextField textEvo;
 
@@ -412,6 +413,8 @@ void setupUI()
   radkw.setStart = radall;
   checkMultisim = new Checkbox( "Find best deck (slow)", 16, line.y+24*4+2, 240, 24, 0 );
   uiDeck.add( checkMultisim );
+  checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+10, 240, 24, 0 );
+  uiSettings.add( checkMultisimResults );
   numberRuns = new TextField("10000", 272, line.y+24, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;
@@ -1685,8 +1688,10 @@ class ListBox extends Control
     pg.popMatrix();
   }
 
+
   void handleMouseMove()
   {
+    //println("here");
     super.handleMouseMove();
     if ( dragStartY != -1 )
     {
@@ -1696,6 +1701,7 @@ class ListBox extends Control
     if ( mouseIsOn() && (!hasScroll || mousex < x+w-lineSize) )
     {
       selectIndex =  (mousey - y)/lineSize;
+      //println(scroll + " " +mousey );
     }
     else
     {

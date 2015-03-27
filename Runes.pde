@@ -77,6 +77,7 @@ class RuneType
 
 class Rune
 {
+  boolean selected = false;
   int level = 4;
   RuneType type;
   int remainingUses;
