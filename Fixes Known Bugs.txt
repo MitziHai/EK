@@ -1,3 +1,42 @@
+2015
+
+  Fixes:
+    - KW simulation had a potential endless loop if the deck simmed against would never win.
+        Sim now runs for 1000 matches (more than a player could win in a single kw) or when 
+          player dies
+    - KW had random start, but KW attacker always goes first so sim is now set for player to be attacker
+    - scroll dot sometimes goes haywire
+    - Fixed % of 
+   Enhancements:
+    - Added a setting so player could go second in KW (be defender)
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - obstinacy should allow player to finish turn and opponent turn to happen before death
+  Possible Bugs Check these:
+    - KW resets and buff/rune carry overs
+    - Need to check who wins in EK if both players run out of cards (GW vs GW example)
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it won’t be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Disable ESC from closing the app
+    - Tabs to move from one object to another
+    - in cards search box up/down keys should scroll between cards 
+    - Add proper costs for evolved cards
+
 3.27.2015
   Enhancements 
     - Find best deck working properly with Runes and with cards
@@ -28,7 +67,6 @@
   Known bugs
     - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
     - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
-    - scroll dot sometimes goes haywire
     - obstinacy should allow player to finish turn and opponent turn to happen before death
   Possible Bugs Check these:
     - KW resets and buff/rune carry overs

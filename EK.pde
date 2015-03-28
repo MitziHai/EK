@@ -53,6 +53,7 @@ class Mutex {
 Mutex m = new Mutex();
 long totalwin = 0;
 long totalloss = 0;
+long totalgames = 0;
 Player player1;
 Player player2;
 
@@ -365,7 +366,6 @@ class RunSim implements Runnable
       {
         ++ duplicatesUsed[ index ];
         ++ cardCount;
-        if (cardCount > 10) iterMax--;
         carry = (duplicatesUsed[ index ] > duplicatesCount[ index ] || cardCount > 10 );
         if ( carry )
         {
@@ -663,7 +663,7 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = 2*8;
-
+    //cores = 1;    debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -706,7 +706,9 @@ class RunSim implements Runnable
       synchronized(m)
       {
         done = numMatch <= totalwin + totalloss;
-        String c = (""+((totalwin + totalloss)/(float)numMatch*100));
+        String c = "";
+        if (!radkw.checked) c = (""+((totalwin + totalloss)/(float)numMatch*100));
+        else c = (""+((totalgames)/(float)numMatch*100));
         if ( !multideck )
         {
           synchronized( listresult )
@@ -923,9 +925,10 @@ void keyReleased()
 
 void mouseWheel(MouseEvent event) {
   float e = event.getCount();
-  if ( selectedList != null )
+  if ( selectedList != null && selectedList.hasScroll)
   {
-    selectedList.scroll += e * float(selectedList.h-selectedList.lineSize) / (selectedList.listItems.size()-selectedList.h/selectedList.lineSize);
+    if (selectedList.scroll + e * float(selectedList.h-selectedList.lineSize) / (selectedList.listItems.size()-selectedList.h/selectedList.lineSize) >= 0)
+      selectedList.scroll += e * float(selectedList.h-selectedList.lineSize) / (selectedList.listItems.size()-selectedList.h/selectedList.lineSize);
   }
 }
 

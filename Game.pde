@@ -33,14 +33,16 @@ class Game implements Runnable
     //println("t: " + t);
         while(!p1.dead) 
         {
-          playMatch(i%2);
+          if (checkKWDefend.checked) playMatch(0);
+          else playMatch(1);
           p1.checkDead();
+          if (win >= 1000) break;
         }
         p1 = new Player(player1);
       } 
       else
         playMatch(i % 2);
-      if ( i % 10000 == 0 )
+      if ( i % 10000 == 0 || radkw.checked)
       {
         totalUpMatches();
       }
@@ -69,6 +71,7 @@ class Game implements Runnable
      // println("Wins: " + win);
       totalloss += loss;
       totalwin += win;
+      totalgames += max(1,loss);
       loss = 0; 
       win = 0;
     }
@@ -456,6 +459,7 @@ class Game implements Runnable
       {
         synchronized( resultsTracked )
         {
+          if (win > 1000) done = true; 
           if( resultsTracked.size() < 1000000 )
           {
             resultsTracked.add( new Result( 0, round ) );
