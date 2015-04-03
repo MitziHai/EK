@@ -139,7 +139,7 @@ class Rune
         break;
       
       case OPPONENT_HAND:
-        activate = ( type.requirement2 == ANY && current.handSize() > type.requirementVal )
+        activate = ( type.requirement2 == ANY && op.handSize() > type.requirementVal )
           || ( type.requirement2 != ANY && op.cardCount[ HAND ][ type.requirement2 ] > type.requirementVal );
         break;
       
@@ -431,7 +431,7 @@ void loadRunes()
   runesMap.put( "Lightning", new RuneType( "Lightning", 4, 5, RType.R_LIGHTNING, FOREST, AType.A_ELECTRIC_SHOCK, 6, 7, 8, 9, 10, PLAYER_IN_PLAY, FOREST, 1, true ) );
   runesMap.put( "Lore", new RuneType( "Lore", 4, 5, RType.R_LORE, MOUNTAIN, AType.A_GROUP_WARPATH, 6, 7, 8, 9, 10, PLAYER_GRAVE, MOUNTAIN, 2, false ) );
   runesMap.put( "Nimble Soul", new RuneType( "Nimble Soul", 3, 5, RType.R_NIMBLE_SOUL, FOREST, AType.A_GROUP_DODGE, 5, 6, 7, 8, 9, PLAYER_GRAVE, FOREST, 2, false ) );
-  runesMap.put( "Ghost Step", new RuneType( "Ghost Step", 5, 5, RType.R_GHOST_STEP, MOUNTAIN, AType.A_GROUP_EVASION, 1, 1, 1, 1, 1, PLAYER_IN_PLAY, MOUNTAIN, 1, false ) );
+  runesMap.put( "Ghost Step", new RuneType( "Ghost Step", 5, 5, RType.R_GHOST_STEP, MOUNTAIN, AType.A_GROUP_EVASION, 1, 1, 1, 1, 1, PLAYER_IN_PLAY, MOUNTAIN, 2, false ) );
   runesMap.put( "Permafrost", new RuneType( "Permafrost",4, 5, RType. R_PERMAFROST, TUNDRA, AType.A_BLIZZARD, 6, 7, 8, 9, 10, PLAYER_IN_PLAY, TUNDRA, 1, true ) );
 }
 
