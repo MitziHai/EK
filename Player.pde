@@ -12,6 +12,7 @@ class Player
   int merit;
   int hpmax;
   int hp;
+  int initative;
   boolean dead = false;
   ArrayList< Card > hand = new ArrayList< Card >();
   ArrayList< Card > deck = new ArrayList< Card >();
@@ -39,6 +40,8 @@ class Player
   Player( Player p )
   {
     name = p.name;
+    initative = p.hp;
+    if (p.hp == 0) initative += 999999;
     for ( Card c : p.deck )
     {
       if( c == null ) break;
@@ -46,6 +49,7 @@ class Player
       c2.lvl = c.lvl;
       c2.resetAll(this);
       deck.add( c2 );
+      initative += c2.type.hp[c2.lvl] + c2.type.atk[c2.lvl];
     }
     for( int i = 0; i < p.numRunes; ++ i )
     {

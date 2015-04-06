@@ -100,7 +100,7 @@ class Game implements Runnable
     int round;
     boolean done = false;
     round = 0;
-    int goFirst = !raddi.checked && f == 1?1:0;
+    int goFirst = p1.initative >= p2.initative ? 1 : 0; //!raddi.checked && f == 1?1:0;
     p1.isP1 = true;
     while ( !done )
     {

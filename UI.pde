@@ -266,7 +266,13 @@ void setupUI()
   // Help tab
   //ListBox helpText = new ListBox( "", 32, 32+32, 1280-64, 800-64-32, 0 );
   Control helpText = new Control( "", 32, 32+32, 1280-64, 800-64-32, 0 );
-  helpText.text =  "Modes:\n";
+  helpText.font = 14;
+  helpText.text =  "Important Information:\n";
+  helpText.text += "- In this version I have implemented an initative cost = (Player Health + Sum of Card HP + Sum of Card Atk).\n";
+  helpText.text += "- The higher initative determines which player goes first.\n";
+  helpText.text += "- In order to make sure demons work properly set your demons player (not card) level to 0 (invulnerable).\n";
+  helpText.text += "\n";
+  helpText.text +=  "Modes:\n";
   helpText.text += "- Arena results show the win percentage of player one beating player 2.\n";
   helpText.text += "- Demon results shows the minimum, maximum, average, and per minute merit and rounds. Add a demon card to player two. Player 2's level is ignored.\n";
   helpText.text += "- Kingdom War results shows the number of times player one can win against player two without resetting the cards.\n";
@@ -494,7 +500,7 @@ void setupUI()
     uiDeck.add( labeld1 );
     textdeck[i-1] = new TextField( "Unamed", left+64, 96+uiTop, 128, 24, 0 );
     uiDeck.add( textdeck[i-1] );
-    labelc[ i - 1 ] = new Control( "Deck cost: 0", left, 128+uiTop, 224, 24, 0 );
+    labelc[ i - 1 ] = new Control( "Deck/Init cost: 0/0", left, 128+uiTop, 224, 24, 0 );
     uiDeck.add( labelc[ i - 1 ] );
     deckList[i-1] = new ListBox( "", left, 160+uiTop, 240, 336, 0 );
     deckList[i-1].lineSize = 24;
@@ -901,14 +907,14 @@ class Button extends Control
         deckList[0].current.clear();
         deckList[0].listItems.clear();
         deckp1 = deckFromUI( 0 );
-        labelc[ 0 ].text = "Deck cost: 0";
+        labelc[ 0 ].text = "Deck/Init cost: 0/0";
         break;
 
       case BUTTON_REMOVE_ALL_2:
         deckList[1].current.clear();
         deckList[1].listItems.clear();
         deckp1 = deckFromUI( 1 );
-        labelc[ 1 ].text = "Deck cost: 0";
+        labelc[ 1 ].text = "Deck/Init cost: 0/0";
         break;
 
       case BUTTON_SAVE_1:
@@ -1183,16 +1189,20 @@ void showDeckCost( int p )
   Deck d = deckFromUI( p );
   if( d == null )
   {
-    labelc[ p ].text = "Deck cost: ?";
+    labelc[ p ].text = "Deck/Init cost: ?/?";
   }
   else
   {
     deckCost = 0;
+    int initativeCost = hpPerLevel[ (int)textLevel[ p ].lastNum ]; // figure out how to get player hps
     for ( int i = 0; i < d.numCards; ++ i )
     {
       deckCost += d.cards[ i ].type.cost;
+      initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
+      initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
     }
-    labelc[ p ].text = "Deck cost: " + deckCost;
+    if ((int)textLevel[ p ].lastNum == 0) initativeCost = 999999;
+    labelc[ p ].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
   }
 }
 
@@ -1478,17 +1488,49 @@ class TextField extends Control
       break;
 
     case TEXT_LEVEL_1:
+      Deck d = deckFromUI( 0 );
+
       if( (int)textLevel[ 0 ].lastNum == 0 )
+      {
         labelh[0].text = "Health: Invulnerable";
+        labelc[0].text = "Deck/Init cost " + deckCost + "/999999";
+      }
       else
+      {
+        int initativeCost = hpPerLevel[ (int)textLevel[ 0 ].lastNum ]; // figure out how to get player hps
+        deckCost = 0;
+        for ( int i = 0; i < d.numCards; ++ i )
+        {
+          deckCost += d.cards[ i ].type.cost;
+          initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
+          initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
+        }
+        labelc[0].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
         labelh[0].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
+      }
       break;
 
     case TEXT_LEVEL_2:
+      d = deckFromUI( 1 );
+
       if( (int)textLevel[ 1 ].lastNum == 0 )
+      {
         labelh[1].text = "Health: Invulnerable";
+        labelc[1].text = "Deck/Init cost " + deckCost + "/999999";
+      }
       else
-        labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 1 ].lastNum ];
+      {
+        int initativeCost = hpPerLevel[ (int)textLevel[ 1 ].lastNum ]; // figure out how to get player hps
+        deckCost = 0;
+        for ( int i = 0; i < d.numCards; ++ i )
+        {
+          deckCost += d.cards[ i ].type.cost;
+          initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
+          initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
+        }
+        labelc[1].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
+        labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
+      }
       break;
 
     case TEXT_TIME:
