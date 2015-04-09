@@ -1408,6 +1408,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
               op.removeFromPlay( c );
               op.guards.remove( c );
               op.deck.add( c );
+              long seed = System.nanoTime();              
+              Collections.shuffle(op.deck, new Random(seed));
               c.checkAbilities( own, op, ON_DEATH,-1 );
             }
           }
@@ -1974,6 +1976,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
               op.removeFromPlay( c );
               op.guards.remove( c );
               op.deck.add( c );
+              long seed = System.nanoTime();              
+              Collections.shuffle(op.deck, new Random(seed));
               c.checkAbilities( own, op, ON_DEATH, -1 );
             }
           }

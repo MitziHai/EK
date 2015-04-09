@@ -1,3 +1,87 @@
+2015.04.09
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Fixed Exile reshuffles entire deck (rather than adding to the top of the deck)
+
+  Enhancements:
+    - Added a cool down time to the demon stats
+
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - obstinacy should allow player to finish turn and opponent turn to happen before death
+
+  Possible Bugs Check these:
+    - KW resets and buff/rune carry overs
+    - Need to check who wins in EK if both players run out of cards (GW vs GW example)
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - Unsure how ressurection works with a full hand (does it reshuffle deck or add card to the top)...Implemented as adding to the top
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it won’t be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, 
+         cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Disable ESC from closing the app
+    - Tabs to move from one object to another
+    - in cards search box up/down keys should scroll between cards 
+    - Add proper costs for evolved cards
+
+2015.04.06
+
+  Fixes:
+    - Who goes first changes!
+    - It is believed (not 100% proven) that the player who goes first is the player with the highest:
+        HP + Sum Card HP + Sum Card Atk
+    - Created an Inititive value (init) for each player based on above
+    - Player with higher number now goes first
+    - Demons/Thiefs need to have level 0 to be invulnerble and always go first.
+    - KW is implemented with starting initative (it doesn't change as hp of cards/player change)
+        Ths needs to be verified.
+  Enhancements:
+    - None
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - obstinacy should allow player to finish turn and opponent turn to happen before death
+  Possible Bugs Check these:
+    - KW resets and buff/rune carry overs
+    - Need to check who wins in EK if both players run out of cards (GW vs GW example)
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - mouse drag to re-arrange the order of items in the player decks and the saved deck list
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server (if this happens, it won’t be within a week)
+    - settings tab to provide these options: debug/verbose mode output, load specified file into decks or cards list, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit, player 1 always goes first, cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Disable ESC from closing the app
+    - Tabs to move from one object to another
+    - in cards search box up/down keys should scroll between cards 
+    - Add proper costs for evolved cards
+
 2015.04.03
 
   Fixes:
