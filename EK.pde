@@ -753,7 +753,8 @@ class RunSim implements Runnable
           totalmeritAvg = totalmerit / (double)numMatch;
           totalroundsAvg = totalrounds / (double)numMatch;
 
-          resultText = "Average merit per minute: " + ((int)(totalmpm*100)/100.0) + "\n" +
+          resultText = "Average merit per minute: " + ((int)(totalmpm*100)/100.0) + 
+            "  Cooldown Time: " + floor((deckCost*2+60)/60.0) + ":" + nf((deckCost*2+60) - 60* floor((deckCost*2+60)/60.0),2) + "\n" + 
             "Maximum merit: " + totalmeritMax +
             " Minimum merit: " + totalmeritMin + "\n" +
             "Average merit: " + ((int)(totalmeritAvg*100)/100.0) + "\n" + 
