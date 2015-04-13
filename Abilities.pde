@@ -283,7 +283,7 @@ void loadAbils()
   evoNames.put( "Resurrection", "rez" );
   evoNames.put( "Resistance", "res" );
   evoNames.put( "Sacrifice", "sac" );
-  evoNames.put( "Sacred Flame", "sf");
+  evoNames.put( "Sacred Flame", "sdf");
   evoNames.put( "Seal", "seal" );
   evoNames.put( "Self-Destruct", "sd" );
   evoNames.put( "Slayer", "slay" );
