@@ -995,9 +995,9 @@ class Card
       int reduced = ( int )( wickedLeech * attacker.atk );
       attacker.atk -= reduced;
       atk += reduced;
+      attacker.totalGlitchCount += reduced;
 
-      if ( debug > 1 && wickedLeech > 0 )
-        println("     " + attacker.toStringNoHp() + " loses " + reduced + " attack to " + toStringNoHp() + "'s Wicked Leach");
+      if ( wickedLeech > 0 && debug > 0 ) println("     " + attacker.toStringNoHp() + " loses " + reduced + " attack to " + toStringNoHp() + "'s Wicked Leach");
     }
     if ( raddi.checked && !own.isP1 )
     {
@@ -2524,6 +2524,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         c.atk += amount;
       else if( c.atk > c.atkBuff )
       {
+        
         int used = min(-amount, c.totalGlitchCount);
         c.totalGlitchCount = max(0, c.totalGlitchCount - used );
         amount = -max(-amount - used, 0);
