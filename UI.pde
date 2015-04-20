@@ -1,3 +1,4 @@
+
 ArrayList< Control > uiDeck = new ArrayList< Control >();
 ArrayList< Control > uiHelp = new ArrayList< Control >();
 ArrayList< Control > uiCard = new ArrayList< Control >();
@@ -46,6 +47,7 @@ static final int BUTTON_CARD_FILL = 33;
 static final int BUTTON_ABILITY_CLEAR = 34;
 static final int TAB4 = 35;
 static final int TAB5 = 36;
+static final int BUTTON_LOAD_DECKS = 37;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -69,6 +71,7 @@ boolean cardMatch(String s, String sf )
     || sf.length() < 1
     || sf.equals("");
 }
+
 
 void filterCards( boolean stricter )
 {
@@ -223,6 +226,7 @@ ListBox decks;
 RadioButton radall;
 RadioButton raddi;
 RadioButton radkw;
+RadioButton radhydra;
 Control labelh[] = new Control[2];
 ListBox listresult;
 TextField numberRuns;
@@ -231,6 +235,9 @@ Checkbox checkMultisim;
 Checkbox checkMultisimResults;
 Checkbox checkKWDefend;
 ListBox evoList;
+DropList ListHydraCard1;
+DropList ListHydraCard2;
+DropList ListHydraCard3;
 TextField textEvo;
 
 CardType editedCard;
@@ -412,31 +419,40 @@ void setupUI()
   uiDeck.add( radall );
   raddi = new RadioButton( "Show Demon Results", 16, line.y+24*2-4, 240, 24, 0 );
   uiDeck.add( raddi );
-  radkw = new RadioButton( "Show Kingdom War Results", 16, line.y+24*3-2, 240, 24, 0 );
+  radkw = new RadioButton( "Show KW Results", 16, line.y+24*3-2, 240, 24, 0 );
   uiDeck.add( radkw );
+  radhydra = new RadioButton( "Show Hydra Results", 16, line.y+24*4, 240, 24, 0 );
+  uiDeck.add( radhydra );
   radall.setNext = raddi;
   radall.setStart = radall;
   raddi.setNext = radkw;
   raddi.setStart = radall;
-  radkw.setNext = null;
+  radkw.setNext = radhydra;
   radkw.setStart = radall;
-  checkMultisim = new Checkbox( "Find best deck (slow)", 16, line.y+24*4+2, 240, 24, 0 );
+  radhydra.setNext = null;
+  radhydra.setStart = radall;
+  checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 240, 24, 0 );
   uiDeck.add( checkMultisim );
 
   labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
   uiSettings.add(labelMultiSim);
   checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+40, 240, 24, 0 );
   uiSettings.add( checkMultisimResults );
-  labelKWSim = new Control( "Kingdom War Sim Additional Options", 16, uiTop+100, 240, 24, 0 );
+  labelKWSim = new Control( "Hydra Simulation Options\n   Choose the three event cards you want:\n                    3 *                                    4 *                                5*", 16, uiTop+100, 240, 24, 0 );
   uiSettings.add(labelKWSim);
-  checkKWDefend = new Checkbox( "Simulate Kingdom War as defender", 16, uiTop+130, 240, 24, 0 );
-  uiSettings.add( checkKWDefend );
-  numberRuns = new TextField("10000", 272, line.y+24, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
+  ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
+  ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
+  ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
+ 
+  uiSettings.add(ListHydraCard1);
+  uiSettings.add(ListHydraCard2);
+  uiSettings.add(ListHydraCard3);
+  numberRuns = new TextField("10000", 275, line.y+48, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;
   numberRuns.max = 1000000;
   uiDeck.add( numberRuns );
-  Control runsLabel = new Control( "Runs:", 216, line.y+24, 128, 32, 0);
+  Control runsLabel = new Control( "Runs:", 226, line.y+48, 128, 32, 0);
   uiDeck.add( runsLabel );
 
   cards = new ListBox( "Cards", 16, 16+uiTop, 224, 408, 0 );
@@ -514,6 +530,7 @@ void setupUI()
     Control butsave1 = new Button( "              Save Deck", left, 636-28+uiTop, 240, 32, BUTTON_SAVE_1+i-1 );
     uiDeck.add( butsave1 );
   }
+  
 
   Control labsav = new Control( "Saved Decks", 768+offsetLeft, 16+uiTop, 256, 24, 0 );
   uiDeck.add( labsav );
@@ -525,12 +542,15 @@ void setupUI()
   uiDeck.add( butload1 );
   Control butload2 = new Button( "      Load Deck as Player 2", 768+offsetLeft, 456+40+16+32+16+uiTop, 240, 32, BUTTON_LOAD_2 );
   uiDeck.add( butload2 );
-  Control butdel = new Button( "              Delete Deck", 768+offsetLeft, 456+40+16+32+16+16+32+uiTop, 240, 32, BUTTON_DELETE );
+  Control butdel = new Button( " Delete Deck", 768+offsetLeft, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_DELETE );
   uiDeck.add( butdel );
+  Control butdeckfile = new Button( " Load Decks", 768+offsetLeft+125, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_LOAD_DECKS );
+  uiDeck.add( butdeckfile );
 
 
-  Button butgo = new Button( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
-  butgo.font = 28;
+
+  Button butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );
+  butgo.font = 18;
   butgo.type = 2;
   uiDeck.add( butgo );
 
@@ -973,6 +993,11 @@ class Button extends Control
           saveDecks();
         }
         break;
+
+      case BUTTON_LOAD_DECKS:
+        selectInput("Select a decks file to load:", "loadSelectedDecks");
+        break;
+        
 
       case BUTTON_GO:
         new Thread(new RunSim()).start();
@@ -1560,6 +1585,8 @@ class DropList extends Control
   int currentIndex = 0;
   int selectIndex = 0;
   boolean showList = false;
+  int offset = 0;
+  int maxSize = 20;
 
   DropList( String t, int xx, int yy, int ww, int hh, int i )
   {
@@ -1583,34 +1610,40 @@ class DropList extends Control
     super.draw(pg);
     if ( showList )
     {
-      /*pg.fill(255);
-       pg.strokeWeight(1);
-       pg.rect( x, y+h, w, font*1.3*listItems.size());
+      pg.image( imgDropList[ 2 ], x+20, y + h, w-40, font*1.3*min(listItems.size(),maxSize) + 5);
+      pg.fill(0);
+       //pg.strokeWeight(1);
+       //pg.rect( x, y+h, w-40, font*1.3*listItems.size()+ 5);
        if( selectIndex > -1 )
        {
        pg.strokeWeight(2);
-       pg.rect( x, y+h+selectIndex*1.3*font, w, font*1.3*1);
+       pg.rect( x+23, 3+y+h+selectIndex*1.3*font, w-48, font*1.3*1);
        pg.strokeWeight(1);
-       }*/
-      pg.image( imgDropList[ 2 ], x+20, y + h, w-40, font*1.3*listItems.size() + 5);
+       }
       pg.pushMatrix();
       pg.translate( 20, 5 );
-      for ( int i = 0; i < listItems.size(); ++ i )
+      for ( int i = 0+offset; i < min(listItems.size(),maxSize)+offset; ++ i )
       {
         pg.translate(0, font*1.3*(1));
         text = listItems.get(i);
         super.draw(pg);
       }
       pg.popMatrix();
+      if (selectIndex == (maxSize - 1) || selectIndex == 1) handleMouseMove();
     }
   }
 
   void handleMouseMove()
   {
+    int origy = mousey;
     super.handleMouseMove();
-    if ( showList && mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*listItems.size()+5 )
+    if ( showList && mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*min(listItems.size(),maxSize)+5 )
     {
-      selectIndex = (mousey - (y+h+5))/(int)(font*1.3);
+      selectIndex = floor((mousey - (y+h+3))/(font*1.3));
+      if (selectIndex >= maxSize - 1 || selectIndex <= 0) {
+        if (selectIndex >= maxSize - 1) {offset  ++;  if (listItems.size() - 1 < selectIndex + offset) offset = listItems.size()-selectIndex -1;}
+        if (selectIndex <= 0) {offset --; selectIndex++; if (offset < 0) offset = 0;} 
+      }
     }
     else
     {
@@ -1621,7 +1654,7 @@ class DropList extends Control
   void handleMousePressed()
   {
     super.handleMousePressed();
-    if ( !( mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*listItems.size() ) )
+    if ( !( mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*min(listItems.size(),maxSize) ) )
     {
       showList = false;
       droppedList = null;
@@ -1637,9 +1670,9 @@ class DropList extends Control
     }
     else
     {
-      if ( showList && mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*listItems.size() )
+      if ( showList && mousex > x && mousex < x+w && mousey > y+h && mousey < y+h+font*1.3*min(listItems.size(),maxSize) )
       {
-        currentIndex = (mousey - (y+h+5))/(int)(font*1.3);
+        currentIndex = floor((mousey - (y+h+5))/(font*1.3)) + offset;
 
         if ( this == cardFaction )
         {

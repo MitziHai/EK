@@ -14,6 +14,9 @@ TreeMap<Integer, String> factionsName = new TreeMap<Integer, String>();
 String error = "";
 void loadCards()
 {
+  int index3 = 0;
+  int index4 = 0;
+  int index5 = 0;
   try
   {
     File f = new File("CardsList2.txt");
@@ -93,7 +96,24 @@ void loadCards()
         }
       }
       CardType ct = new CardType(data[0], hp, atk, factions.get(data[3]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[4]), abil, abilLvl);
+      
+
       cardsMap.put( ct.name, ct );
+      if (ct.stars == 3)  {
+        ListHydraCard1.listItems.add( ct.name );
+        if (Event3Star.equals(ct.name)) ListHydraCard1.currentIndex = index3; 
+        index3++;
+      }
+      if (ct.stars == 4)  {
+        ListHydraCard2.listItems.add( ct.name );
+        if (Event4Star.equals(ct.name)) ListHydraCard2.currentIndex = index4;
+        index4++;
+      }
+      if (ct.stars == 5)  {
+        ListHydraCard3.listItems.add( ct.name );
+        if (Event5Star.equals(ct.name)) ListHydraCard3.currentIndex = index5;
+        index5++;
+      }
     }
     br.close();
   }
@@ -1318,7 +1338,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         {
         case A_ADVANCED_STRIKE:
           Card longest = null;
-          for ( Card c : own.hand )
+          for ( Card c : own.hand )   
           {
             if ( longest == null || c.time > longest.time ) longest = c;
           }
