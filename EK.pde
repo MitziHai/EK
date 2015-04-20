@@ -825,7 +825,7 @@ class RunSim implements Runnable
     }
     else if ( radhydra.checked )
     {
-      score = (totalloss + totalwin)/(float)max(1, totalwin);
+      score = max(1, totalwin)/(float)(totalloss + totalwin);
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", (totalloss + totalwin)/(float)max(1, totalwin));
