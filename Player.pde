@@ -37,7 +37,7 @@ class Player
     invul = (h == 0);
   }
 
-  Player( Player p )
+  Player( Player p, boolean isPlayer )
   {
     name = p.name;
     initative = p.hp;
@@ -46,9 +46,13 @@ class Player
     {
       if( c == null ) break;
       Card c2 = new Card( c.type, c.lvl, c.evo, c.evoLevel );
+      if (ListHydraCard1 != null && ListHydraCard1.listItems.get(ListHydraCard1.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)(c2.hpMax*1.5); c2.atkMax = (int)(c2.atkMax*1.5);}
+      if (ListHydraCard2 != null && ListHydraCard2.listItems.get(ListHydraCard2.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*2; c2.atkMax = (int)c2.atkMax*2; }
+      if (ListHydraCard3 != null && ListHydraCard3.listItems.get(ListHydraCard3.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
       c2.lvl = c.lvl;
       c2.resetAll(this);
       deck.add( c2 );
+      
       initative += c2.type.hp[c2.lvl] + c2.type.atk[c2.lvl];
     }
     for( int i = 0; i < p.numRunes; ++ i )
@@ -112,8 +116,8 @@ class Player
       Card c = hand.get( i );
       if ( --c.time <= 0 )
       {
-        c.hpCurr = c.hpBuff = c.type.hp[ c.lvl ] + hpBuff[ c.type.faction ];
-        c.atk = c.atkBuff = c.type.atk[ c.lvl ] + atkBuff[ c.type.faction ];
+        c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.type.faction ];
+        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.type.faction ];
         addToPlay( c );
         removeFromHand( i -- );
         c.checkAbilities(this, op, ON_ENTER, -1);

@@ -20,29 +20,49 @@ class Game implements Runnable
   String MyLog;
 
   Player p1;
+  Player p2;
+  
+
 
   void run()
   {
     
-    p1 = new Player(player1);
     for ( int i = 0; i < t; ++ i )
     {
       if (radkw.checked) 
       {
-    //println("i: " + i);
-    //println("t: " + t);
+        p1 = new Player(player1, true);
+        p2 = new Player(player2, false);
         while(!p1.dead) 
         {
-          if (checkKWDefend.checked) playMatch(0);
-          else playMatch(1);
+          playMatch(0);
           p1.checkDead();
+          p2 = new Player(player2,false);
+          p1.resetForKW();
           if (win >= 1000) break;
         }
-        p1 = new Player(player1);
+        p1 = new Player(player1,true);
       } 
-      else
+      else if (radhydra.checked)
+      {
+        p1 = new Player(player1,true);
+        p2 = new Player(player2,false);
+        while(!p2.dead) 
+        {
+          playMatch(1);
+          p2.checkDead();
+          p1 = new Player(player1,true);
+          p2.resetForKW();
+          if (win >= 1000) break;
+        }
+        p2 = new Player(player2,false);
+      } 
+      else {
+        p1 = new Player(player1,true);
+        p2 = new Player(player2,false);
         playMatch(i % 2);
-      if ( i % 10000 == 0 || radkw.checked)
+      }
+      if ( i % 10000 == 0 || radkw.checked || radhydra.checked)
       {
         totalUpMatches();
       }
@@ -55,7 +75,7 @@ class Game implements Runnable
   {
     synchronized( m )
     {
-      if ( raddi.checked || radkw.checked )
+      if ( raddi.checked)
       {
         totalmerit += meritTotal;
         totalmeritMax = totalmeritMax > meritMax ? totalmeritMax : meritMax;
@@ -67,11 +87,9 @@ class Game implements Runnable
       meritTotal = roundsTotal = 0;
 
 
-     // println("Loss: " + loss);
-     // println("Wins: " + win);
       totalloss += loss;
       totalwin += win;
-      totalgames += max(1,loss);
+      totalgames += (radhydra.checked ? max(1,loss) : max(1,win));
       loss = 0; 
       win = 0;
     }
@@ -91,11 +109,6 @@ class Game implements Runnable
       println("-----------------------------------");
       println("");
     }
-    if ( radkw.checked )
-      p1.resetForKW();
-    else
-      p1 = new Player(player1);
-    Player p2 = new Player(player2);
 
     int round;
     int winner = 0;
@@ -463,7 +476,7 @@ class Game implements Runnable
       roundsTotal += round;
       roundsMax = round > roundsMax ? round : roundsMax;
       roundsMin = round < roundsMin ? round : roundsMin;
-      if( !radkw.checked )
+      if( !radkw.checked && !radhydra.checked)
       {
         synchronized( resultsTracked )
         {

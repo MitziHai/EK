@@ -57,6 +57,8 @@ long totalgames = 0;
 Player player1;
 Player player2;
 
+String DecksFileName = "decks_Demons.txt";
+
 int deckCost = 0;
 long totalmerit;
 long totalrounds;
@@ -74,6 +76,9 @@ PGraphics pg = new PGraphics();
 boolean control = false;
 boolean pressC = false;
 boolean pressV = false;
+String Event3Star = "";
+String Event4Star = "";
+String Event5Star = "";
 
 void setup()
 {
@@ -84,21 +89,64 @@ void setup()
   pg = new PGraphics();
   pg = createGraphics(1280, 768+32);
   loadAbils();
+  loadSettings();
   setupUI();
   loadCards();
   loadRunes();
-  loadDecks();
+  loadDecks("decks_KW.txt",false,KWdecksList);
+  loadDecks("decks_Hydra.txt",false,HydradecksList);
+  loadDecks("decks_Demons.txt",false,DemondecksList);
+  loadDecks("decks_Thiefs.txt",false,ThiefdecksList);
+  loadDecks(DecksFileName,true,DemondecksList);
   frame.setResizable(true);
 
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run () {
       saveDecks();
+      saveSettings();
     }
   }
   ));
 
   loadLevel();
   //test();
+}
+
+void loadSettings() {
+  try
+  {   
+    File f = new File("settings.txt");
+    if(f.exists()) 
+    {
+      BufferedReader br = createReader("settings.txt");
+      DecksFileName = br.readLine();
+      Event3Star = br.readLine();
+      Event4Star = br.readLine();
+      Event5Star = br.readLine();
+      br.close();
+    }
+  }
+  catch( Exception e )
+  {
+    println(e);
+  }
+}
+
+void saveSettings() {
+  try
+  {   
+    PrintWriter writer = new PrintWriter("settings.txt", "UTF-8");
+    BufferedReader br = createReader("settings.txt");
+    writer.println(DecksFileName);
+    writer.println(ListHydraCard1.listItems.get(ListHydraCard1.currentIndex));
+    writer.println(ListHydraCard2.listItems.get(ListHydraCard2.currentIndex));
+    writer.println(ListHydraCard3.listItems.get(ListHydraCard3.currentIndex));
+    writer.close();
+  }
+  catch( Exception e )
+  {
+    println(e);
+  }
 }
 
 public static double choose(int x, int y) 
@@ -632,6 +680,7 @@ class RunSim implements Runnable
     totalmerit = totalrounds = 0;
     totalwin = 0;
     totalloss = 0;
+    totalgames = 0 ;
 
     // Setup players
     for ( int i = 0; i < min(10,d1.numCards); ++ i )
@@ -663,7 +712,7 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = 2*8;
-    //cores = 1;    debug = 4;  // To single thread and print all info to log uncomment this line
+    //cores = 1;    //debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -685,6 +734,7 @@ class RunSim implements Runnable
        executor.execute(worker);*/
 
       // Method 3 part 1 of 2. BEST Add workers to completion service to avoid re-creating thread pool.
+      //println(perCore + " " + cores);
       Runnable worker;
       if(i==cores-1)
         worker = new Game(numMatch-perCore*(cores-1));
@@ -705,10 +755,10 @@ class RunSim implements Runnable
       delay(0);
       synchronized(m)
       {
-        done = numMatch <= totalwin + totalloss;
+        done = numMatch <= (radkw.checked ? totalloss : (radhydra.checked ? totalwin : totalwin + totalloss));
         String c = "";
-        if (!radkw.checked) c = (""+((totalwin + totalloss)/(float)numMatch*100));
-        else c = (""+((totalgames)/(float)numMatch*100));
+        if (!radkw.checked && !radhydra.checked) c = (""+((totalwin + totalloss)/(float)numMatch*100));
+        else c = (""+((radkw.checked ? totalloss : totalwin)/(float)numMatch*100));
         if ( !multideck )
         {
           synchronized( listresult )
@@ -771,6 +821,15 @@ class RunSim implements Runnable
       {
         String c = String.format("%1$,.5f", totalwin/(float)max(1, totalloss));
         resultText = "Player 1 wins " + c.substring(0, min(10, c.length())) +" matches per life.";
+      }
+    }
+    else if ( radhydra.checked )
+    {
+      score = max(1, totalwin)/(float)(totalloss + totalwin);
+      if ( score >= bestScore )
+      {
+        String c = String.format("%1$,.5f", (totalloss + totalwin)/(float)max(1, totalwin));
+        resultText = "Player 1 takes " + c.substring(0, min(10, c.length())) +" attacks to kill Hydra.";
       }
     }
     return score;

@@ -76,7 +76,7 @@ void saveDecks()
 {
   try
   {    
-    PrintWriter writer = new PrintWriter("decks.txt", "UTF-8");
+    PrintWriter writer = new PrintWriter(DecksFileName, "UTF-8");
     writer.println( textLevel[ 0 ].num );
     writer.println( textLevel[ 1 ].num );
     writer.println();
@@ -117,16 +117,18 @@ public static boolean isNumeric(String str)
 
 void loadLevel()
 {
+  textLevel[ 0 ].num = textLevel[ 0 ].lastNum = 90;
+  textLevel[ 0 ].num = textLevel[ 1 ].lastNum = 90;
   try
   {
-    File f = new File("decks.txt");
+    File f = new File(DecksFileName);
     if(!f.exists()) 
     {
-      PrintWriter writer = new PrintWriter("decks.txt", "UTF-8");
+      PrintWriter writer = new PrintWriter(DecksFileName, "UTF-8");
       writer.println("");
     }
     
-    BufferedReader br = createReader("decks.txt");
+    BufferedReader br = createReader(DecksFileName);
     Deck d = new Deck();
     int i = 0;
     String l1 = br.readLine();
@@ -137,22 +139,27 @@ void loadLevel()
   catch( Exception e )
   {
     textLevel[ 0 ].num = textLevel[ 0 ].lastNum = 60;
-    textLevel[ 0 ].num = textLevel[ 0 ].lastNum = 60;
+    textLevel[ 0 ].num = textLevel[ 1 ].lastNum = 60;
   }
   labelh[0].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
   labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 1 ].lastNum ];
 }
     
-void loadDecks()
+void loadSelectedDecks(File selection) {
+  if (selection != null) {  
+    DecksFileName = selection.getAbsolutePath();
+    loadDecks(DecksFileName, true, null);
+  }
+}
+    
+void loadDecks(String FileName, boolean load, String decksList[])
 {
-  savedDecks.clear();
-  decks.listItems.clear();
   try
   {   
-    File f = new File("decks.txt");
+    File f = new File(FileName);
     if(!f.exists()) 
     {
-      PrintWriter writer = new PrintWriter("decks.txt", "UTF-8");
+      PrintWriter writer = new PrintWriter(FileName, "UTF-8");
       for( int i = 0; i < decksList.length; ++ i )
       {
         writer.println(decksList[i]);
@@ -160,48 +167,53 @@ void loadDecks()
       writer.close();
     }
     
-    BufferedReader br = createReader("decks.txt");
-    Deck d = new Deck();
-    int i = 0;
-    br.readLine(); br.readLine(); br.readLine();
-    for (String line; (line = br.readLine()) != null; ) 
-    {
-      if( line.length() < 1 )
+    if (load) {
+      savedDecks.clear();
+      decks.listItems.clear();
+      BufferedReader br = createReader(FileName);
+      Deck d = new Deck();
+      int i = 0;
+      br.readLine(); br.readLine(); br.readLine();
+      for (String line; (line = br.readLine()) != null; ) 
       {
-        //println("!" + d + " " + d.name );
-        savedDecks.add( d );
-        decks.listItems.add( d.name );
-        d = new Deck();
-        i = 0;
-        continue;
+        if( line.length() < 1 )
+        {
+          //println("!" + d + " " + d.name );
+          savedDecks.add( d );
+          decks.listItems.add( d.name );
+          d = new Deck();
+          i = 0;
+          continue;
+        }
+        if( i == 0 )
+        {
+          d.name = line;
+        }
+        else if( i == 1 && isNumeric( line ) )
+        {
+          d.level = Integer.parseInt( line );
+        }
+        else if( line.substring( 0, Math.min( line.length(), 6 ) ).toLowerCase().equals( "rune: " ) )
+        {
+          Rune r = runeFromString( line );
+          if( r != null )
+            d.runes[ d.numRunes ++ ] = r; 
+        }
+        else
+        {
+         // if( line.indexOf( '[' ) > 0 )
+         //   line = line.substring( 0, line.indexOf( '[' ) - 1 );
+          Card c = cardFromString( line );
+          if( c != null )
+            d.cards[ d.numCards ++ ] = c;
+        }
+        ++ i;
       }
-      if( i == 0 )
-      {
-        d.name = line;
-      }
-      else if( i == 1 && isNumeric( line ) )
-      {
-        d.level = Integer.parseInt( line );
-      }
-      else if( line.substring( 0, Math.min( line.length(), 6 ) ).toLowerCase().equals( "rune: " ) )
-      {
-        Rune r = runeFromString( line );
-        if( r != null )
-          d.runes[ d.numRunes ++ ] = r; 
-      }
-      else
-      {
-       // if( line.indexOf( '[' ) > 0 )
-       //   line = line.substring( 0, line.indexOf( '[' ) - 1 );
-        Card c = cardFromString( line );
-        if( c != null )
-          d.cards[ d.numCards ++ ] = c;
-      }
-      ++ i;
+      br.close();
     }
-    br.close();
   }
   catch( Exception e )
   {
+    println(e);
   }
 }
