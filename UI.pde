@@ -928,6 +928,7 @@ class Button extends Control
         deckList[0].listItems.clear();
         deckp1 = deckFromUI( 0 );
         labelc[ 0 ].text = "Deck/Init cost: 0/0";
+        deckList[0].scroll = 0;
         break;
 
       case BUTTON_REMOVE_ALL_2:
@@ -935,6 +936,7 @@ class Button extends Control
         deckList[1].listItems.clear();
         deckp1 = deckFromUI( 1 );
         labelc[ 1 ].text = "Deck/Init cost: 0/0";
+        deckList[1].scroll = 0;
         break;
 
       case BUTTON_SAVE_1:
@@ -972,7 +974,6 @@ class Button extends Control
         {
           deckToUI( decks.current.get(0), 0 );
           showDeckCost( 0 );
-          labelh[0].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
         }
         break;
 
@@ -981,7 +982,6 @@ class Button extends Control
         {
           deckToUI( decks.current.get(0), 1 );
           showDeckCost( 1 );
-          labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 1 ].lastNum ];
         }
         break;
 
@@ -1214,6 +1214,7 @@ void showDeckCost( int p )
   Deck d = deckFromUI( p );
   if( d == null )
   {
+    labelh[p].text = "Health: ";
     labelc[ p ].text = "Deck/Init cost: ?/?";
   }
   else
@@ -1228,6 +1229,7 @@ void showDeckCost( int p )
     }
     if ((int)textLevel[ p ].lastNum == 0) initativeCost = 999999;
     labelc[ p ].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
+    labelh[p].text = "Health: " + hpPerLevel[ (int)textLevel[ p ].lastNum ];
   }
 }
 
@@ -1742,6 +1744,8 @@ class ListBox extends Control
     }
 
     pg.pushMatrix();
+    
+    scroll = min(scroll,h-lineSize);
     int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
     for ( int i = 0; i + scrollOffset >=0 && i + scrollOffset <= listItems.size() && i < h/lineSize; ++ i )
     {
@@ -1776,12 +1780,10 @@ class ListBox extends Control
 
   void handleMouseMove()
   {
-    //println("here");
     super.handleMouseMove();
     if ( dragStartY != -1 )
     {
       scroll = min( h-lineSize, max( 0, (mousey - (dragStartY-(y+scrollStart))) - y ) );
-      //println(scroll + " " +mousey + " " +dragStartY);
     }
     if ( mouseIsOn() && (!hasScroll || mousex < x+w-lineSize) )
     {
@@ -1805,8 +1807,26 @@ class ListBox extends Control
         scrollStart = scroll;
         dragStartY = mousey;
       }
-      else
+      else {
         draggedList = this;
+        selected = true;
+        selectedList = this;
+        int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
+        int newCurrentIndex = (mousey - y)/lineSize + scrollOffset;
+        // Clicked a list item
+        if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() )
+        {
+          int lastSelected = current.size() > 0 ? current.get( current.size() - 1 ) : -1;
+          if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) )
+            current.clear();
+          if ( keyPressed && keyCode == SHIFT && key == CODED )
+            for ( int i = min( lastSelected, newCurrentIndex ); i <= max( lastSelected, newCurrentIndex ); ++ i ) current.add( i );
+          else if ( current.contains( newCurrentIndex ) )
+            current.remove( (Integer)newCurrentIndex );
+          else
+            current.add( newCurrentIndex );
+        }
+      }
     }
   }
 
@@ -1823,7 +1843,7 @@ class ListBox extends Control
       showDeckCost( 0 );
       showDeckCost( 1 );
     }
-    if ( mouseIsOn() && clicked && (!hasScroll || mousex < x+w-lineSize) )
+    if ( mouseIsOn() && clicked && (!hasScroll || mousex < x+w-lineSize) && !(keyPressed && key == CODED && ( keyCode == CONTROL ) ) && !( keyPressed && keyCode == SHIFT && key == CODED ))
     {
       if( selectedList != null )
       {
@@ -1838,17 +1858,28 @@ class ListBox extends Control
       int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
       int newCurrentIndex = (mousey - y)/lineSize + scrollOffset;
       // Clicked a list item
-      if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() )
+      if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() && (this == deckList[0] || this == deckList[1] || this == decks) && this.current.size() > 0 )
       {
-        int lastSelected = current.size() > 0 ? current.get( current.size() - 1 ) : -1;
-        if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) )
-          current.clear();
-        if ( keyPressed && keyCode == SHIFT && key == CODED )
-          for ( int i = min( lastSelected, newCurrentIndex ); i <= max( lastSelected, newCurrentIndex ); ++ i ) current.add( i );
-        else if ( current.contains( newCurrentIndex ) )
-          current.remove( (Integer)newCurrentIndex );
-        else
-          current.add( newCurrentIndex );
+        for ( Integer i : this.current )
+        {
+          listItems.add( newCurrentIndex,listItems.get( (int)i ) );
+          if (newCurrentIndex >= (int) i) listItems.remove( (int) i);
+          else listItems.remove( (int) i + 1);
+          if (this == decks) {
+            savedDecks.add( newCurrentIndex,savedDecks.get( (int)i ) );
+            if (newCurrentIndex >= (int) i) savedDecks.remove( (int) i);
+            else savedDecks.remove( (int) i + 1);
+          }
+        }
+ //        int lastSelected = current.size() > 0 ? current.get( current.size() - 1 ) : -1;
+//        if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) )
+//          current.clear();
+//        if ( keyPressed && keyCode == SHIFT && key == CODED )
+//          for ( int i = min( lastSelected, newCurrentIndex ); i <= max( lastSelected, newCurrentIndex ); ++ i ) current.add( i );
+//        else if ( current.contains( newCurrentIndex ) )
+//          current.remove( (Integer)newCurrentIndex );
+//        else
+//          current.add( newCurrentIndex );
       }
       // Clicked after list items
       else if( newCurrentIndex >= 0 && ( this == deckList[ 0 ] || this == deckList[ 1 ] ) )
@@ -2039,7 +2070,7 @@ class ListBox extends Control
           showDeckCost( 1 );
           current.clear();
           current.add( listItems.size() );
-          //listItems.add( "" );
+          listItems.add( "" );
         }
         else if( ((key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z')) || key == BACKSPACE || key == ':' || key == ' ' || key == '\'' || key == '(' || key == ')' || key == '-' || (key >= '0' && key <= '9') )
         {
@@ -2073,28 +2104,29 @@ class ListBox extends Control
     {
       for ( int i = 0; i < 2; ++ i )
       {
-        for ( int j = 0; j < deckList[i].current.size(); ++ j )
-        {
-          String s = deckList[i].listItems.get( deckList[i].current.get(j) );
-          if( s.toLowerCase().substring( 0, min( s.length(), 4 ) ).equals( "rune" ) )
+        if (!(deckList[i].current.size() > deckList[i].listItems.size()))
+          for ( int j = 0; j < deckList[i].current.size(); ++ j )
           {
-            Rune r = runeFromString( s );
-            if( r != null )
+            String s = deckList[i].listItems.get( deckList[i].current.get(j) );
+            if( s.toLowerCase().substring( 0, min( s.length(), 4 ) ).equals( "rune" ) )
             {
-              r.level = min( 4, max( 0, r.level + adjust ) );
-              deckList[i].listItems.set( deckList[i].current.get(j), ""+r );
+              Rune r = runeFromString( s );
+              if( r != null )
+              {
+                r.level = min( 4, max( 0, r.level + adjust ) );
+                deckList[i].listItems.set( deckList[i].current.get(j), ""+r );
+              }
+            }
+            else
+            {
+              Card c = cardFromString( s );
+              if( c != null )
+              {
+                c.lvl = min( 15, max( 0, c.lvl + adjust ) );
+                deckList[i].listItems.set( deckList[i].current.get(j), ""+c );
+              }
             }
           }
-          else
-          {
-            Card c = cardFromString( s );
-            if( c != null )
-            {
-              c.lvl = min( 15, max( 0, c.lvl + adjust ) );
-              deckList[i].listItems.set( deckList[i].current.get(j), ""+c );
-            }
-          }
-        }
       }
     }
     if ( keyCode == DELETE )
