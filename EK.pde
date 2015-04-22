@@ -788,7 +788,7 @@ class RunSim implements Runnable
     {
       score = ((100*totalwin/(float)numMatch));
       if ( score >= bestScore )
-        resultText = "Player 1 wins " + (100*totalwin/(float)numMatch)+"%";
+        resultText = (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)numMatch)+"% of the matches";
     }
     else if ( raddi.checked )
     {

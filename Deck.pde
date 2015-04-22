@@ -149,6 +149,7 @@ void loadSelectedDecks(File selection) {
   if (selection != null) {  
     DecksFileName = selection.getAbsolutePath();
     loadDecks(DecksFileName, true, null);
+    decks.scroll = 0;
   }
 }
     
