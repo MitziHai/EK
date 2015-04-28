@@ -11,8 +11,9 @@ All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_
     - Added output of # of runs done (should equal # in box, but will be less if stop button pressed).
     - Fixed issue with Hydra and KW sometimes not simming the correct number of lives
     - Fixed the factions of the following cards: Fire Elemental, Fire Elemental [Elite], Harpy, Life Source, Sptifire Worm
+    - Fixed QS: Destroy not in evo list
 
-  Enhancements:
+  Ehhancements:
     - Disabled ESC key from exiting the application
     - Find best deck only does combos with 4 runes (or minimum number of runes provided if less than 4)
 
