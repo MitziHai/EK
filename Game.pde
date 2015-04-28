@@ -7,6 +7,7 @@ class Game2 implements Runnable
 class Game implements Runnable
 {
   long t = 0;
+  int procid = -1;
   long win = 0;
   long loss = 0;
 
@@ -31,17 +32,17 @@ class Game implements Runnable
     {
       if (radkw.checked) 
       {
-        p1 = new Player(player1, true);
+        p1 = new Player(player1, false);
         p2 = new Player(player2, false);
         while(!p1.dead) 
         {
           playMatch(0);
-          p1.checkDead();
+//          p1.checkDead();
           p2 = new Player(player2,false);
           p1.resetForKW();
-          if (win >= 1000) break;
+          if (win >= 1000) break; 
         }
-        p1 = new Player(player1,true);
+        //p1 = new Player(player1,true);
       } 
       else if (radhydra.checked)
       {
@@ -50,22 +51,23 @@ class Game implements Runnable
         while(!p2.dead) 
         {
           playMatch(1);
-          p2.checkDead();
+//          p2.checkDead();
           p1 = new Player(player1,true);
           p2.resetForKW();
           if (win >= 1000) break;
         }
-        p2 = new Player(player2,false);
+//        p2 = new Player(player2,false);
       } 
       else {
-        p1 = new Player(player1,true);
+        p1 = new Player(player1,false);
         p2 = new Player(player2,false);
         playMatch(i % 2);
       }
-      if ( i % 10000 == 0 || radkw.checked || radhydra.checked)
+      if ( i % 1000 == 0 || radkw.checked || radhydra.checked)
       {
         totalUpMatches();
       }
+      if (StopMe) i = (int)t+1;
     }
     //println( t + " matches averaging " + (t==0?0:(total / (float)t)) + " milliseconds and totalling " + total +".");
     totalUpMatches();
@@ -89,15 +91,16 @@ class Game implements Runnable
 
       totalloss += loss;
       totalwin += win;
-      totalgames += (radhydra.checked ? max(1,loss) : max(1,win));
+      totalgames += (radhydra.checked ? max(1,win) : max(1,loss));
       loss = 0; 
       win = 0;
     }
   }
 
-  Game( long times )
+  Game( long times, int ids )
   {
     t = times;
+    procid = ids;
   }
 
   void playMatch( int f )
@@ -476,7 +479,7 @@ class Game implements Runnable
       roundsTotal += round;
       roundsMax = round > roundsMax ? round : roundsMax;
       roundsMin = round < roundsMin ? round : roundsMin;
-      if( !radkw.checked && !radhydra.checked)
+      //if( !radkw.checked && !radhydra.checked)
       {
         synchronized( resultsTracked )
         {

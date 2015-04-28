@@ -166,6 +166,7 @@ public static double choose(int x, int y)
 }
 
 static boolean isRun = false;
+static boolean StopMe = false;
 
 String resultText = "";
 boolean multideck = false;
@@ -194,6 +195,7 @@ class RunSim implements Runnable
     // Do not run if already running!
     if ( isRun ) return;
     isRun = true;
+    StopMe = false;
     
     int playerDeckCost = costPerLevel[ (int)textLevel[ 0 ].lastNum ];
     int nC = deckp1.numCards;
@@ -294,12 +296,12 @@ class RunSim implements Runnable
         duplicatesUsed[ j ] = duplicatesCount[ j ];
     }
       // For each card combination:
-    while ( !cardsDone )
+    while ( !cardsDone && !StopMe)
     {
       //println(Arrays.toString(duplicatesUsed));
       // Check if card count for this deck is valid.
       int cardCount = 0;
-      for( int j = 0; j < deckp1.numCards; ++ j )
+      for( int j = 0; j < deckp1.numCards && !StopMe; ++ j )
         cardCount += duplicatesUsed[ j ];
       
       if( cardCount <= 10 && cardCount >= min( deckp1.numCards - 3, 7 ) )
@@ -315,7 +317,7 @@ class RunSim implements Runnable
           cR = 0; // start with no runes selected
           if (!multideck) cR = (1 << nR) -1; //unless we are not doing multi deck
           // For each rune combination:
-          while ( cR < (1<<nR) )
+          while ( cR < (1<<nR) && !StopMe)
           {
             // If combination includes all selected runes, construct the deck and simulate games for that deck.
             if(  ( selectedRunes & cR ) == selectedRunes  )
@@ -393,16 +395,7 @@ class RunSim implements Runnable
                 a >>= 1;
               }
             }
-            while (cR < (1 << nR) && runesIn > 4);
-            // Go to next combination of runes using Gosper's trick.
-//            if ( cR > 0 )
-//            {
-//              int a = cR&-cR;
- //             int b = cR+a;
-  //            cR = (cR^b)/4/a|b;
-   //         }
-     //       else
-       //       break;
+            while (cR < (1 << nR) && runesIn != min(4,deckp1.numRunes));
           }
         }
       }
@@ -470,6 +463,7 @@ class RunSim implements Runnable
       resultsTracked = null;
     }
     isRun = false;
+    butgo.text = "      Go!";
   }
 
   // duplicatesUsed, duplicatesCards, cR
@@ -648,6 +642,7 @@ class RunSim implements Runnable
       }
     }
     isRun = false;
+    StopMe = false;
   }
 
   Deck constructDeckGospers( int c, int r )
@@ -712,7 +707,7 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = 2*8;
-    //cores = 1;    //debug = 4;  // To single thread and print all info to log uncomment this line
+    //cores = 1;   // debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -737,9 +732,9 @@ class RunSim implements Runnable
       //println(perCore + " " + cores);
       Runnable worker;
       if(i==cores-1)
-        worker = new Game(numMatch-perCore*(cores-1));
+        worker = new Game(numMatch-perCore*(cores-1),i);
       else
-        worker = new Game(perCore);
+        worker = new Game(perCore,i);
       ecs.submit(worker, null);
     }
 
@@ -786,31 +781,31 @@ class RunSim implements Runnable
     //if (debug > 0) println(WorstLog);
     if ( radall.checked )
     {
-      score = ((100*totalwin/(float)numMatch));
+      score = ((100*totalwin/(float)(totalwin + totalloss)));
       if ( score >= bestScore )
-        resultText = (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)numMatch)+"% of the matches";
+        resultText = (totalwin + totalloss) + " matches complete\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)(totalwin + totalloss))+"% of the matches";
     }
     else if ( raddi.checked )
     {
-      score = totalmerit / ( numMatch * (deckCost*2+60)/60.0 );
+      score = totalmerit / ( (totalwin + totalloss) * (deckCost*2+60)/60.0 );
       if ( score >= bestScore )
       {
-        totalmpm = totalmerit / ( numMatch * (deckCost*2+60)/60.0 );
+        totalmpm = totalmerit / ( (totalwin + totalloss) * (deckCost*2+60)/60.0 );
         /*if( multisim )
          resultText = "Average merit per minute: " + totalmpm;// + "\n";
          else*/
         {
-          totalmeritAvg = totalmerit / (double)numMatch;
-          totalroundsAvg = totalrounds / (double)numMatch;
+          totalmeritAvg = totalmerit / (double)(totalwin + totalloss);
+          totalroundsAvg = totalrounds / (double)(totalwin + totalloss);
 
-          resultText = "Average merit per minute: " + ((int)(totalmpm*100)/100.0) + 
+          resultText = (totalwin + totalloss) + " matches complete\n" + "Average merit per minute: " + nfc((float)totalmpm,2) + 
             "  Cooldown Time: " + floor((deckCost*2+60)/60.0) + ":" + nf((deckCost*2+60) - 60* floor((deckCost*2+60)/60.0),2) + "\n" + 
-            "Maximum merit: " + totalmeritMax +
-            " Minimum merit: " + totalmeritMin + "\n" +
-            "Average merit: " + ((int)(totalmeritAvg*100)/100.0) + "\n" + 
+            "Maximum merit: " + nfc((int)totalmeritMax) +
+            " Minimum merit: " + nfc((int)totalmeritMin) + "\n" +
+            "Average merit: " + nfc((float)totalmeritAvg,2) + "\n" + 
             "Maximum rounds: " + totalroundsMax +
             " Minimum rounds: " + totalroundsMin + "\n" +
-            "Average rounds: " + (((int)(totalroundsAvg*100))/100.0) + "\n";
+            "Average rounds: " + nfc((int)totalroundsAvg,2) + "\n";
         }
       }
     }
@@ -820,7 +815,7 @@ class RunSim implements Runnable
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", totalwin/(float)max(1, totalloss));
-        resultText = "Player 1 wins " + c.substring(0, min(10, c.length())) +" matches per life.";
+        resultText = totalloss + " lives complete\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " wins " + c.substring(0, min(10, c.length())) +" matches per life.";
       }
     }
     else if ( radhydra.checked )
@@ -829,7 +824,7 @@ class RunSim implements Runnable
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", (totalloss + totalwin)/(float)max(1, totalwin));
-        resultText = "Player 1 takes " + c.substring(0, min(10, c.length())) +" attacks to kill Hydra.";
+        resultText = totalwin + " hydras defeated\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " takes " + c.substring(0, min(10, c.length())) +" attacks to kill Hydra.";
       }
     }
     return score;
@@ -971,6 +966,7 @@ void keyPressed()
   if ( key == '2' && selectedText == null && selectedList != deckList[0] && selectedList != deckList[1]  )
     addCardsToDeck(1);
 
+  if  (key == ESC) key = 0; 
   if ( key == CODED && keyCode == CONTROL ) control = true;
   if ( key == 'c' || key == 'C' ) pressC = true;
   if ( key == 'c' || key == 'C' ) pressV = true;

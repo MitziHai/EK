@@ -80,6 +80,7 @@ class Player
     hand.clear();
     inPlay.clear();
     grave.clear();
+    graveReanim.clear();
     guards.clear();
     hpmax = hp;
     for( Card c : deck )

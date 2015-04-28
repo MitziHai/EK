@@ -1,3 +1,51 @@
+2015.04.28
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Added the following cards: Arctic Overlord, Chimera, Gilgamesh, Hephaestus, Silver Swordmaster, Voodoo Scarecrow 
+    - UI improvements for card entering:
+        When you get to 10th spot and hit enter it will auto scroll to the 11th spot
+        Fixed issue with double enters causing deck entry to lock up
+    - Added a feature to stop long sims (go button turns to stop button)
+    - Added output of # of runs done (should equal # in box, but will be less if stop button pressed).
+    - Fixed issue with Hydra and KW sometimes not simming the correct number of lives
+    - Fixed the factions of the following cards: Fire Elemental, Fire Elemental [Elite], Harpy, Life Source, Sptifire Worm
+
+  Ehhancements:
+    - Disabled ESC key from exiting the application
+    - Find best deck only does combos with 4 runes (or minimum number of runes provided if less than 4)
+
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - maybe add a foh tab which automatically loads the decks from the EK server 
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+    - Add proper costs for evolved cards
+
+
 2015.04.22
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing

@@ -254,6 +254,7 @@ Checkbox cardLocked;
 Button cardLoad;
 Button cardSave;
 Button cardsSave;
+Button butgo;
 Picture pic;
 Picture picStars[] = new Picture[5];
 Control labelCardName;
@@ -549,7 +550,7 @@ void setupUI()
 
 
 
-  Button butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );
+  butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );
   butgo.font = 18;
   butgo.type = 2;
   uiDeck.add( butgo );
@@ -905,7 +906,7 @@ class Button extends Control
         for ( Integer i : deckList[0].current )
         {
           //println(i);
-          if( i >= 0 )
+          if( i >= 0 && i < deckList[0].listItems.size())
             deckList[0].listItems.remove( (int)i );
         }
         deckList[0].current.clear();
@@ -916,7 +917,7 @@ class Button extends Control
         Collections.sort(deckList[1].current, Collections.reverseOrder());
         for ( Integer i : deckList[1].current )
         {
-          if( i >= 0 )
+          if( i >= 0  && i < deckList[1].listItems.size())
             deckList[1].listItems.remove( (int)i );
         }
         deckList[1].current.clear();
@@ -1000,7 +1001,14 @@ class Button extends Control
         
 
       case BUTTON_GO:
-        new Thread(new RunSim()).start();
+        if (isRun) {
+          butgo.text = "      Go!";
+          StopMe = true;
+        }
+        else {
+          butgo.text = "     Stop!";
+          new Thread(new RunSim()).start();
+        }
         break;
         
       case BUTTON_ADD_ABILITY_1:
@@ -1711,6 +1719,7 @@ class ListBox extends Control
   boolean multiselect = true;
   boolean selected = false;
   int lastClickTime = millis();
+  int mousePressy = -1;
 
   ListBox( String t, int xx, int yy, int ww, int hh, int i )
   {
@@ -1751,9 +1760,9 @@ class ListBox extends Control
     {
       if( i + scrollOffset == listItems.size() && !( this == deckList[ 0 ] || this == deckList[ 1 ] ) ) continue;
       if( i + scrollOffset < listItems.size() )
-        text = listItems.get( i + scrollOffset ) + ((selected && current.contains(i) && millis() % 1000 < 500) ? "|" : "");
+        text = listItems.get( i + scrollOffset ) + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
       else
-        text = "" + ((selected && current.contains(i) && millis() % 1000 < 500) ? "|" : "");
+        text = "" + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
       if ( current.contains( i+scrollOffset ) )
       {
         /*pg.strokeWeight(1);
@@ -1800,6 +1809,7 @@ class ListBox extends Control
   {
     super.handleMousePressed();
     dragStartY = -1;
+    mousePressy = mousey;
     if ( mouseIsOn() && clicked )
     {
       if ( mousex > x+w-lineSize && mousey > y+scroll && mousey < y+scroll+lineSize )
@@ -1834,15 +1844,15 @@ class ListBox extends Control
   {
     dragStartY = -1;
     
-    if( selectedList == this )
-    {
-      selected = false;
-      selectedList = null;
-      current.remove( (Integer) listItems.size() );
-      listItems.remove("");
-      showDeckCost( 0 );
-      showDeckCost( 1 );
-    }
+//    if( selectedList == this )
+//    {
+//      selected = false;
+//      selectedList = null;
+//      current.remove( (Integer) listItems.size() );
+//      listItems.remove("");
+//      showDeckCost( 0 );
+//      showDeckCost( 1 );
+//    }
     if ( mouseIsOn() && clicked && (!hasScroll || mousex < x+w-lineSize) && !(keyPressed && key == CODED && ( keyCode == CONTROL ) ) && !( keyPressed && keyCode == SHIFT && key == CODED ))
     {
       if( selectedList != null )
@@ -1858,8 +1868,8 @@ class ListBox extends Control
       int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
       int newCurrentIndex = (mousey - y)/lineSize + scrollOffset;
       // Clicked a list item
-      if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() && (this == deckList[0] || this == deckList[1] || this == decks) && this.current.size() > 0 )
-      {
+      if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() && (this == deckList[0] || this == deckList[1] || this == decks) && this.current.size() > 0 ) {
+        if (mousePressy != mousey)
         for ( Integer i : this.current )
         {
           listItems.add( newCurrentIndex,listItems.get( (int)i ) );
@@ -1886,7 +1896,7 @@ class ListBox extends Control
       {
         current.clear();
         current.add( listItems.size() );
-        //listItems.add( "" );
+        listItems.add( "" );
       }
       // Double clicked an evolution
       if( millis() - lastClickTime < 500 && this == evoList && evoList.current.size() == 1 )
@@ -2038,13 +2048,14 @@ class ListBox extends Control
     {
       if( key == '' )
       {
+        println(current.size());
         String string = "";
         for( int i = 0; i < current.size(); ++ i )
           string += listItems.get( current.get( i ) ) + (i < current.size() - 1 ? "\n" : "");
         cp.copyString(string);
         return;
       }
-      if( key == '' && (this == deckList[0] || this == deckList[1]) )
+      if( key == '' && (this == deckList[0] || this == deckList[1] ) )
       {
         String p = cp.pasteString();
         String[] tokens = p.split("\n");
@@ -2063,14 +2074,17 @@ class ListBox extends Control
       {
         
       }
-      else if( this == deckList[ 0 ] || this == deckList[ 1 ] ) //modified code for enter key and colon
+      else if(( this == deckList[ 0 ] || this == deckList[ 1 ] ) && current.size() == 1) //modified code for enter key and colon
       {
         if (key == '\n') {
           showDeckCost( 0 );
           showDeckCost( 1 );
           current.clear();
-          current.add( listItems.size() );
-          listItems.add( "" );
+          if (!listItems.get(listItems.size() - 1).equals("")) {
+            current.add( listItems.size() );
+            listItems.add( "" );
+            if (listItems.size() > h/lineSize)  scroll = (h-lineSize)*(50)/(listItems.size()-h/lineSize); 
+          }
         }
         else if( ((key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z')) || key == BACKSPACE || key == ':' || key == ' ' || key == '\'' || key == '(' || key == ')' || key == '-' || (key >= '0' && key <= '9') )
         {
@@ -2138,6 +2152,7 @@ class ListBox extends Control
           deckList[i].listItems.remove( (int)deckList[i].current.get(j) );
         }
         deckList[i].current.clear();
+        if (deckList[i].listItems.size() <= h/lineSize) {scroll = 0;}
       }
     }
   }
