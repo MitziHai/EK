@@ -263,6 +263,7 @@ void loadAbils()
   evoNames.put( "Power Source", "ps" );
   evoNames.put( "QS: Blizzard", "q:blz" );
   evoNames.put( "QS: Curse", "q:crs" );
+  evoNames.put( "QS: Destroy", "q:des" );
   evoNames.put( "QS: Electric Shock", "q:es" );
   evoNames.put( "QS: Exile", "q:exl" );
   evoNames.put( "QS: Fire God", "q:fgd" );
