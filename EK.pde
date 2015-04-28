@@ -387,6 +387,7 @@ class RunSim implements Runnable
             int runesIn = 0;
             do
             {
+              runesIn = 0;
               cR++;
               int a = cR;
               while(a > 0 )
