@@ -48,6 +48,7 @@ static final int BUTTON_ABILITY_CLEAR = 34;
 static final int TAB4 = 35;
 static final int TAB5 = 36;
 static final int BUTTON_LOAD_DECKS = 37;
+static final int BUTTON_PAUSE = 38;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -255,6 +256,7 @@ Button cardLoad;
 Button cardSave;
 Button cardsSave;
 Button butgo;
+Button butPause;
 Picture pic;
 Picture picStars[] = new Picture[5];
 Control labelCardName;
@@ -555,6 +557,11 @@ void setupUI()
   butgo.type = 2;
   uiDeck.add( butgo );
 
+//  butPause = new Button( "", 330, line.y+32+56, 80, 32, BUTTON_PAUSE );
+//  butPause.font = 18;
+//  butPause.type = 2;
+//  uiDeck.add( butPause );
+
 
   // Card editor
   int column1 = 256; // Image
@@ -740,6 +747,7 @@ class Control
 {
   boolean mouseOn;
   boolean clicked;
+  boolean focus;
 
   String text = "";
   int x;
@@ -779,6 +787,7 @@ class Control
   void handleMousePressed()
   {
     clicked = mouseIsOn();
+    focus = mouseIsOn();
   }
 
   void handleMouseReleased()
@@ -998,15 +1007,29 @@ class Button extends Control
       case BUTTON_LOAD_DECKS:
         selectInput("Select a decks file to load:", "loadSelectedDecks");
         break;
+
+//      case BUTTON_PAUSE:
+//        if (isRun && !Pause) {
+//          butPause.text = "Resume!";
+//          Pause = true;
+//        }
+//        else if (isRun) {
+//          butPause.text = " Pause!";
+//          Pause = false;
+//        }
+//        break;
+        
         
 
       case BUTTON_GO:
         if (isRun) {
           butgo.text = "      Go!";
+//          butPause.text = "";
           StopMe = true;
         }
         else {
           butgo.text = "     Stop!";
+//          butPause.text = " Pause!";
           new Thread(new RunSim()).start();
         }
         break;
@@ -1520,6 +1543,7 @@ class TextField extends Control
     case SEARCH_TEXT:
       cards.current.clear();
       filterCards( false );
+      cards.focus = true;
       break;
 
     case TEXT_LEVEL_1:
@@ -2044,7 +2068,7 @@ class ListBox extends Control
 
   void handleKeyboard()
   {
-    if( selected && selectedList == this )
+    if( selected && selectedList == this && focus)
     {
       if( key == '' )
       {

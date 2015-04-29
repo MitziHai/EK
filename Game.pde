@@ -30,6 +30,9 @@ class Game implements Runnable
     
     for ( int i = 0; i < t; ++ i )
     {
+//      while (Pause && !StopMe) {
+//        delay(10000);
+//      } 
       if (radkw.checked) 
       {
         p1 = new Player(player1, false);
