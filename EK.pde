@@ -167,6 +167,7 @@ public static double choose(int x, int y)
 
 static boolean isRun = false;
 static boolean StopMe = false;
+static boolean Pause = false;
 
 String resultText = "";
 boolean multideck = false;
