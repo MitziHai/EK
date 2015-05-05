@@ -153,8 +153,10 @@ class Player
       c.morale = 0;
       c.status[ SICK ] = false;
     }
-    for( int i = 0; i < numRunes; ++ i )
+    for( int i = 0; i < numRunes; ++ i ) {
       runes[ i ].checkRune( this, op, round );
+      
+    }
     removeDeadCards( op );
 
     // Fourth, each card attacks.

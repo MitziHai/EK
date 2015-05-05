@@ -320,6 +320,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = ON_ATTACK_CARD; 
     when2 = NEVER; 
     break;
+  case A_FROST_SHOCK: 
+    when = BEFORE_ATTACK; 
+    when2 = NEVER; 
+    break;
   case A_GLACIAL_BARRIER: 
     when = ON_ATTACKED; 
     when2 = NEVER; 
@@ -494,6 +498,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_SELF_DESTRUCT: 
     when = ON_DEATH; 
+    when2 = NEVER; 
+    break;
+  case A_SHIELD_OF_EARTH: 
+    when = ON_ATTACKED; 
     when2 = NEVER; 
     break;
   case A_SLAYER: 
@@ -691,23 +699,25 @@ static final int ON_DEATH = 6;
 static final int ON_ATTACKED_SPELL = 7;
 static final int NUM_WHEN = 8;
 
-static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "reanimated sickness", "lacerated", "corrupted", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none"};
+static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "reanimated sickness", "lacerated", "stunned", "corrupted", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none"};
 static final int FROZEN = 0;
 static final int SHOCKED = 1;
 static final int TRAPPED = 2;
 static final int CONFUSED = 3;
 static final int SICK = 4;
 static final int LACERATED = 5;
-static final int CORRUPT = 6;
-static final int HEAL = 7;
-static final int HEAL_MIST = 8;
-static final int DESTROY = 9;
-static final int NO_IMMUNE = 10;
-static final int NO_REFLECT = 11;
-static final int POISONED = 12;
-static final int FIRE = 13;
-static final int BLOOD = 14;
-static final int NONE = 15;
+static final int STUNNED = 6;
+static final int CORRUPT = 7;
+static final int HEAL = 8;
+static final int HEAL_MIST = 9;
+static final int DESTROY = 10;
+static final int NO_IMMUNE = 11;
+static final int NO_REFLECT = 12;
+static final int POISONED = 13;
+static final int FIRE = 14;
+static final int BLOOD = 15;
+static final int NONE = 16;
+
 
 class Card
 {
@@ -725,7 +735,7 @@ class Card
   boolean combust[] = {false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
   int poison;
-  boolean status[] = new boolean[ 6 ];
+  boolean status[] = new boolean[ 7 ];
   int time;
   int atkNow;
   int dmgTaken;
@@ -848,7 +858,7 @@ class Card
     }
     poison = 0;
     morale = 0;
-    for ( int i = 0; i <= 5; ++ i )
+    for ( int i = 0; i <= 6; ++ i )
       status[ i ] = false;
     alreadySealed = false;
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
@@ -871,6 +881,7 @@ class Card
 
   void attack( Player own, Player op, int pos )
   {
+    boolean isStunned = status[STUNNED];
     if ( dead ) { 
       //println("dead card attacking!!! "+this+ " " +hpCurr+" " +dead);
       //Card c = null;
@@ -892,6 +903,7 @@ class Card
       cleanSweeped = false;
       chain = 1;
 
+
       if ( status[ CONFUSED ] )
       {
         if ( debug > 1 )
@@ -900,7 +912,7 @@ class Card
       }
       else
       {
-        if ( !status[ FROZEN ] && !status[ TRAPPED ] )
+        if ( !status[ FROZEN ] && !status[ TRAPPED ] && !status[STUNNED])
         {
           atkNow = atk + backstab;
           backstab = 0;
@@ -908,7 +920,7 @@ class Card
           checkAbilities(own, op, BEFORE_ATTACK,-1);
         }
 
-        if ( !dead && !status[ FROZEN ] && !status[ TRAPPED ] && !status[ SHOCKED ] )  
+        if ( !dead && !status[ FROZEN ] && !status[ TRAPPED ] && !status[ SHOCKED ]  && !status[STUNNED])  
         {
           // Attack Player
           if ( op.board[ pos ] == null || op.board[ pos ].dead  )
@@ -953,6 +965,7 @@ class Card
     status[ FROZEN ] = false;
     status[ SHOCKED ] = false;
     status[ TRAPPED ] = false;
+    if (isStunned) status[ STUNNED ] = false;
     status[ CONFUSED ] = false;
   }
 
@@ -1056,7 +1069,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
   {
     dmgTaken = 0;
-    if ( immune || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune or damage is snipe or Devils Blade, or mana corruption
+    if ( (immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
     {
       if ( effect == NO_IMMUNE )
       {
@@ -1151,7 +1164,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         break;
       }
     }
-    if (effect == TRAPPED || effect == CONFUSED) {  // abilities affected by evasion but not by magic shield and/or reflection
+    if (effect == TRAPPED || effect == CONFUSED || effect == STUNNED) {  // abilities affected by evasion but not by magic shield and/or reflection
       if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
       else if (random( 0, 100 ) <= chance) {
         if( debug > 2 ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
@@ -1469,6 +1482,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
           damageAll( own, op, 25*l, 50*l, FIRE, 0 );
           break;
 
+        case A_FROST_SHOCK:
+          if( debug > 3 ) println( "     Frost Shock for " + (40+10*l+(5+5*l)*op.playSize()));
+          damageAll( own, op, (40+10*l+(5+5*l)*op.playSize()), FROZEN, 50 );
+          break;
+
         case A_GROUP_WEAKEN:
           if( debug > 3 ) println( "     Group Weaken for " + (10*l));
           weakenAll( own, op, 10*l );
@@ -1745,7 +1763,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_FOREST_FIRE:
-          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == TUNDRA )
+          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == FOREST )
           {
             if( debug > 3 ) println( "     Forest Fire increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
@@ -1919,6 +1937,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
             if( debug > 3 ) println( "       " + toStringNoHp() + "'s Marsh Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
           }
+          break;
+
+        case A_SHIELD_OF_EARTH:
+          if( debug > 3 ) println( "       " + toStringNoHp() + " Shield of Earth stuns attcking card " + attacker.toStringNoHp());
+          attacker.attackedSpell (op, own, 0, this, STUNNED, 100);
           break;
 
         case A_VOLCANO_BARRIER:
