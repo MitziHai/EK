@@ -98,6 +98,7 @@ void loadAbils()
   abilities.put( "Forest Force", AType.A_FOREST_ATK );
   abilities.put( "Forest Guard", AType.A_FOREST_HP );
   abilities.put( "Forest Fire", AType.A_FOREST_FIRE );
+  abilities.put( "Frost Shock", AType.A_FROST_SHOCK );
   abilities.put( "Glacial Barrier", AType.A_GLACIAL_BARRIER );
   abilities.put( "Guard", AType.A_GUARD );
   abilities.put( "Group Weaken", AType.A_GROUP_WEAKEN );
@@ -156,6 +157,7 @@ void loadAbils()
   abilities.put( "Sacred Flame", AType.A_SACRED_FLAME);
   abilities.put( "Seal", AType.A_SEAL );
   abilities.put( "Self-Destruct", AType.A_SELF_DESTRUCT );
+  abilities.put( "Shield of Earth", AType.A_SHIELD_OF_EARTH );
   abilities.put( "Slayer", AType.A_SLAYER );
   abilities.put( "Smog", AType.A_SMOG );
   abilities.put( "Snipe", AType.A_SNIPE );
@@ -232,6 +234,7 @@ void loadAbils()
   evoNames.put( "Forest Fire", "ffi" );
   evoNames.put( "Forest Force", "ff" );
   evoNames.put( "Forest Guard", "fg" );
+  evoNames.put( "Frost Shock", "frs" );
   evoNames.put( "Glacial Barrier", "gb" );
   evoNames.put( "Guard", "grd" );
   evoNames.put( "Group Weaken", "gw" );
@@ -287,6 +290,7 @@ void loadAbils()
   evoNames.put( "Sacred Flame", "sdf");
   evoNames.put( "Seal", "seal" );
   evoNames.put( "Self-Destruct", "sd" );
+  evoNames.put( "Shield of Earth", "soe" );
   evoNames.put( "Slayer", "slay" );
   evoNames.put( "Smog", "smog" );
   evoNames.put( "Snipe", "snp" );
