@@ -785,7 +785,7 @@ class RunSim implements Runnable
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));
       if ( score >= bestScore )
-        resultText = (totalwin + totalloss) + " matches complete\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)(totalwin + totalloss))+"% of the matches";
+        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)(totalwin + totalloss))+"% of the matches";
     }
     else if ( raddi.checked )
     {
@@ -800,7 +800,7 @@ class RunSim implements Runnable
           totalmeritAvg = totalmerit / (double)(totalwin + totalloss);
           totalroundsAvg = totalrounds / (double)(totalwin + totalloss);
 
-          resultText = (totalwin + totalloss) + " matches complete\n" + "Average merit per minute: " + nfc((float)totalmpm,2) + 
+          resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + "Average merit per minute: " + nfc((float)totalmpm,2) + 
             "  Cooldown Time: " + floor((deckCost*2+60)/60.0) + ":" + nf((deckCost*2+60) - 60* floor((deckCost*2+60)/60.0),2) + "\n" + 
             "Maximum merit: " + nfc((int)totalmeritMax) +
             " Minimum merit: " + nfc((int)totalmeritMin) + "\n" +
@@ -817,7 +817,7 @@ class RunSim implements Runnable
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", totalwin/(float)max(1, totalloss));
-        resultText = totalloss + " lives complete\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " wins " + c.substring(0, min(10, c.length())) +" matches per life.";
+        resultText = nfc(totalloss,0) + " lives completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " wins " + c.substring(0, min(10, c.length())) +" matches per life.";
       }
     }
     else if ( radhydra.checked )
@@ -826,7 +826,7 @@ class RunSim implements Runnable
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", (totalloss + totalwin)/(float)max(1, totalwin));
-        resultText = totalwin + " hydras defeated\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " takes " + c.substring(0, min(10, c.length())) +" attacks to kill Hydra.";
+        resultText = nfc(totalwin,0) + " hydras defeated\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " takes " + c.substring(0, min(10, c.length())) +" attacks to kill Hydra.";
       }
     }
     return score;
