@@ -920,7 +920,7 @@ class Card
           checkAbilities(own, op, BEFORE_ATTACK,-1);
         }
 
-        if ( !dead && !status[ FROZEN ] && !status[ TRAPPED ] && !status[ SHOCKED ]  && !status[STUNNED] && op.hp > 0 && own.hp > 0)  
+        if ( !dead && !status[ FROZEN ] && !status[ TRAPPED ] && !status[ SHOCKED ]  && !status[STUNNED] && (op.hp > 0 || op.invul)  && (own.hp > 0 || own.invul))  
         {
           // Attack Player
           if ( op.board[ pos ] == null || op.board[ pos ].dead  )
@@ -1346,7 +1346,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   {
     for ( int i = 0; i < abilityNum[ when ]; ++ i )
     {
-      if (own.hp <= 0 || op.hp <= 0) break;
+      if ((own.hp <= 0 && !own.invul) || (op.hp <= 0 && !op.invul)) break;
       AType a = abilities[ when ][ i ];
       if ( a == null) continue;
       int l = abilityL[ when ][ i ];

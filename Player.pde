@@ -123,7 +123,7 @@ class Player
         removeFromHand( i -- );
         c.checkAbilities(this, op, ON_ENTER, -1);
       }
-      if (hp <=0 || op.hp <=0) break;
+      if ((hp <=0 && !invul) || (op.hp <=0 && !op.invul)) break;
     }
     for( Card c : op.hand )
     {
@@ -131,7 +131,7 @@ class Player
     }
     
     // Second, draw.
-    if ( deck.size() > 0 && handSize() < 5 && hp > 0 && op.hp > 0)
+    if ( deck.size() > 0 && handSize() < 5 && (hp > 0 || invul) && (op.hp > 0 || op.invul))
     {
       Card c = deck.remove( deck.size() - 1 );
       if(debug>0)
@@ -156,7 +156,7 @@ class Player
     }
     for( int i = 0; i < numRunes; ++ i ) {
       runes[ i ].checkRune( this, op, round );
-      if (hp <= 0 || op.hp <= 0) break;
+      if ((hp <= 0 && !invul) || (op.hp <= 0 && !op.invul)) break;
     }
     removeDeadCards( op );
 
@@ -166,7 +166,7 @@ class Player
       Card c = board[ i ];
       if ( c != null)
         c.attack( this, op, i );
-      if (hp <=0 || op.hp <= 0) break;
+      if ((hp <=0 && !invul) || (op.hp <= 0 && !op.invul)) break;
     }
 
     // Last, dead cards again and compact the board.
