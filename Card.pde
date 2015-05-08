@@ -1166,6 +1166,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     }
     if (effect == TRAPPED || effect == CONFUSED || effect == STUNNED) {  // abilities affected by evasion but not by magic shield and/or reflection
       if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
+      else if( immune && type.faction == DEMON && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s demon immunity");
       else if (random( 0, 100 ) <= chance) {
         if( debug > 2 ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
         status[ effect ] = true;
