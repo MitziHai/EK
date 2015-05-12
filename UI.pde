@@ -595,7 +595,7 @@ void setupUI()
     uiCard.add( label1 );
     cardAtk[ i ] = new TextField(""+a[i], offsetLeft + column2 + over * 105 + 18, 336 + down * 28 + uiTop, 101 - 18, 24, 0 );
     cardAtk[ i ].isNumeric = true;
-    cardAtk[ i ].max = 999;
+    cardAtk[ i ].max = 9999;
     cardAtk[ i ].num = cardAtk[ i ].lastNum = a[i];
     cardAtk[ i ].font = 14;
     uiCard.add( cardAtk[ i ] );
@@ -2072,7 +2072,7 @@ class ListBox extends Control
     {
       if( key == '' )
       {
-        println(current.size());
+        //println(current.size());
         String string = "";
         for( int i = 0; i < current.size(); ++ i )
           string += listItems.get( current.get( i ) ) + (i < current.size() - 1 ? "\n" : "");

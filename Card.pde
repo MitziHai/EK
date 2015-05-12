@@ -731,8 +731,8 @@ class Card
   int atkBuff;
   int atkMax;
   int burn;
-  boolean fireGod[] = {false, false, false, false, false, false, false, false, false, false};
-  boolean combust[] = {false, false, false, false, false, false, false, false, false, false};
+  boolean fireGod[] = {false, false, false, false, false, false, false, false, false, false, false};
+  boolean combust[] = {false, false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
   int poison;
   boolean status[] = new boolean[ 7 ];
