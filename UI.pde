@@ -417,14 +417,14 @@ void setupUI()
   Control line = new Control( "--------------------------------------------------------------------------------------------------------------------------------------------", 0, 640+uiTop, width, 24, 0 );
   uiDeck.add( line );
 
-  radall = new RadioButton( "Show Arena Results", 16, line.y+24-6, 240, 24, 0 );
+  radall = new RadioButton( "Show Arena Results", 16, line.y+24-6, 200, 24, 0 );
   radall.checked = true;
   uiDeck.add( radall );
-  raddi = new RadioButton( "Show Demon Results", 16, line.y+24*2-4, 240, 24, 0 );
+  raddi = new RadioButton( "Show Demon Results", 16, line.y+24*2-4, 200, 24, 0 );
   uiDeck.add( raddi );
-  radkw = new RadioButton( "Show KW Results", 16, line.y+24*3-2, 240, 24, 0 );
+  radkw = new RadioButton( "Show KW Results", 16, line.y+24*3-2, 200, 24, 0 );
   uiDeck.add( radkw );
-  radhydra = new RadioButton( "Show Hydra Results", 16, line.y+24*4, 240, 24, 0 );
+  radhydra = new RadioButton( "Show Hydra Results", 16, line.y+24*4, 200, 24, 0 );
   uiDeck.add( radhydra );
   radall.setNext = raddi;
   radall.setStart = radall;
@@ -1426,7 +1426,7 @@ class TextField extends Control
     super.handleMousePressed();
     if ( !mouseIsOn() && selected )
     {
-      deselect();
+      selected = false;
     }
     if ( mouseIsOn() )
     {
@@ -1851,14 +1851,18 @@ class ListBox extends Control
         if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() )
         {
           int lastSelected = current.size() > 0 ? current.get( current.size() - 1 ) : -1;
-          if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) )
+          if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) ) {
             current.clear();
-          if ( keyPressed && keyCode == SHIFT && key == CODED )
+          }
+          if ( keyPressed && keyCode == SHIFT && key == CODED ){
             for ( int i = min( lastSelected, newCurrentIndex ); i <= max( lastSelected, newCurrentIndex ); ++ i ) current.add( i );
-          else if ( current.contains( newCurrentIndex ) )
+          }
+          else if ( current.contains( newCurrentIndex ) ) {
             current.remove( (Integer)newCurrentIndex );
-          else
+          }
+          else {
             current.add( newCurrentIndex );
+          }
         }
       }
     }

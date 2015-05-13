@@ -731,6 +731,7 @@ class Card
   int atkBuff;
   int atkMax;
   int burn;
+  int cost;
   boolean fireGod[] = {false, false, false, false, false, false, false, false, false, false, false};
   boolean combust[] = {false, false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
@@ -786,6 +787,7 @@ class Card
     immune = t.immune;
     lvl = l;
     type = t;
+    cost = t.cost;
     hpMax = t.hp[lvl];
     atkMax = t.atk[lvl];
     this.evo = evo;
