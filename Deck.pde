@@ -161,6 +161,7 @@ void convertSelectedDecks(File selection) {
       PrintWriter writer;
       int evoStart;
       int evoEnd;
+      int offset;
       String e = "";  
       BufferedReader br = createReader(selection);
       if (selection.getName().lastIndexOf(".") == -1) writer = new PrintWriter(selection.getParent() + '/' + selection.getName() + "_converted", "UTF-8");
@@ -183,18 +184,16 @@ void convertSelectedDecks(File selection) {
           writer.println(line);
         }
         else {
-          println(line);
           line = line.replace(" (", ";").replace(")","");
-          println(line);
           evoStart = line.lastIndexOf('-');
           evoEnd = line.indexOf(';');
           e = "";
           if( evoEnd == -1 ) evoEnd = line.length();
           if( evoStart > -1 && evoStart < evoEnd ) e = line.substring( evoStart+1, evoEnd ); 
-          println(e);
           if( e.length() > 0 ) {
-            println(e.substring(0,e.length()-1));
-            if( evoNamesR.get( e.substring(0,e.length()-1) ) != null )
+            offset = 1;
+            if (e.substring(e.length()-1).equals("0")) offset = 2;
+            if( evoNamesR.get( e.substring(0,e.length()-offset) ) != null )
             {
               line = line.substring(0,line.lastIndexOf('-')) + ";" + line.substring(line.lastIndexOf('-')+1);
             }
