@@ -2238,13 +2238,12 @@ void addCardsToDeck(int p)
       String el = evoList.listItems.get( (int)evoList.current.get( 0 ) );
       el = el.substring( 0, el.lastIndexOf(' ') );
       String e = evoNames.get( el );
-      evo = evoList.current.size() > 0 ? ( "-" + e + (int)textEvo.lastNum ) : "";
+      evo = evoList.current.size() > 0 ? (e + (int)textEvo.lastNum ) : "";
     }
-
     String card = cards.listItems.get( i );
-    int cardEnd = card.lastIndexOf( '(' ) - 1;
+    int cardEnd = card.lastIndexOf( ';' );
     if ( cardEnd < 0 ) cardEnd = card.length();
-    String card2 = card.substring( 0, cardEnd ) + evo + card.substring( cardEnd, card.length() );
+    String card2 = card.substring( 0, cardEnd ) + ";" + evo + card.substring( cardEnd, card.length() );
     Card c = cardFromString( card2 );
     deckList[p].listItems.add( c.toString() );
   }
