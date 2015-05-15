@@ -128,7 +128,7 @@ void loadCards()
   while (it.hasNext ())
   {
     Map.Entry pairs = (Map.Entry)it.next();
-    cards.listItems.add((String)pairs.getKey() + " (10)");
+    cards.listItems.add((String)pairs.getKey() + ";10");
   }
 
   //println(cardsMap.get("Mars")+ " " +cardsMap.get("Mars").abilityL[0]);
@@ -781,13 +781,14 @@ class Card
   Card divineProtect[] = new Card[3];
   int divineProVal = 0;
 
-  Card( CardType t, int l, AType evo, int evoLevel )
+  Card( CardType t, int l, AType evo, int evoLevel, int cost )
   {
     resist = t.resist;
     immune = t.immune;
     lvl = l;
     type = t;
-    cost = t.cost;
+    if (cost == -1) this.cost = t.cost + (int)((l - 9)/2);
+    else this.cost = cost;
     hpMax = t.hp[lvl];
     atkMax = t.atk[lvl];
     this.evo = evo;
@@ -2775,12 +2776,12 @@ Seperate Variables: BURNED, POISON, immune, resist,
       else return type.name + "-" + evoNames.get( abilityName.get( evo ) ) + evoLevel + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkBuff +", Health: "+ hpCurr+" / " + hpBuff + "]";
     }
     if ( evo != AType.A_NONE )
-      return type.name + "-" + evoNames.get( abilityName.get( evo ) ) + evoLevel + " (" + lvl + ")";// + "[t"+time+"]" + abilityL[0];
-    return type.name + " (" + lvl + ")";// + "["+atk+", "+hp+"]" + abilityL[0];
+      return type.name + ";" + evoNames.get( abilityName.get( evo ) ) + evoLevel + ";" + lvl + ";" + cost;// + "[t"+time+"]" + abilityL[0];
+    return type.name + ";" + lvl + ";" + cost;// + "["+atk+", "+hp+"]" + abilityL[0];
   }
 }
 
-Card cardFromString( String s )
+Card old_cardFromString( String s )
 {
   // Get level
   int level = -1;
@@ -2869,7 +2870,7 @@ Card cardFromString( String s )
   
   // Create card
   if ( cardsMap.containsKey( s ) )
-    return new Card( cardsMap.get( s ), level, evo, evoL );
+    return new Card( cardsMap.get( s ), level, evo, evoL, -1 );
     
   // If card not found, search for any card with its first n initials equal to the string where n is string length.
   String initials;
@@ -2884,8 +2885,109 @@ Card cardFromString( String s )
       if( Character.isUpperCase( ch ) || (i > 0 && cardName.charAt ( i - 1 ) == ' ' ) || i == 0 ) initials = initials + ch;
     }
     if( initials.substring( 0, min( s.length(), initials.length() ) ).toLowerCase().equals( s.toLowerCase() ) )
-      return new Card( cardsMap.get( cardName ), level, evo, evoL );
+      return new Card( cardsMap.get( cardName ), level, evo, evoL, -1 );
   }
   return null;
 }
 
+
+Card cardFromString( String s )
+{
+  
+  AType evo = AType.A_NONE;
+  int evoL = 1;
+  int cost = -1;
+  int level = 10;
+  Boolean found = false;
+  String st[] = s.split(";");
+  String e = "";
+    
+  String enteredName = st[0];
+  if (st.length > 1) {
+    if (st[1].matches("\\d+$")) level = Integer.parseInt(st[1]);
+    else {
+      e= st[1];
+    }
+    if (st.length > 2) {
+      if (e.length() == 0) {
+        if (st[2].matches("\\d+$")) cost = Integer.parseInt(st[2]);
+        else {
+          return null;
+        }
+      }
+      else {
+        if (st[2].matches("\\d+$")) level = Integer.parseInt(st[2]);
+        else {
+          return null;
+        }
+      }
+    }
+    if (st.length > 3) {
+      if (e.length() == 0) {
+        return null;
+      }
+      else {
+        if (st[3].matches("\\d+$")) cost = Integer.parseInt(st[3]);
+        else {
+          return null;
+        }
+      }
+    }
+  }    
+  if (!cardsMap.containsKey(enteredName)) 
+  {
+    String initals[] = enteredName.split(" ");
+    for( String cardName : cardsMap.keySet() )
+    {
+      found = true;
+      String cardParts[] = cardName.split(" ");
+      if (cardParts.length != initals.length) found = false;
+      for (int i=0; i<initals.length && found; i++) {
+        if (initals[i].length() <= cardParts[i].length() && initals[i].length() > 0) {
+          if (!initals[i].toLowerCase().equals(cardParts[i].toLowerCase().substring(0,initals[i].length()))) found = false;
+        }
+        else found = false;
+      }
+      if (found) {enteredName = cardName; break;}
+    }
+  }
+  else found = true;
+  if( e.length() > 0 )
+  {
+    if( e.charAt( e.length() - 1 ) == '0' )
+    {
+      e = e.substring( 0, e.length() - 2 );
+      evoL = 10;
+    }
+    else
+    {
+      char last = e.charAt( e.length() - 1 );
+      if( last >= '0' && last <= '9' )
+      {
+        evoL = last - '0';
+        e = e.substring( 0, e.length() - 1 );
+       }
+      else
+      {
+        e = e.substring( 0, e.length() );
+        evoL = 1;
+      }
+    }
+    String evoName = evoNamesR.get( e );
+    if( evoName == null )
+    {
+      evo = AType.A_NONE;
+    }
+    else
+    {
+      evo = abilities.get( evoName );
+      if( evo == null ) 
+      {
+        evo = AType.A_NONE;
+      }
+    }
+  }
+  if( evoL <= 0 ) evo = AType.A_NONE;
+  if (found) return new Card(cardsMap.get(enteredName),level,evo,evoL,cost);
+  else return null;
+}

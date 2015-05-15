@@ -45,7 +45,7 @@ class Player
     for ( Card c : p.deck )
     {
       if( c == null ) break;
-      Card c2 = new Card( c.type, c.lvl, c.evo, c.evoLevel );
+      Card c2 = new Card( c.type, c.lvl, c.evo, c.evoLevel,c.cost );
       if (ListHydraCard1 != null && ListHydraCard1.listItems.get(ListHydraCard1.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)(c2.hpMax*1.5); c2.atkMax = (int)(c2.atkMax*1.5);}
       if (ListHydraCard2 != null && ListHydraCard2.listItems.get(ListHydraCard2.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*2; c2.atkMax = (int)c2.atkMax*2; }
       if (ListHydraCard3 != null && ListHydraCard3.listItems.get(ListHydraCard3.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }

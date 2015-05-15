@@ -60,6 +60,7 @@ Player player2;
 String DecksFileName = "decks_Demons.txt";
 
 int deckCost = 0;
+int demonCost = 0;
 long totalmerit;
 long totalrounds;
 double totalmpm;
@@ -185,10 +186,10 @@ class RunSim implements Runnable
     listresult.listItems.clear();
     listresult.scroll = 0;
 
-    deckp1 = deckFromUI( 0 );
+    deckp1 = deckFromUI( 0, true );
     if ( deckp1 == null ) return;
 
-    deckp2 = deckFromUI( 1 );
+    deckp2 = deckFromUI( 1, true );
     if ( deckp2 == null ) return; 
 
     if ( deckp1.numCards == 0 || deckp2.numCards == 0 ) return;
@@ -476,7 +477,7 @@ class RunSim implements Runnable
       for( int j = 0; j < used[ i ]; ++ j )
       {
         d.cards[ d.numCards ++ ] = cards[ i ][ j ];
-        d.cost += cards[ i ][ j ].type.cost;
+        d.cost += cards[ i ][ j ].cost;
       }
 
     for ( int i = 0; i < deckp1.numRunes; ++ i )
@@ -486,166 +487,6 @@ class RunSim implements Runnable
     return d;
   }
 
-  void runOldGospers()
-  {
-    numMatch = numberRuns.lastNum;
-    if ( numMatch == 1 ) debug = 4; 
-    else debug = 0;
-    resultText = "";
-    listresult.listItems.clear();
-    listresult.scroll = 0;
-
-    deckp1 = deckFromUI( 0 );
-    if ( deckp1 == null ) return;
-
-    deckp2 = deckFromUI( 1 );
-    if ( deckp2 == null ) return; 
-
-    if ( deckp1.numCards == 0 || deckp2.numCards == 0 ) return;
-
-    // Do not run if already running!
-    if ( isRun ) return;
-    isRun = true;
-    int nC = deckp1.numCards;
-    int nR = deckp1.numRunes;
-    int kC = min(10, deckp1.numCards);
-    int kR = min(4, deckp1.numRunes);
-    int bestC = 0;
-    int bestR = 0;
-    float bestScore = 0;
-    long iterCount = 0;
-    multideck = deckp1.numCards > 10 || deckp1.numRunes > 4 || checkMultisim.checked;
-    int selectedCards = 0;
-    int selectedRunes = 0;
-    int card = 0; 
-    int rune = 0;
-    for ( int i = 0; i < deckList[0].listItems.size() && i <= 10; ++ i )
-    {
-      if ( deckList[0].current.contains( i ) && deckList[ 0 ].listItems.get(i).equals( deckp1.cards[card].toString() ) )
-      {
-        selectedCards = selectedCards | (1<<i);
-        card ++;
-      }
-      else if ( deckList[0].current.contains( i ) && deckList[ 0 ].listItems.get(i).equals( deckp1.runes[rune].toString() ) )
-      {
-        selectedRunes = selectedRunes | (1<<i);
-        rune ++;
-      }
-    }
-
-    // Estimate the number of deck combinations as sum of n choose k for k = 10-3 to 10
-    double iterMax = 1;
-    int cTotal = 0;
-    if ( multideck )
-    {
-      iterMax = 0;
-      for ( int j = max(1,min(6,deckp1.numCards-4)); j <= min(10,deckp1.numCards); ++ j )
-      {
-        for ( int i = min(4,deckp1.numRunes); i <= max( 1, min(4,deckp1.numRunes) ); ++ i )
-        {
-          kC = j; 
-          kR = i;
-          iterMax += choose(nC, kC) * choose(max(1, nR), kR); // n!/(k!*(n-k)!);
-        }
-      }
-    }
-
-    // For combinations of cards containing 1 to 10 cards:
-    for ( int j = multideck ? max(1,min(6,deckp1.numCards-4)) : min(10,deckp1.numCards); j <= min(10,deckp1.numCards); ++ j )
-    {
-      // For combinations of runes containing 1 to 4 runes:
-      for ( int i = multideck ? min(4,deckp1.numRunes) : min(4,deckp1.numRunes); i <= max( multideck ? 1 : 0, min(4,deckp1.numRunes) ); ++ i )
-      {
-        // Initialize variables for iterating n choose k using Gosper's trick.
-        kC = j; 
-        kR = i;
-        int cC = (1 << kC)-1;
-        int cR = (1 << kR)-1;
-
-        // For each card combination:
-        while ( cC < (1<<nC ) )
-        {
-          cR = (1 << min(4, deckp1.numRunes))-1;
-          // For each rune combination:
-          while ( cR < (1<<nR) )
-          {
-            ++ iterCount;
-            // If combination includes all selected cards, construct the deck and simulate games for that deck.
-            if ( ( ( selectedCards & cC ) == selectedCards ) && ( ( selectedRunes & cR ) == selectedRunes ) )
-            {
-              float score = iterate( constructDeckGospers( cC, cR ), deckp2, bestScore, multideck );
-              if ( score > bestScore )
-              {
-                bestScore = score;
-                bestC = cC;
-                bestR = cR;
-              }
-            }
-
-            // Only show completion by number of completed deck combinations for multisim mode.
-            if ( multideck )
-            {
-              String s = "" + (iterCount/(double)iterMax*100);
-              listresult.listItems.clear();
-              listresult.listItems.add( "Working... Completion: " + s.substring(0, min(s.length(), 5)) + " %" );
-            }
-
-            // Go to next combination of cards using new method.
-
-
-            // Go to next combination of cards using Gosper's trick.
-            if ( cR > 0 )
-            {
-              int a = cR&-cR;
-              int b = cR+a;
-              cR = (cR^b)/4/a|b;
-            }
-            else
-              break;
-          }
-          // Go to next combination of runes using Gosper's trick.
-          int a = cC&-cC;
-          int b = cC+a;
-          cC = (cC^b)/4/a|b;
-        }
-      }
-    }
-    listresult.listItems.clear();
-    StringTokenizer tokenizer = new StringTokenizer(resultText, "\n");
-    while (tokenizer.hasMoreTokens ())
-      listresult.listItems.add( tokenizer.nextToken() );
-    // Print out winning best deck.
-    if ( multideck )
-    {
-      listresult.listItems.add( "Best Deck: " );
-      Deck bestDeck = constructDeckGospers( bestC, bestR );
-      String t = "";
-      for ( int j = 0; j < bestDeck.numCards; ++ j )
-      {
-        String evo = bestDeck.cards[ j ].evo == AType.A_NONE ? "" : ( "-" + evoNames.get( abilityName.get( bestDeck.cards[ j ].evo ) ) + bestDeck.cards[ j ].evoLevel + " (" + bestDeck.cards[ j ].lvl + ")" );
-        t += bestDeck.cards[ j ].type.name + evo + (j<bestDeck.numCards-1?", ":"");
-        if ( j == 3 || j == 7 )
-        {
-          listresult.listItems.add( t );
-          t = "";
-        }
-      }
-      if ( t.length() > 0 )
-      {
-        listresult.listItems.add( t );
-        t = "";
-      }
-      for ( int j = 0; j < bestDeck.numRunes; ++ j )
-        t += bestDeck.runes[ j ].type.name + (j<bestDeck.numRunes-1?", ":"");
-      if ( t.length() > 0 )
-      {
-        listresult.listItems.add( t );
-        t = "";
-      }
-    }
-    isRun = false;
-    StopMe = false;
-  }
 
   Deck constructDeckGospers( int c, int r )
   {
@@ -690,8 +531,12 @@ class RunSim implements Runnable
     }
     player1.numRunes = d1.numRunes;
     deckCost = 0;
+    demonCost = 0;
     for ( Card c : player1.deck )
-      deckCost += c.type.cost;
+    {
+      deckCost += c.cost;
+      demonCost += c.type.cost;
+    }
 
     for ( int i = 0; i < min(10,d2.numCards); ++ i )
     {
@@ -789,10 +634,10 @@ class RunSim implements Runnable
     }
     else if ( raddi.checked )
     {
-      score = totalmerit / ( (totalwin + totalloss) * (deckCost*2+60)/60.0 );
+      score = totalmerit / ( (totalwin + totalloss) * (demonCost*2+60)/60.0 );
       if ( score >= bestScore )
       {
-        totalmpm = totalmerit / ( (totalwin + totalloss) * (deckCost*2+60)/60.0 );
+        totalmpm = totalmerit / ( (totalwin + totalloss) * (demonCost*2+60)/60.0 );
         /*if( multisim )
          resultText = "Average merit per minute: " + totalmpm;// + "\n";
          else*/
@@ -801,7 +646,7 @@ class RunSim implements Runnable
           totalroundsAvg = totalrounds / (double)(totalwin + totalloss);
 
           resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + "Average merit per minute: " + nfc((float)totalmpm,2) + 
-            "  Cooldown Time: " + floor((deckCost*2+60)/60.0) + ":" + nf((deckCost*2+60) - 60* floor((deckCost*2+60)/60.0),2) + "\n" + 
+            "  Cooldown Time: " + floor((demonCost*2+60)/60.0) + ":" + nf((demonCost*2+60) - 60* floor((demonCost*2+60)/60.0),2) + "\n" + 
             "Maximum merit: " + nfc((int)totalmeritMax) +
             " Minimum merit: " + nfc((int)totalmeritMin) + "\n" +
             "Average merit: " + nfc((float)totalmeritAvg,2) + "\n" + 

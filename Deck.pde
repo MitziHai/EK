@@ -10,10 +10,12 @@ class Deck
   int cost;
 }
 
-Deck deckFromUI( int p )
+Deck deckFromUI( int p, boolean clear )
 {
   Deck d = new Deck();
-  
+
+
+  if (clear) listresult.listItems.clear();
   d.name = textdeck[ p ].textIn;
   for( int i = 0; i < deckList[p].listItems.size(); ++ i )
   {
@@ -23,7 +25,6 @@ Deck deckFromUI( int p )
       Rune r = runeFromString( line );
       if( r == null && line.length() > 0 )
       {
-        listresult.listItems.clear();
         listresult.listItems.add( "Invalid rune: " + line );
         return null;
       }
@@ -39,7 +40,6 @@ Deck deckFromUI( int p )
       Card c = cardFromString( line );
       if( c == null && line.length() > 0 )
       {
-        listresult.listItems.clear();
         listresult.listItems.add( "Invalid card: " + line );
         return null;
       }
@@ -91,7 +91,7 @@ void saveDecks()
       }
       for( int i = 0; i < d.numRunes && d.runes[ i ] != null; i ++ )
       {
-        writer.println( "Rune: " + d.runes[ i ].type.name + " ("+d.runes[ i ].level+")" );
+        writer.println( "Rune: " + d.runes[ i ].type.name + ";"+d.runes[ i ].level );
       }
       writer.println("");
     }
@@ -152,6 +152,66 @@ void loadSelectedDecks(File selection) {
     decks.scroll = 0;
   }
 }
+
+void convertSelectedDecks(File selection) {
+  
+  if (selection != null) {
+    try
+    {   
+      PrintWriter writer;
+      int evoStart;
+      int evoEnd;
+      String e = "";  
+      BufferedReader br = createReader(selection);
+      if (selection.getName().lastIndexOf(".") == -1) writer = new PrintWriter(selection.getParent() + '/' + selection.getName() + "_converted", "UTF-8");
+      else writer = new PrintWriter(selection.getParent() + '/' + selection.getName().substring(0,selection.getName().lastIndexOf(".")) + "_converted" + selection.getName().substring(selection.getName().lastIndexOf(".")), "UTF-8");
+      writer.println(br.readLine());
+      writer.println(br.readLine());
+      writer.println(br.readLine());
+      int i = 0;
+      for (String line; (line = br.readLine()) != null; )
+      {
+        if (line.length() < 1) {
+          writer.println(line);
+          i = 0;
+          continue;
+        }
+        if (i <= 1) writer.println(line);
+        else if( line.substring( 0, Math.min( line.length(), 6 ) ).toLowerCase().equals( "rune: " ) )
+        {
+          line = line.replace(" (", ";").replace(")","");
+          writer.println(line);
+        }
+        else {
+          println(line);
+          line = line.replace(" (", ";").replace(")","");
+          println(line);
+          evoStart = line.lastIndexOf('-');
+          evoEnd = line.indexOf(';');
+          e = "";
+          if( evoEnd == -1 ) evoEnd = line.length();
+          if( evoStart > -1 && evoStart < evoEnd ) e = line.substring( evoStart+1, evoEnd ); 
+          println(e);
+          if( e.length() > 0 ) {
+            println(e.substring(0,e.length()-1));
+            if( evoNamesR.get( e.substring(0,e.length()-1) ) != null )
+            {
+              line = line.substring(0,line.lastIndexOf('-')) + ";" + line.substring(line.lastIndexOf('-')+1);
+            }
+          }
+          writer.println(line);
+        }
+        i++;
+      }
+     writer.close(); 
+    }
+    catch( Exception e )
+    {
+      println(e);
+    }
+  }
+}
+ 
     
 void loadDecks(String FileName, boolean load, String decksList[])
 {

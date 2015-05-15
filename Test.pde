@@ -20,9 +20,9 @@ void test()
   // A_ADVANCED_STRIKE,
   AType ab2[] = {AType.A_ADVANCED_STRIKE};
   ct1 = new CardType("test card1", h, a, SPECIAL, 100, 1, 10, ab2, al);
-  c1 = new Card( ct1, 10, AType.A_NONE, 0 );
-  c2 = new Card( ct1, 10, AType.A_NONE, 0 );
-  c3 = new Card( ct1, 10, AType.A_NONE, 0 );
+  c1 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
+  c2 = new Card( ct1, 10, AType.A_NONE, 0 , -1);
+  c3 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
   c1.time = 10;
   c2.time = 11;
   tp1.hand.add(c1);
@@ -35,8 +35,8 @@ void test()
   AType ab3[] = {AType.A_ICE_SHIELD,AType.A_PARRY};
   int al3[] = {10,10};
   ct1 = new CardType("test card1", h, h, SPECIAL, 100, 1, 10, ab3, al3);
-  c1 = new Card( ct1, 10, AType.A_NONE, 0 );
-  c2 = new Card( ct1, 10, AType.A_NONE, 0 );
+  c1 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
+  c2 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
   tp1 = new Player(1000);
   tp2 = new Player(1000);
   tp1.addToPlay(c1);
@@ -47,8 +47,8 @@ void test()
   AType ab4[] = {AType.A_PARRY,AType.A_ICE_SHIELD};
   int al4[] = {10,10};
   ct1 = new CardType("test card1", h, h, SPECIAL, 100, 1, 10, ab4, al4);
-  c1 = new Card( ct1, 10, AType.A_NONE, 0 );
-  c2 = new Card( ct1, 10, AType.A_NONE, 0 );
+  c1 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
+  c2 = new Card( ct1, 10, AType.A_NONE, 0, -1 );
   tp1 = new Player(1000);
   tp2 = new Player(1000);
   tp1.addToPlay(c1);

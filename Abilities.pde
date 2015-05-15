@@ -201,7 +201,7 @@ void loadAbils()
   evoNames.put( "Craze", "cz" );
   evoNames.put( "Curse", "crs" );
   evoNames.put( "D: Annihilation", "d:a" );
-  evoNames.put( "D: Blizzard", "d:blz" );
+  evoNames.put( "D: Blizzard", "d:bzd" );
   evoNames.put( "D: Curse", "d:crs" );
   evoNames.put( "D: Destroy", "d:des" );
   evoNames.put( "D: Electric Shock", "d:es" );
@@ -264,7 +264,7 @@ void loadAbils()
   evoNames.put( "Prayer", "pyr" );
   evoNames.put( "Puncture", "punc" );
   evoNames.put( "Power Source", "ps" );
-  evoNames.put( "QS: Blizzard", "q:blz" );
+  evoNames.put( "QS: Blizzard", "q:bzd" );
   evoNames.put( "QS: Curse", "q:crs" );
   evoNames.put( "QS: Destroy", "q:des" );
   evoNames.put( "QS: Electric Shock", "q:es" );

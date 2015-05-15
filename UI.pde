@@ -49,6 +49,7 @@ static final int TAB4 = 35;
 static final int TAB5 = 36;
 static final int BUTTON_LOAD_DECKS = 37;
 static final int BUTTON_PAUSE = 38;
+static final int BUTTON_CONVERT = 39;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -109,40 +110,40 @@ void filterCards( boolean stricter )
             boolean matchedByInitials = ( enteredCard != null && c.name.equals( enteredCard.type.name ) );
             if ( levels.currentIndex == 0 )
             {
-              String s = c.name + " (10)";
+              String s = c.name + ";10";
               //println(s + " " + searchf.text + " " + s.contains( searchf.textIn ) );
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
             else if ( levels.currentIndex == 1 )
             {
-              String s = c.name + " (0)";
+              String s = c.name + ";0";
               //println(s + " " + searchf.text + " " + s.contains( searchf.textIn ) );
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
             else if ( levels.currentIndex == 2 )
             {
-              String s = c.name + " (4)";
+              String s = c.name + ";4";
               //println(s + " " + searchf.text + " " + s.contains( searchf.textIn ) );
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
             else if ( levels.currentIndex == 3 )
             {
-              String s = c.name + " (5)";
+              String s = c.name + ";5";
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
             else if ( levels.currentIndex == 4 )
             {
-              String s = c.name + " (10)";
+              String s = c.name + ";10";
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
             else if ( levels.currentIndex == 5 )
             {
-              String s = c.name + " (15)";
+              String s = c.name + ";15";
               if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                 cards.listItems.add(s);
             }
@@ -150,7 +151,7 @@ void filterCards( boolean stricter )
             {
               for ( int i = 10; i <= 15; ++ i )
               {
-                String s = c.name + " (" + i + ")";
+                String s = c.name + ";" + i;
                 if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                   cards.listItems.add(s);
               }
@@ -159,7 +160,7 @@ void filterCards( boolean stricter )
             {
               for ( int i = 0; i <= 15; ++ i )
               {
-                String s = c.name + " (" + i + ")";
+                String s = c.name + ";" + i;
                 if ( cardMatch( s, searchf.textIn ) || matchedByInitials )
                   cards.listItems.add(s);
               }
@@ -181,7 +182,7 @@ void filterCards( boolean stricter )
           {
             for ( int i = 0; i <= 4; ++ i )
             {
-              String s = "Rune: " + r.name + " ("+i+")";
+              String s = "Rune: " + r.name + ";"+i;
               if ( s.toLowerCase().contains( searchf.textIn.toLowerCase() ) || searchf.text.length() < 1 || searchf.text.equals("") )
               {
                 cards.listItems.add(s);
@@ -190,13 +191,13 @@ void filterCards( boolean stricter )
           }
           else if ( levels.currentIndex == 1 )
           {
-            String s = "Rune: " + r.name + " (0)";
+            String s = "Rune: " + r.name + ";0";
             if ( s.toLowerCase().contains( searchf.textIn.toLowerCase() ) || searchf.text.length() < 1 || searchf.text.equals("") )
               cards.listItems.add(s);
           }
           else //if ( levels.currentIndex == 2 )
           {
-            String s = "Rune: " + r.name + " (4)";
+            String s = "Rune: " + r.name + ";4";
             if ( s.toLowerCase().contains( searchf.textIn.toLowerCase() ) || searchf.text.length() < 1 || searchf.text.equals("") )
               cards.listItems.add(s);
           }
@@ -256,7 +257,7 @@ Button cardLoad;
 Button cardSave;
 Button cardsSave;
 Button butgo;
-Button butPause;
+Button butConvert;
 Picture pic;
 Picture picStars[] = new Picture[5];
 Control labelCardName;
@@ -434,7 +435,7 @@ void setupUI()
   radkw.setStart = radall;
   radhydra.setNext = null;
   radhydra.setStart = radall;
-  checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 240, 24, 0 );
+  checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 180, 24, 0 );
   uiDeck.add( checkMultisim );
 
   labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
@@ -447,6 +448,13 @@ void setupUI()
   ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
   ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
  
+  Control labelConvertLegacy = new Control( "Convert Old Version Decks", 16, uiTop+220, 240, 24, 0 );
+  uiSettings.add(labelConvertLegacy);
+  butConvert = new Button( "Convert", 36, uiTop+250, 160, 32, BUTTON_CONVERT );
+  butConvert.font = 18;
+  butConvert.type = 2;
+  uiSettings.add( butConvert );
+
   uiSettings.add(ListHydraCard1);
   uiSettings.add(ListHydraCard2);
   uiSettings.add(ListHydraCard3);
@@ -503,23 +511,21 @@ void setupUI()
   for ( int i = 1; i <= 2; ++ i )
   {
     int left = ( i == 1 ? 256 : 512 ) + offsetLeft;
-    Control labelp1 = new Control( "Player " + i, left, 10+uiTop, 224, 24, 0 );
-    uiDeck.add( labelp1 );
-    Control labell1 = new Control( "Level: ", left, 32+uiTop, 224, 24, 0 );
+    Control labell1 = new Control( "Level: ", left, 48+uiTop, 224, 24, 0 );
     uiDeck.add( labell1 );
-    textLevel[i-1] = new TextField( "60", left+64, 32+uiTop, 128, 24, TEXT_LEVEL_1+i-1 );
+    textLevel[i-1] = new TextField( "60", left+80, 48+uiTop, 128, 24, TEXT_LEVEL_1+i-1 );
     textLevel[i-1].isNumeric = true;
     textLevel[i-1].lastNum = 60;
     textLevel[i-1].num = 60;
     textLevel[i-1].min = 0;
     uiDeck.add( textLevel[i-1] );
-    labelh[i-1] = new Control( "Health: 8080", left, 64+uiTop, 224, 24, 0 );
+    labelh[i-1] = new Control( "Health: 8080", left, 76+uiTop, 224, 24, 0 );
     uiDeck.add( labelh[i-1] );
-    Control labeld1 = new Control( "Name: ", left, 96+uiTop, 224, 24, 0 );
+    Control labeld1 = new Control( "Player " + i + ": ", left, 12+uiTop, 224, 24, 0 );
     uiDeck.add( labeld1 );
-    textdeck[i-1] = new TextField( "Unamed", left+64, 96+uiTop, 128, 24, 0 );
+    textdeck[i-1] = new TextField( "Unamed", left+80, 12+uiTop, 128, 24, 0 );
     uiDeck.add( textdeck[i-1] );
-    labelc[ i - 1 ] = new Control( "Deck/Init cost: 0/0", left, 128+uiTop, 224, 24, 0 );
+    labelc[ i - 1 ] = new Control( "Deck (Demon) Cost: 0 (0)\nInitative Cost: 0", left, 104+uiTop, 224, 24, 0 );
     uiDeck.add( labelc[ i - 1 ] );
     deckList[i-1] = new ListBox( "", left, 160+uiTop, 240, 336, 0 );
     deckList[i-1].lineSize = 24;
@@ -919,7 +925,7 @@ class Button extends Control
             deckList[0].listItems.remove( (int)i );
         }
         deckList[0].current.clear();
-        showDeckCost( 0 );
+        showDeckCost( 0, true );
         break;
 
       case BUTTON_REMOVE_CARD_2:
@@ -930,13 +936,13 @@ class Button extends Control
             deckList[1].listItems.remove( (int)i );
         }
         deckList[1].current.clear();
-        showDeckCost( 1 );
+        showDeckCost( 1, true );
         break;
 
       case BUTTON_REMOVE_ALL_1:
         deckList[0].current.clear();
         deckList[0].listItems.clear();
-        deckp1 = deckFromUI( 0 );
+        deckp1 = deckFromUI( 0, true );
         labelc[ 0 ].text = "Deck/Init cost: 0/0";
         deckList[0].scroll = 0;
         break;
@@ -944,13 +950,13 @@ class Button extends Control
       case BUTTON_REMOVE_ALL_2:
         deckList[1].current.clear();
         deckList[1].listItems.clear();
-        deckp1 = deckFromUI( 1 );
+        deckp1 = deckFromUI( 1, true );
         labelc[ 1 ].text = "Deck/Init cost: 0/0";
         deckList[1].scroll = 0;
         break;
 
       case BUTTON_SAVE_1:
-        Deck d = deckFromUI( 0 );
+        Deck d = deckFromUI( 0, true );
         if( d == null ) return;
         if ( decks.listItems.contains( textdeck[ 0 ].textIn ) )
         {
@@ -965,7 +971,7 @@ class Button extends Control
         break;
 
       case BUTTON_SAVE_2:
-        Deck d1 = deckFromUI( 1 );
+        Deck d1 = deckFromUI( 1,true );
         if( d1 == null ) return;
         if ( decks.listItems.contains( textdeck[ 1 ].textIn ) )
         {
@@ -983,7 +989,8 @@ class Button extends Control
         if ( decks.current.size() > 0 )
         {
           deckToUI( decks.current.get(0), 0 );
-          showDeckCost( 0 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
         break;
 
@@ -991,7 +998,8 @@ class Button extends Control
         if ( decks.current.size() > 0 )
         {
           deckToUI( decks.current.get(0), 1 );
-          showDeckCost( 1 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
         break;
 
@@ -1002,6 +1010,10 @@ class Button extends Control
           savedDecks.remove( (int)decks.current.get(0) );
           saveDecks();
         }
+        break;
+
+      case BUTTON_CONVERT:
+        selectInput("Select a decks file to convert:", "convertSelectedDecks");
         break;
 
       case BUTTON_LOAD_DECKS:
@@ -1155,15 +1167,15 @@ class Button extends Control
         String line = cards.listItems.get( cards.current.get( 0 ) );
         if ( line.substring( 0, Math.min( line.length(), 6 ) ).equals( "Rune: " ) ) return;
         
-        int cardEnd = line.lastIndexOf( '(' ) - 1;
+        int cardEnd = line.lastIndexOf( ';' );
         if ( cardEnd < 0 ) cardEnd = line.length();
         
         CardType c = cardsMap.get( line.substring( 0, cardEnd ) );
         if( c != null )
         {
           editedCard.name = labelCardName.text = cardName.textIn = c.name;
-          cardTime.text = ""+ (cardTime.num = cardTime.lastNum = editedCard.timer = c.timer);
-          cardCost.text = ""+ (cardCost.num = cardCost.lastNum = editedCard.cost = c.cost);
+          cardTime.textIn = ""+ (cardTime.num = cardTime.lastNum = editedCard.timer = c.timer);
+          cardCost.textIn = ""+ (cardCost.num = cardCost.lastNum = editedCard.cost = c.cost);
           cardStars.currentIndex = ( editedCard.stars = c.stars ) - 1;
           cardFaction.currentIndex = editedCard.faction = c.faction;
           for( int i = 0; i <= 15; ++ i )
@@ -1240,26 +1252,28 @@ void showAbilities()
   cardAbility[ 3 ].text = "Ability 4 (10+): " + abilityName.get( editedCard.abilities[ 3 ] ) + (editedCard.abilities[ 3 ] == AType.A_NONE ? "" : " " + editedCard.abilityL[ 3 ]);
 }
 
-void showDeckCost( int p )
+void showDeckCost( int p, boolean clear )
 {
-  Deck d = deckFromUI( p );
+  Deck d = deckFromUI( p, clear );
   if( d == null )
   {
     labelh[p].text = "Health: ";
-    labelc[ p ].text = "Deck/Init cost: ?/?";
+    labelc[ p ].text = "Deck/Init cost: ? (?)/?";
   }
   else
   {
     deckCost = 0;
+    demonCost = 0;
     int initativeCost = hpPerLevel[ (int)textLevel[ p ].lastNum ]; // figure out how to get player hps
     for ( int i = 0; i < d.numCards; ++ i )
     {
-      deckCost += d.cards[ i ].type.cost;
+      demonCost += d.cards[ i ].type.cost;
+      deckCost += d.cards[ i ].cost;
       initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
       initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
     }
     if ((int)textLevel[ p ].lastNum == 0) initativeCost = 999999;
-    labelc[ p ].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
+    labelc[ p ].text = "Deck (Demon) Cost: " + deckCost + " (" + demonCost + ")\n" + "Initative Cost: " + initativeCost;
     labelh[p].text = "Health: " + hpPerLevel[ (int)textLevel[ p ].lastNum ];
   }
 }
@@ -1426,13 +1440,14 @@ class TextField extends Control
     super.handleMousePressed();
     if ( !mouseIsOn() && selected )
     {
-      selected = false;
+      deselect();
     }
     if ( mouseIsOn() )
     {
       if (  id == SEARCH_TEXT )
       {
         text = textIn = "";
+        deselect();
       }
     }
   }
@@ -1541,53 +1556,59 @@ class TextField extends Control
     switch( id )
     {
     case SEARCH_TEXT:
-      cards.current.clear();
-      filterCards( false );
+      if (searchf.mouseIsOn()) {
+        cards.current.clear();
+        filterCards( false );
+      }
       cards.focus = true;
       break;
 
     case TEXT_LEVEL_1:
-      Deck d = deckFromUI( 0 );
+      Deck d = deckFromUI( 0, true );
 
       if( (int)textLevel[ 0 ].lastNum == 0 )
       {
         labelh[0].text = "Health: Invulnerable";
-        labelc[0].text = "Deck/Init cost " + deckCost + "/999999";
+        labelc[0].text = "Deck (Demon) Cost: " + deckCost + "(" + demonCost + ")\nInitative Cost: 999999";
       }
       else
       {
         int initativeCost = hpPerLevel[ (int)textLevel[ 0 ].lastNum ]; // figure out how to get player hps
         deckCost = 0;
+        demonCost = 0;
         for ( int i = 0; i < d.numCards; ++ i )
         {
-          deckCost += d.cards[ i ].type.cost;
+          deckCost += d.cards[ i ].cost;
+          demonCost += d.cards[ i ].type.cost;
           initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
           initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
         }
-        labelc[0].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
+        labelc[0].text = "Deck (Demon) Cost: " + deckCost + "(" + demonCost + ")\nInitative Cost: " + initativeCost;
         labelh[0].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
       }
       break;
 
     case TEXT_LEVEL_2:
-      d = deckFromUI( 1 );
+      d = deckFromUI( 1, true );
 
       if( (int)textLevel[ 1 ].lastNum == 0 )
       {
         labelh[1].text = "Health: Invulnerable";
-        labelc[1].text = "Deck/Init cost " + deckCost + "/999999";
+        labelc[1].text = "Deck (Demon) Cost: " + deckCost + "(" + demonCost + ")\nInitative Cost: 999999";
       }
       else
       {
         int initativeCost = hpPerLevel[ (int)textLevel[ 1 ].lastNum ]; // figure out how to get player hps
         deckCost = 0;
+        demonCost = 0;
         for ( int i = 0; i < d.numCards; ++ i )
         {
-          deckCost += d.cards[ i ].type.cost;
+          deckCost += d.cards[ i ].cost;
+          demonCost += d.cards[ i ].type.cost;
           initativeCost += d.cards[i].type.hp[d.cards[i].lvl];
           initativeCost += d.cards[i].type.atk[d.cards[i].lvl];
         }
-        labelc[1].text = "Deck/Init cost: " + deckCost + "/" + initativeCost;
+        labelc[1].text = "Deck (Demon) Cost: " + deckCost + "(" + demonCost + ")\nInitative Cost: " + initativeCost;
         labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
       }
       break;
@@ -1866,6 +1887,7 @@ class ListBox extends Control
         }
       }
     }
+    else if ((this == deckList[1] || this == deckList[0]) && (deckList[1].mouseIsOn() || deckList[0].mouseIsOn())) current.clear();
   }
 
   void handleMouseReleased()
@@ -1888,8 +1910,10 @@ class ListBox extends Control
         selectedList.current.remove( (Integer) selectedList.listItems.size() );
         selectedList.selected = false;
         selectedList.listItems.remove("");
-        showDeckCost( 0 );
-        showDeckCost( 1 );
+        if (this != listresult) {
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
+        }
       }
       selected = true;
       selectedList = this;
@@ -1922,6 +1946,8 @@ class ListBox extends Control
       // Clicked after list items
       else if( newCurrentIndex >= 0 && ( this == deckList[ 0 ] || this == deckList[ 1 ] ) )
       {
+        showDeckCost( 0, true );
+        showDeckCost( 1, false );
         current.clear();
         current.add( listItems.size() );
         listItems.add( "" );
@@ -1965,12 +1991,14 @@ class ListBox extends Control
         if ( this == deckList[ 0 ] )
         {
           addCardsToDeck(0);
-          showDeckCost( 0 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
         else if ( this == deckList[ 1 ] )
         {
           addCardsToDeck(1);
-          showDeckCost( 1 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
       }
       if ( draggedList == decks )
@@ -1981,7 +2009,8 @@ class ListBox extends Control
           {
             deckToUI( decks.current.get(0), 0 );
           }
-          showDeckCost( 0 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
         else if ( this == deckList[ 1 ] )
         {
@@ -1989,7 +2018,8 @@ class ListBox extends Control
           {
             deckToUI( decks.current.get(0), 1 );
           }
-          showDeckCost( 1 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
       }
       else if ( this == decks )
@@ -1998,11 +2028,11 @@ class ListBox extends Control
         {
           if ( decks.listItems.contains( textdeck[ 0 ].textIn ) )
           {
-            savedDecks.set(  decks.listItems.indexOf( textdeck[ 0 ].textIn ), deckFromUI( 0 ) );
+            savedDecks.set(  decks.listItems.indexOf( textdeck[ 0 ].textIn ), deckFromUI( 0, true ) );
           }
           else
           {
-            savedDecks.add( deckFromUI( 0 ) );
+            savedDecks.add( deckFromUI( 0, true ) );
             decks.listItems.add( textdeck[ 0 ].textIn );
           }
           saveDecks();
@@ -2011,11 +2041,11 @@ class ListBox extends Control
         {
           if ( decks.listItems.contains( textdeck[ 1 ].textIn ) )
           {
-            savedDecks.set(  decks.listItems.indexOf( textdeck[ 1 ].textIn ), deckFromUI( 1 ) );
+            savedDecks.set(  decks.listItems.indexOf( textdeck[ 1 ].textIn ), deckFromUI( 1, true ) );
           }
           else
           {
-            savedDecks.add( deckFromUI( 1 ) );
+            savedDecks.add( deckFromUI( 1,true ) );
             decks.listItems.add( textdeck[ 1 ].textIn );
           }
           saveDecks();
@@ -2031,7 +2061,8 @@ class ListBox extends Control
             deckList[0].listItems.remove( (int)i );
           }
           deckList[0].current.clear();
-          showDeckCost( 0 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
         else if ( draggedList == deckList[ 1 ] )
         {
@@ -2041,7 +2072,8 @@ class ListBox extends Control
             deckList[1].listItems.remove( (int)i );
           }
           deckList[1].current.clear();
-          showDeckCost( 1 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
         }
       }
       else if ( this == deckList[ 0 ] && draggedList == deckList[ 1 ] )
@@ -2052,8 +2084,8 @@ class ListBox extends Control
           deckList[0].listItems.add( deckList[1].listItems.remove( (int)i ) );
         }
         deckList[1].current.clear();
-        showDeckCost( 0 );
-        showDeckCost( 1 );
+        showDeckCost( 0,true );
+        showDeckCost( 1,false );
       }
       else if ( this == deckList[ 1 ] && draggedList == deckList[ 0 ] )
       {
@@ -2063,8 +2095,8 @@ class ListBox extends Control
           deckList[1].listItems.add( deckList[0].listItems.remove( (int)i ) );
         }
         deckList[0].current.clear();
-        showDeckCost( 0 );
-        showDeckCost( 1 );
+        showDeckCost( 0,true );
+        showDeckCost( 1,false );
       }
     }
     super.handleMouseReleased();
@@ -2105,8 +2137,8 @@ class ListBox extends Control
       else if(( this == deckList[ 0 ] || this == deckList[ 1 ] ) && current.size() == 1) //modified code for enter key and colon
       {
         if (key == '\n') {
-          showDeckCost( 0 );
-          showDeckCost( 1 );
+          showDeckCost( 0, true );
+          showDeckCost( 1, false );
           current.clear();
           if (!listItems.get(listItems.size() - 1).equals("")) {
             current.add( listItems.size() );
@@ -2114,7 +2146,7 @@ class ListBox extends Control
             if (listItems.size() > h/lineSize)  scroll = (h-lineSize)*(50)/(listItems.size()-h/lineSize); 
           }
         }
-        else if( ((key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z')) || key == BACKSPACE || key == ':' || key == ' ' || key == '\'' || key == '(' || key == ')' || key == '-' || (key >= '0' && key <= '9') )
+        else if( ((key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z')) || key == BACKSPACE || key == ':' || key == ' ' || key == ';' || key == '\'' || key == '(' || key == ')' || key == '-' || (key >= '0' && key <= '9') )
         {
           for( Integer i : current )
           {
@@ -2182,6 +2214,8 @@ class ListBox extends Control
         deckList[i].current.clear();
         if (deckList[i].listItems.size() <= h/lineSize) {scroll = 0;}
       }
+      showDeckCost(0,true);
+      showDeckCost(1,false);
     }
   }
 }
@@ -2214,7 +2248,8 @@ void addCardsToDeck(int p)
     Card c = cardFromString( card2 );
     deckList[p].listItems.add( c.toString() );
   }
-  showDeckCost(p);
+  showDeckCost( 0, true );
+  showDeckCost( 1, false );
 }
 
 class Picture extends Control

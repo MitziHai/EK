@@ -20,7 +20,7 @@ int atk[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 AType[] a = {AType.A_NONE};
 int al[] = {0};
 CardType dummy = new CardType( "not a card", hp, atk, 0, 0, 0, 0, a, al );
-Card dummyCard = new Card(dummy, 0, AType.A_NONE, 0);
+Card dummyCard = new Card(dummy, 0, AType.A_NONE, 0, -1);
 
 class AbilityWhen
 {
@@ -91,7 +91,7 @@ class Rune
   
   String toString()
   {
-    return "Rune: " + type.name + " ("+level+")";
+    return "Rune: " + type.name + ";"+level;
   }
   
   void checkRune( Player current, Player op, int round )
@@ -439,8 +439,8 @@ Rune runeFromString( String s )
 {
   if( s.length() > 6 )
   {
-    int level = s.charAt( s.length() - 2 ) - '0';
-    s = s.substring( 6, s.length() - 4 );
+    int level = s.charAt( s.length() - 1 ) - '0';
+    s = s.substring( 6, s.length() - 2 );
     if( runesMap.containsKey( s ) )
       return new Rune( runesMap.get( s ), level );
     else
