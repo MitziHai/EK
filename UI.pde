@@ -4,6 +4,7 @@ ArrayList< Control > uiHelp = new ArrayList< Control >();
 ArrayList< Control > uiCard = new ArrayList< Control >();
 ArrayList< Control > uiResults = new ArrayList< Control >();
 ArrayList< Control > uiSettings = new ArrayList< Control >();
+ArrayList< Control > uiFOH = new ArrayList< Control >();
 ArrayList< Control > uiTabs = new ArrayList< Control >();
 ArrayList< Control > ui = uiDeck;
 TextField selectedText = null;
@@ -50,6 +51,9 @@ static final int TAB5 = 36;
 static final int BUTTON_LOAD_DECKS = 37;
 static final int BUTTON_PAUSE = 38;
 static final int BUTTON_CONVERT = 39;
+static final int BUTTON_GET_FOH_DECKS = 40;
+static final int TAB6 = 41;
+static final int SERVER_SELECT = 42;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -236,11 +240,16 @@ Control labelc[] = new Control[2];
 Checkbox checkMultisim;
 Checkbox checkMultisimResults;
 Checkbox checkKWDefend;
+Checkbox checkSingleThread;
 ListBox evoList;
 DropList ListHydraCard1;
 DropList ListHydraCard2;
 DropList ListHydraCard3;
+DropList servers;
 TextField textEvo;
+
+Picture picPlayerAvatar[] = new Picture[8];
+Control PlayerNames[] = new Control[8];
 
 CardType editedCard;
 TextField cardHp[] = new TextField[ 16 ];
@@ -379,9 +388,12 @@ void setupUI()
   Button tab4 = new Button( "     Settings", 416, 8, 128, 24, TAB4);
   tab4.isTab = true;
   uiTabs.add(tab4);
-  Button tab5 = new Button( "       Help", 552, 8, 128, 24, TAB5);
+  Button tab5 = new Button( "       FOH", 552, 8, 128, 24, TAB5);
   tab5.isTab = true;
   uiTabs.add(tab5);
+  Button tab6 = new Button( "       Help", 688, 8, 128, 24, TAB6);
+  tab6.isTab = true;
+  uiTabs.add(tab6);
 
   // Deck editor
 
@@ -414,9 +426,11 @@ void setupUI()
 
   listresult = new ListBox("", 512-96, 640+16+uiTop, 600+offsetLeft, 104, 0);
   uiDeck.add( listresult );
+  uiFOH.add( listresult);
 
   Control line = new Control( "--------------------------------------------------------------------------------------------------------------------------------------------", 0, 640+uiTop, width, 24, 0 );
   uiDeck.add( line );
+  uiFOH.add( line );
 
   radall = new RadioButton( "Show Arena Results", 16, line.y+24-6, 200, 24, 0 );
   radall.checked = true;
@@ -455,16 +469,48 @@ void setupUI()
   butConvert.type = 2;
   uiSettings.add( butConvert );
 
+  Control labelRunOptions = new Control( "Run Options", 16, uiTop+290, 280, 24, 0 );
+  uiSettings.add(labelRunOptions);
+  checkSingleThread = new Checkbox( "Run all simulations single threaded", 16, uiTop+320, 240, 24, 0 );
+  uiSettings.add( checkSingleThread );
+
+
   uiSettings.add(ListHydraCard1);
   uiSettings.add(ListHydraCard2);
   uiSettings.add(ListHydraCard3);
+  
+  for ( int i = 0; i < 8; ++ i )
+  {
+    PlayerNames [i] = new Control("",60+(512*(i>3?1:0)), uiTop+80+(i%4)*128, 64, 64, 0);
+    picPlayerAvatar[ i ] = new Picture("test", 64+(512*(i>3?1:0)), uiTop+104+(i%4)*128, 64, 64, 1,loadImage( "PhotoCards\\img_photoCard_0.PNG" ) );
+    uiFOH.add( picPlayerAvatar[ i ] );
+    uiFOH.add( PlayerNames[ i ] );
+  }
+
+
+
+  servers = new DropList( "", 512, uiTop+24, 224, 24, SERVER_SELECT );
+  servers.listItems.addAll(Arrays.asList(new String[] {
+    "Chaos", "Harmony", "Legacy", "Destiny", "Fury", "Serenity", "Skorn", "Apollo"
+  }
+  ));
+  uiFOH.add(servers);
+  
+  Button butFOHDecks = new Button( "Get FOH Info", 36, line.y+24, 160, 32, BUTTON_GET_FOH_DECKS );
+  butFOHDecks.font = 18;
+  butFOHDecks.type = 2;
+  uiFOH.add( butFOHDecks );
+
   numberRuns = new TextField("10000", 275, line.y+48, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;
   numberRuns.max = 1000000;
   uiDeck.add( numberRuns );
+  //uiFOH.add( numberRuns );
   Control runsLabel = new Control( "Runs:", 226, line.y+48, 128, 32, 0);
   uiDeck.add( runsLabel );
+  //uiFOH.add (runsLabel);
+
 
   cards = new ListBox( "Cards", 16, 16+uiTop, 224, 408, 0 );
   cards.lineSize = 24;
@@ -562,12 +608,7 @@ void setupUI()
   butgo.font = 18;
   butgo.type = 2;
   uiDeck.add( butgo );
-
-//  butPause = new Button( "", 330, line.y+32+56, 80, 32, BUTTON_PAUSE );
-//  butPause.font = 18;
-//  butPause.type = 2;
-//  uiDeck.add( butPause );
-
+  //uiFOH.add (butgo);
 
   // Card editor
   int column1 = 256; // Image
@@ -843,7 +884,7 @@ class Button extends Control
     }
     if ( isTab )
     {
-      if ( ( uiTab == 0 && id == TAB1 ) || ( uiTab == 1 && id == TAB2 ) || ( uiTab == 2 && id == TAB3 ) || ( uiTab == 3 && id == TAB4 ) || ( uiTab == 4 && id == TAB5 ) )
+      if ( ( uiTab == 0 && id == TAB1 ) || ( uiTab == 1 && id == TAB2 ) || ( uiTab == 2 && id == TAB3 ) || ( uiTab == 3 && id == TAB4 ) || ( uiTab == 4 && id == TAB5 ) || ( uiTab == 5 && id == TAB6 ))
         pg.image( imgTab[ 0 ], x, y, w, h );
       else
         pg.image( imgTab[ 1 ], x, y, w, h );
@@ -904,8 +945,13 @@ class Button extends Control
         break;
 
       case TAB5:
-        ui = uiHelp;
+        ui = uiFOH;
         uiTab = 4;
+        break;
+
+      case TAB6:
+        ui = uiHelp;
+        uiTab = 5;
         break;
 
       case BUTTON_ADD_CARD_1:
@@ -1016,6 +1062,11 @@ class Button extends Control
         selectInput("Select a decks file to convert:", "convertSelectedDecks");
         break;
 
+      case BUTTON_GET_FOH_DECKS:
+          FOH();
+  
+        break;
+
       case BUTTON_LOAD_DECKS:
         selectInput("Select a decks file to load:", "loadSelectedDecks");
         break;
@@ -1042,7 +1093,8 @@ class Button extends Control
         else {
           butgo.text = "     Stop!";
 //          butPause.text = " Pause!";
-          new Thread(new RunSim()).start();
+          if (uiTab == 4) FOH_RUN();
+          else new Thread(new RunSim()).start();
         }
         break;
         
@@ -2241,7 +2293,7 @@ void addCardsToDeck(int p)
       evo = evoList.current.size() > 0 ? (e + (int)textEvo.lastNum ) : "";
     }
     String card = cards.listItems.get( i );
-    int cardEnd = card.lastIndexOf( ';' );
+    int cardEnd = card.length(); //card.lastIndexOf( ';' );
     if ( cardEnd < 0 ) cardEnd = card.length();
     String card2 = card.substring( 0, cardEnd ) + ";" + evo + card.substring( cardEnd, card.length() );
     Card c = cardFromString( card2 );
@@ -2254,6 +2306,7 @@ void addCardsToDeck(int p)
 class Picture extends Control
 {
   PImage img;
+  int tint = 255;
 
   Picture( String t, int xx, int yy, int ww, int hh, int i, PImage ig )
   {
@@ -2265,6 +2318,7 @@ class Picture extends Control
   {
     if ( img != null )
     {
+      pg.tint(255,tint);
       pg.image( img, x, y, w, h );
     }
   }

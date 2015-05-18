@@ -1,3 +1,13 @@
+import servconn.*;
+import servconn.dto.*;
+import servconn.dto.rune.*;
+import servconn.dto.skill.*;
+import servconn.dto.login.*;
+import servconn.util.*;
+import servconn.dto.card.*;
+import servconn.client.*;
+import servconn.dto.league.*;
+
 /*
 
  MISSING FEATURES
@@ -63,6 +73,8 @@ int deckCost = 0;
 int demonCost = 0;
 long totalmerit;
 long totalrounds;
+long totalroundswins;
+long totalroundslosses;
 double totalmpm;
 long totalmeritMax;
 long totalmeritMin;
@@ -516,8 +528,8 @@ class RunSim implements Runnable
     totalmeritMax = totalroundsMax = 0;
     totalmeritMin = totalroundsMin = 9999999999L;
     totalmerit = totalrounds = 0;
-    totalwin = 0;
-    totalloss = 0;
+    totalwin = totalroundswins = 0;
+    totalloss = totalroundslosses = 0;
     totalgames = 0 ;
 
     // Setup players
@@ -554,7 +566,8 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = 2*8;
-    //cores = 1;   // debug = 4;  // To single thread and print all info to log uncomment this line
+    if (checkSingleThread.checked ) cores = 1;
+    // debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -630,7 +643,8 @@ class RunSim implements Runnable
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));
       if ( score >= bestScore )
-        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + (100*totalwin/(float)(totalwin + totalloss))+"% of the matches";
+        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + 
+          (100*totalwin/(float)(totalwin + totalloss))+"% of the matches against " + (textdeck[1].textIn == "Unamed" ? "Player 2" : textdeck[1].textIn);
     }
     else if ( raddi.checked )
     {

@@ -275,6 +275,7 @@ void loadAbils()
   evoNames.put( "QS: Healing", "q:h" );
   evoNames.put( "QS: Plague", "q:plg" );
   evoNames.put( "QS: Regeneration", "q:reg" );
+  evoNames.put( "QS: Teleportation", "q:tel" );
   evoNames.put( "QS: Toxic Clouds", "q:tc" );
   evoNames.put( "QS: Prayer", "q:pyr" );
   evoNames.put( "QS: Trap", "q:trp" );
