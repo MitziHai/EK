@@ -767,6 +767,7 @@ class Card
   int dmgMinus = 0;
   AType evo;
   int evoLevel;
+  int wash;
   int morale;
   
   int totalGlitchCount = 0;
@@ -781,14 +782,15 @@ class Card
   Card divineProtect[] = new Card[3];
   int divineProVal = 0;
 
-  Card( CardType t, int l, AType evo, int evoLevel, int cost )
+  Card( CardType t, int l, AType evo, int evoLevel, int w )
   {
     resist = t.resist;
     immune = t.immune;
     lvl = l;
     type = t;
-    if (cost == -1) this.cost = t.cost + (int)((l - 9)/2);
-    else this.cost = cost;
+    wash = w;
+    if (w == 0) this.cost = t.cost + (l>10?(int)((l - 9)/2):0);
+    else this.cost = t.cost + w;
     hpMax = t.hp[lvl];
     atkMax = t.atk[lvl];
     this.evo = evo;
@@ -1341,8 +1343,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void died(Player own, Player op)
   {
     if( debug > 3 ) println( "     Died: " + this);
-    own.addToGrave( this );
     checkAbilities(own, op, ON_DEATH,-1);
+    if (!reanimated) own.addToGrave( this );
     own.removeFromPlay(this);
   }
 
@@ -2272,7 +2274,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             if( random( 0, 100 ) <= 30+l*5 )
             {
               if( debug > 3 ) println( "       " + toStringNoHp() + " Resurrection successful");
-              own.removeFromGrave(this);
+              //own.removeFromGrave(this);
               own.addToHand(this);
               reanimated = true;
             }
@@ -2350,7 +2352,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             Card mostDamaged = null;
             for ( Card c : own.inPlay )
             {
-              if ( mostDamaged == null || c.hpBuff - c.hpCurr > mostDamaged.hpBuff - mostDamaged.hpCurr ) mostDamaged = c;
+              if ( (mostDamaged == null || c.hpBuff - c.hpCurr > mostDamaged.hpBuff - mostDamaged.hpCurr) && c != this ) mostDamaged = c;
             }
             if ( mostDamaged != null )
             {
@@ -2776,8 +2778,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
       else return type.name + "-" + evoNames.get( abilityName.get( evo ) ) + evoLevel + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkBuff +", Health: "+ hpCurr+" / " + hpBuff + "]";
     }
     if ( evo != AType.A_NONE )
-      return type.name + ";" + evoNames.get( abilityName.get( evo ) ) + evoLevel + ";" + lvl + ";" + cost;// + "[t"+time+"]" + abilityL[0];
-    return type.name + ";" + lvl + ";" + cost;// + "["+atk+", "+hp+"]" + abilityL[0];
+      return type.name + ";" + lvl + ((wash > 0) ? (";" + wash):"") + ";" + evoNames.get( abilityName.get( evo ) ) + evoLevel;// + "[t"+time+"]" + abilityL[0];
+    return type.name + ";" + lvl + ((wash > 0) ? (";" + wash):"");// + "["+atk+", "+hp+"]" + abilityL[0];
   }
 }
 
@@ -2898,41 +2900,48 @@ Card cardFromString( String s )
   int evoL = 1;
   int cost = -1;
   int level = 10;
+  int wash = 0;
   Boolean found = false;
   String st[] = s.split(";");
   String e = "";
     
   String enteredName = st[0];
   if (st.length > 1) {
-    if (st[1].matches("\\d+$")) level = Integer.parseInt(st[1]);
-    else {
-      e= st[1];
+    if (st.length == 4) {
+      if (!st[1].matches("\\d+$") || !st[2].matches("\\d+$")) return null;
+      else {
+        level = Integer.parseInt(st[1]);
+        wash = Integer.parseInt(st[2]);
+        e = st[3];
+      }
     }
-    if (st.length > 2) {
-      if (e.length() == 0) {
-        if (st[2].matches("\\d+$")) cost = Integer.parseInt(st[2]);
-        else {
-          return null;
-        }
+    else if (st.length == 2)
+    {
+      if (st[1].matches("\\d+$")) {
+        level = Integer.parseInt(st[1]);
+        wash = 0;
       }
       else {
-        if (st[2].matches("\\d+$")) level = Integer.parseInt(st[2]);
-        else {
-          return null;
-        }
+        level = 10;
+        wash = 0;
+        e = st[1];
       }
     }
-    if (st.length > 3) {
-      if (e.length() == 0) {
-        return null;
+    else if (st.length == 3)
+    {
+      if (!st[1].matches("\\d+$")) return null;
+      else if(st[2].matches("\\d+$")) {
+        level = Integer.parseInt(st[1]);
+        wash = Integer.parseInt(st[2]);
       }
       else {
-        if (st[3].matches("\\d+$")) cost = Integer.parseInt(st[3]);
-        else {
-          return null;
-        }
+        level = 10;
+        e = st[2];
+        if (Integer.parseInt(st[1]) > 3) level = Integer.parseInt(st[1]);
+        else wash = Integer.parseInt(st[1]); 
       }
     }
+    else return null;
   }    
   if (!cardsMap.containsKey(enteredName)) 
   {
@@ -2988,6 +2997,6 @@ Card cardFromString( String s )
     }
   }
   if( evoL <= 0 ) evo = AType.A_NONE;
-  if (found) return new Card(cardsMap.get(enteredName),level,evo,evoL,cost);
+  if (found) return new Card(cardsMap.get(enteredName),level,evo,evoL,wash);
   else return null;
 }

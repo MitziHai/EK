@@ -195,7 +195,7 @@ void convertSelectedDecks(File selection) {
             if (e.substring(e.length()-1).equals("0")) offset = 2;
             if( evoNamesR.get( e.substring(0,e.length()-offset) ) != null )
             {
-              line = line.substring(0,line.lastIndexOf('-')) + ";" + line.substring(line.lastIndexOf('-')+1);
+              line = line.substring(0,line.lastIndexOf('-')) + line.substring(line.indexOf(';')) + ";" + line.substring(line.lastIndexOf('-')+1,line.indexOf(';'));
             }
           }
           writer.println(line);

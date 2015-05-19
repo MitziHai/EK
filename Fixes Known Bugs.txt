@@ -1,3 +1,54 @@
+2015.05.19
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Fixed Light of Hydra Reincarnating itself
+    - Fixed adding evos from evo list
+    - Fixed cards less than level 0 getting incorrect deck cost (demon cost was fine)
+
+  Enhancements:
+    - Changed the format of cards to: <Card Name>;<Level>;<Add Cost>;<Evo>
+        Where <Add Cost> is the additional cost of a card (1 2 or 3) on top of standard cost
+        if <Add Cost> = 0 it will not display
+        Examples of data entry:
+          s o l;pyr5     will result in: Statue of Light;10;pyr5 
+             Level 10 Statue of Light with prayer 5)
+          s s;3;sg5      will result in: Serpant Shamanka;10;3;sg5 
+             Level 10 Serpant Shamanka with Swamp Guard 5 and cost 18 (3 higher than base cost of 15)
+          si s;3         will result in: Silver Swordmaster;3
+             Level 3 Silver Swordmaster
+          l p;15;res     will result in Light Paladin;15;res1
+             Level 15 Light Paladin with Resistance 
+             Note deck cost is properly figured here at 20 based on level without entering additional cost
+
+  Known bugs
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         cards in deck start in fixed order, show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
 2015.05.18
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
