@@ -77,7 +77,7 @@ void loadAbils()
   abilities.put( "D: Regeneration", AType.A_D_REGENERATION );
   abilities.put( "D: Reincarnation", AType.A_D_REINCARNATION );
   abilities.put( "D: Toxic Clouds", AType.A_D_TOXIC_CLOUDS );
-  abilities.put( "D: Trap", AType.A_TRAP );
+  abilities.put( "D: Trap", AType.A_D_TRAP );
   abilities.put( "Damnation", AType.A_DAMNATION );
   abilities.put( "Destroy", AType.A_DESTROY );
   abilities.put( "Devil's Armor", AType.A_DEVILS_ARMOR );

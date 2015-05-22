@@ -54,6 +54,7 @@ static final int BUTTON_CONVERT = 39;
 static final int BUTTON_GET_FOH_DECKS = 40;
 static final int TAB6 = 41;
 static final int SERVER_SELECT = 42;
+static final int NUMBER_RUNS = 43;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -495,13 +496,23 @@ void setupUI()
   }
   ));
   uiFOH.add(servers);
+  if (server.equals("Chaos")) servers.currentIndex = 0;
+  if (server.equals("Harmony")) servers.currentIndex = 1;
+  if (server.equals("Legacy")) servers.currentIndex = 2;
+  if (server.equals("Destiny")) servers.currentIndex = 3;
+  if (server.equals("Fury")) servers.currentIndex = 4;
+  if (server.equals("Serenity")) servers.currentIndex = 5;
+  if (server.equals("Serenity")) servers.currentIndex = 6;
+  if (server.equals("Apollo")) servers.currentIndex = 7;
+  if (server.equals("")) server = "Chaos";
+  
   
   Button butFOHDecks = new Button( "Get FOH Info", 36, line.y+24, 160, 32, BUTTON_GET_FOH_DECKS );
   butFOHDecks.font = 18;
   butFOHDecks.type = 2;
   uiFOH.add( butFOHDecks );
 
-  numberRuns = new TextField("10000", 275, line.y+48, 128, 24, 0); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
+  numberRuns = new TextField(Integer.toString((int)numMatch), 275, line.y+48, 128, 24, NUMBER_RUNS); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;
   numberRuns.max = 1000000;
@@ -1663,6 +1674,10 @@ class TextField extends Control
         labelc[1].text = "Deck (Demon) Cost: " + deckCost + "(" + demonCost + ")\nInitative Cost: " + initativeCost;
         labelh[1].text = "Health: " + hpPerLevel[ (int)textLevel[ 0 ].lastNum ];
       }
+      break;
+
+    case NUMBER_RUNS:
+      numMatch = lastNum;
       break;
 
     case TEXT_TIME:

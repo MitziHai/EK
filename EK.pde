@@ -56,6 +56,7 @@ int debug = 0;
 boolean evoTab = true;
 
 long numMatch = 10000;
+String server = "";
 
 class Mutex {
 }
@@ -136,6 +137,8 @@ void loadSettings() {
       Event3Star = br.readLine();
       Event4Star = br.readLine();
       Event5Star = br.readLine();
+      numMatch = Integer.parseInt(br.readLine());
+      server = br.readLine();
       br.close();
     }
   }
@@ -154,6 +157,8 @@ void saveSettings() {
     writer.println(ListHydraCard1.listItems.get(ListHydraCard1.currentIndex));
     writer.println(ListHydraCard2.listItems.get(ListHydraCard2.currentIndex));
     writer.println(ListHydraCard3.listItems.get(ListHydraCard3.currentIndex));
+    writer.println(numMatch);
+    writer.println(servers.listItems.get(servers.currentIndex));
     writer.close();
   }
   catch( Exception e )
