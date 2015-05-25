@@ -158,6 +158,7 @@ void loadAbils()
   abilities.put( "Seal", AType.A_SEAL );
   abilities.put( "Self-Destruct", AType.A_SELF_DESTRUCT );
   abilities.put( "Shield of Earth", AType.A_SHIELD_OF_EARTH );
+  abilities.put( "Silence", AType.A_SILENCE );
   abilities.put( "Slayer", AType.A_SLAYER );
   abilities.put( "Smog", AType.A_SMOG );
   abilities.put( "Snipe", AType.A_SNIPE );
@@ -292,6 +293,7 @@ void loadAbils()
   evoNames.put( "Seal", "seal" );
   evoNames.put( "Self-Destruct", "sd" );
   evoNames.put( "Shield of Earth", "soe" );
+  evoNames.put( "Silence", "sil" );
   evoNames.put( "Slayer", "slay" );
   evoNames.put( "Smog", "smog" );
   evoNames.put( "Snipe", "snp" );

@@ -504,6 +504,9 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = ON_ATTACKED; 
     when2 = NEVER; 
     break;
+  case A_SILENCE:
+    when = BEFORE_ATTACK; 
+    break;
   case A_SLAYER: 
     when = ON_ATTACK_PLAYER; 
     when2 = NEVER; 
@@ -699,24 +702,25 @@ static final int ON_DEATH = 6;
 static final int ON_ATTACKED_SPELL = 7;
 static final int NUM_WHEN = 8;
 
-static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "reanimated sickness", "lacerated", "stunned", "corrupted", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none"};
+static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none"};
 static final int FROZEN = 0;
 static final int SHOCKED = 1;
 static final int TRAPPED = 2;
 static final int CONFUSED = 3;
-static final int SICK = 4;
-static final int LACERATED = 5;
-static final int STUNNED = 6;
-static final int CORRUPT = 7;
-static final int HEAL = 8;
-static final int HEAL_MIST = 9;
-static final int DESTROY = 10;
-static final int NO_IMMUNE = 11;
-static final int NO_REFLECT = 12;
-static final int POISONED = 13;
-static final int FIRE = 14;
-static final int BLOOD = 15;
-static final int NONE = 16;
+static final int SILENCED = 4;
+static final int SICK = 5;
+static final int LACERATED = 6;
+static final int STUNNED = 7;
+static final int CORRUPT = 8;
+static final int HEAL = 9;
+static final int HEAL_MIST = 10;
+static final int DESTROY = 11;
+static final int NO_IMMUNE = 12;
+static final int NO_REFLECT = 13;
+static final int POISONED = 14;
+static final int FIRE = 15;
+static final int BLOOD = 16;
+static final int NONE = 17;
 
 
 class Card
@@ -736,7 +740,7 @@ class Card
   boolean combust[] = {false, false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
   int poison;
-  boolean status[] = new boolean[ 7 ];
+  boolean status[] = new boolean[ 8 ];
   int time;
   int atkNow;
   int dmgTaken;
@@ -863,7 +867,7 @@ class Card
     }
     poison = 0;
     morale = 0;
-    for ( int i = 0; i <= 6; ++ i )
+    for ( int i = 0; i <= 7; ++ i )
       status[ i ] = false;
     alreadySealed = false;
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
@@ -1358,7 +1362,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
       int l = abilityL[ when ][ i ];
       if ( when == BEFORE_ATTACK )
       {
-        if (!dead) 
+        println("Sileneced: " + status[SILENCED] + "  i: " + i + "  Num Orig: " + abilityNumOrig[when]);
+        if (!dead && (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) )
         switch( a )
         {
         case A_ADVANCED_STRIKE:
@@ -1633,6 +1638,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
           break;
 
+        case A_SILENCE:
+          if( debug > 3 ) println( "     Silence");
+          if (op.playSize() == 0 && debug > 2) println("       No Target for silence");
+          if ( !op.inPlay.isEmpty() ) {
+            Card c = op.inPlay.get(0);
+            if (c.resist && debug > 2) println("       " +c.toStringNoHp() + "'s resistance resists silence");
+            else if (!c.resist) {
+              for ( int k = 0; k < NUM_WHEN; ++ k ) c.abilityNum[k] = 0;
+              c.status[SILENCED] = true;
+              if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
+            }
+          }
+          break;
+
         case A_SMOG:
           if( debug > 3 ) println( "     Smog for " + (20*l));
           damageRandom3( own, op, 20*l, POISONED, 20*l );
@@ -1661,6 +1680,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
             damageRandom2( own, op, 0, TRAPPED, 65 );
           else if ( l == 3 )
             damageRandom3( own, op, 0, TRAPPED, 65 );
+          else if ( l == 4 )
+            damageRandom4( own, op, 0, TRAPPED, 65 );
+          else if ( l == 5 )
+            damageRandom5( own, op, 0, TRAPPED, 65 );
           break;
 
         case A_VENOM:
@@ -1679,6 +1702,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == AFTER_ATTACK )
       {
+        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
         switch( a )
         {
         case A_REJUVENATION:
@@ -1733,6 +1757,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACK_PLAYER )
       {
+        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
         switch( a )
         {
         case A_SLAYER:
@@ -1759,6 +1784,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACK_CARD )
       {
+        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
         switch( a )
         {
         case A_ARCTIC_POLLUTION:
@@ -2261,6 +2287,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_DEATH )
       {
+        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
         switch( a )
         {
         case A_GUARD:
@@ -2523,6 +2550,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACKED_SPELL )
       {
+        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
         switch( a )
         {
         case A_IMMUNITY:
@@ -2638,6 +2666,50 @@ Seperate Variables: BURNED, POISON, immune, resist,
     
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 3, target.playSize() ); ++ i )
+    {
+      int index = (int)random(0, target.playSize() - i ); //list[(int)random(0, target.playSize() - i - 1)];
+      targets.add( target.inPlay.get( list[index] ) );
+      
+      list[index] = list[target.playSize()-i -1 ];
+    }
+    for ( Card c : targets )
+    {
+      c.attackedSpell( target, own, dmg, this, effect, chance );
+      //if( dead ) return;  Cards continue their spell attack even if died
+    }
+  }
+
+  void damageRandom4( Player own, Player target, int dmg, int effect, int chance )
+  {
+    int list[] = { 
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    };
+    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    
+    ArrayList< Card > targets = new ArrayList< Card >();
+    for ( int i = 0; i < min( 4, target.playSize() ); ++ i )
+    {
+      int index = (int)random(0, target.playSize() - i ); //list[(int)random(0, target.playSize() - i - 1)];
+      targets.add( target.inPlay.get( list[index] ) );
+      
+      list[index] = list[target.playSize()-i -1 ];
+    }
+    for ( Card c : targets )
+    {
+      c.attackedSpell( target, own, dmg, this, effect, chance );
+      //if( dead ) return;  Cards continue their spell attack even if died
+    }
+  }
+
+  void damageRandom5( Player own, Player target, int dmg, int effect, int chance )
+  {
+    int list[] = { 
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    };
+    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    
+    ArrayList< Card > targets = new ArrayList< Card >();
+    for ( int i = 0; i < min( 5, target.playSize() ); ++ i )
     {
       int index = (int)random(0, target.playSize() - i ); //list[(int)random(0, target.playSize() - i - 1)];
       targets.add( target.inPlay.get( list[index] ) );

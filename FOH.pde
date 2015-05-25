@@ -1,60 +1,74 @@
+/*
+EkClient client = new EkClient();
+  Map<String, Card> cardMap = client.getServerCards(server);
+  Map<String, Skill> skillMap = client.getServerSkills(server);
+  Map<String, Rune> runeMap = client.getServerRunes(server);
+  LeagueData leagueData = client.getLeagueData(server);
+
+  FoHPrinter fohPrinter = FoHPrinterFactory.getFoHPrinter("MITZI"); 
+  
+  fohPrinter.setGameInfo(cardMap, skillMap, runeMap);
+  fohPrinter.setEvoNames(evoNames);
+  
+  String decks = fohPrinter.printDeck(leagueData);
+  
+  */
+  LeagueData leagueData;
+  Map<String, servconn.dto.card.Card> cardMap;
+  Map<String, Skill> skillMap;
+  Map<String, servconn.dto.rune.Rune> runeMap;
 void FOH()
 {
+  String PlayerAvatar[] = new String[8];
+  int loosers = 0;
+
   try
   {
+    radall.checked = true;
+    raddi.checked = radkw.checked = radhydra.checked = false;
     listresult.listItems.clear();
     listresult.listItems.add( "Downloading decks and match info for server " + servers.listItems.get(servers.currentIndex));
     EkClient client = new EkClient();
-    String decks = client.getFoHDeckForServer(servers.listItems.get(servers.currentIndex).toLowerCase(), evoNames);
-    PrintWriter writer = new PrintWriter("foh_"+ servers.listItems.get(servers.currentIndex)+"_decks.txt", "UTF-8");
-    String lines[] = decks.split("\n");
-    Boolean NameNext = false;
-    int PlayerID = 0; 
-    String parts[];
-    for (int i = 0; i < lines.length; i++) 
-    {
-      lines[i] = lines[i].substring(0,lines[i].length()-1);
-      if (lines[i].length() < 2) {
-        writer.println("");
-        NameNext = true;
-        continue;
-      }
-      if (i <= 1 || NameNext) {
-        writer.println(lines[i]);
-        NameNext = false;
-      }
-      else if (lines[i].matches("\\d+$")) writer.println(lines[i]);
-      else if( lines[i].substring( 0, Math.min( lines[i].length(), 6 ) ).toLowerCase().equals( "rune: " ) )
-      {
-        writer.println(lines[i]);
-      }
-      else {
-        parts = lines[i].split(";");
-        if (parts.length == 4) {
-          if (cardsMap.get(parts[0]).cost < Integer.parseInt(parts[3]))
-         { 
-            parts[3] = str(Integer.parseInt(parts[3]) - cardsMap.get(parts[0]).cost);
-            if ((int)((Integer.parseInt(parts[2]) - 9)/2) == Integer.parseInt(parts[3])) parts[3] = "";
-         }
-          else parts[3] = "";
-          lines[i] = parts[0] + ";" + parts[2] + (parts[3].equals("")?"":";" + parts[3]) + ";" + parts[1];
-        }
-        else {
-          if (cardsMap.get(parts[0]).cost < Integer.parseInt(parts[2])) {
-            parts[2] = str(Integer.parseInt(parts[2]) - cardsMap.get(parts[0]).cost);
-            if ((int)((Integer.parseInt(parts[1]) - 9)/2) == Integer.parseInt(parts[2])) parts[2] = "";
-          }
-          else parts[2] = "";
-          lines[i] = parts[0] + ";" + parts[1] + (parts[2].equals("")?"":";" + parts[2]);
-        }
-        writer.println(lines[i]);
-      }
-    }
-    writer.println("");
-    writer.close();
+    skillMap = client.getServerSkills(servers.listItems.get(servers.currentIndex).toLowerCase());
+    cardMap = client.getServerCards(servers.listItems.get(servers.currentIndex).toLowerCase());
+    runeMap = client.getServerRunes(servers.listItems.get(servers.currentIndex).toLowerCase());
+    leagueData = client.getLeagueData(servers.listItems.get(servers.currentIndex).toLowerCase());
 
+    FOHRound = leagueData.getData().getLeagueNow().getRoundNow();
+
+    for (int i=0;i<8;i++) 
+      {
+        PlayerNames[i].text = leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBattleInfo().getUser().getNickName();
+        PlayerAvatar[i] = leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBattleInfo().getUser().getAvatar();
+        picPlayerAvatar[ i ].img = loadImage( "PhotoCards\\img_photoCard_" + PlayerAvatar[i] + ".PNG" ) ;
+        if (FOHRound == 1)
+          BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBetTotal()),0);
+        else if (FOHRound == 2) {
+          if (!PlayerNames[i].text.equals(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i/2).getBattleInfo().getUser().getNickName())) {
+            picPlayerAvatar[ i ].tint = 50;
+            noTint();
+            loosers++;
+          }
+          else BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetTotal()),0);
+        }
+        else if (FOHRound == 3) {
+          if (!PlayerNames[i].text.equals(leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i/4).getBattleInfo().getUser().getNickName())) {
+            picPlayerAvatar[ i ].tint = 50;
+            noTint();
+            loosers++;
+          }
+          else BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetTotal()),0);
+        }
+
+      }
     
-    listresult.listItems.add( "Success. File foh_"+ servers.listItems.get(servers.currentIndex)+"_decks.txt created please load and sim.");
+   // RoundNow = leagueData.getData().getLeagueNow().getRoundNow();
+    
+    listresult.listItems.add("Current Round: " + FOHRound);
+    
+
+    FOHDownload = true;
+    listresult.listItems.add( "Success. Data downloaded for Server: "+ servers.listItems.get(servers.currentIndex)+". Press Go to Sim.");
   }
   catch(Exception e)
   {
@@ -66,10 +80,77 @@ void FOH()
 
 void FOH_RUN()
 {
-//        if (PlayerID%2 == 1)  picPlayerAvatar[ PlayerID ].tint = 63;
-//        else  picPlayerAvatar[ PlayerID ].tint = 255;
+  FOHSim = true;
+  if (FOHRound == 1) FOHMatch = 4;
+  else if (FOHRound == 2) FOHMatch = 2;
+  else FOHMatch = 1;
+  new Thread(new RunSim()).start();
+}
 
+Deck deckFromFOH( int round, int match, int player, boolean clear )
+{
+  String line ="";
+  String evo;
+  try {
+    BattleInfo battleInfo;
+  
+    battleInfo = leagueData.getData().getLeagueNow().getRoundResult().get(round-1).get(match*2+player).getBattleInfo();
+    List<servconn.dto.league.Card> cardList = battleInfo.getCards();
+    List<servconn.dto.league.Rune> runeList = battleInfo.getRunes();
+  
+    Deck d = new Deck();
+    d.name = battleInfo.getUser().getNickName();
 
-
+    FoHPrinter fohPrinter = FoHPrinterFactory.getFoHPrinter("MITZI"); 
+  
+    fohPrinter.setGameInfo(cardMap, skillMap, runeMap);
+    fohPrinter.setEvoNames(evoNames);
+    
+    for (servconn.dto.league.Card cardRef : cardList) {
+      servconn.dto.card.Card card = cardMap.get(cardRef.getCardId());
+      //Card c = cardFromString(card.getCardName()+";"+cardRef.Level)
+      line = card.getCardName() + ";" + cardRef.getLevel();
+      if (Integer.parseInt(cardRef.getEvolution()) > 0) {
+        if (Integer.parseInt(cardRef.getLevel()) < Integer.parseInt(cardRef.getEvolution())+10) {
+          line += ";" + ((int)((Integer.parseInt(cardRef.getEvolution())+1)/2));
+        }
+        evo = skillMap.get(cardRef.getSkillNew()).getName();
+        if (evo.lastIndexOf(" ") != -1 || evo.substring(evo.lastIndexOf(" ")+1).matches("\\d+$")) line += ";" + evoNames.get(evo.substring(0,evo.lastIndexOf(" "))) + evo.substring(evo.lastIndexOf(" ")+1);
+        else line += ";" + evoNames.get(evo) + 1;
+      }
+      Card c = cardFromString( line );
+      if( c == null && line.length() > 0 )
+      {
+        listresult.listItems.add( "Invalid card: " + line );
+        return null;
+      }
+      else if( c != null )
+      {
+        d.cards[ d.numCards ++ ] = c;
+      }
+    }
+    for (servconn.dto.league.Rune runeRef : runeList) {
+      servconn.dto.rune.Rune rune = runeMap.get(runeRef.getRuneId());
+      line = "Rune: " + rune.getRuneName() + ";" + runeRef.getLevel();
+      Rune r = runeFromString( line );
+      if( r == null && line.length() > 0 )
+      {
+        listresult.listItems.add( "Invalid rune: " + line );
+        return null;
+      }
+      else if( r != null )
+      {
+        d.runes[ d.numRunes ++ ] = r;
+      }
+    }
+    d.level = Integer.parseInt(battleInfo.getUser().getLevel());
+    return d;
+  }
+  catch(Exception e)
+  {
+    listresult.listItems.add( "Unsuccesful deck creation please see log.txt for details");
+    println(e);
+    return null;
+  }      
 }
 

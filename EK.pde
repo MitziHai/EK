@@ -2,11 +2,15 @@ import servconn.*;
 import servconn.dto.*;
 import servconn.dto.rune.*;
 import servconn.dto.skill.*;
+import servconn.sim.*;
 import servconn.dto.login.*;
 import servconn.util.*;
 import servconn.dto.card.*;
 import servconn.client.*;
 import servconn.dto.league.*;
+
+
+
 
 /*
 
@@ -57,6 +61,10 @@ boolean evoTab = true;
 
 long numMatch = 10000;
 String server = "";
+Boolean FOHDownload = false;
+Boolean FOHSim = false;
+int FOHRound = -1;
+int FOHMatch = -1;
 
 class Mutex {
 }
@@ -188,6 +196,7 @@ static boolean StopMe = false;
 static boolean Pause = false;
 
 String resultText = "";
+String fullResultText = "";
 boolean multideck = false;
 ExecutorService executor = Executors.newFixedThreadPool(16);
 ExecutorCompletionService ecs = new ExecutorCompletionService(executor);
@@ -200,13 +209,16 @@ class RunSim implements Runnable
     if ( numMatch == 1 ) debug = 4; 
     else debug = 0;
     resultText = "";
+    fullResultText = "";
     listresult.listItems.clear();
     listresult.scroll = 0;
 
-    deckp1 = deckFromUI( 0, true );
+    if (!FOHSim) deckp1 = deckFromUI( 0, true );
+    else deckp1 = deckFromFOH(FOHRound, 0, 0, true);
     if ( deckp1 == null ) return;
 
-    deckp2 = deckFromUI( 1, true );
+    if (!FOHSim) deckp2 = deckFromUI( 1, true );
+    else deckp2 = deckFromFOH(FOHRound, 0, 1, true);
     if ( deckp2 == null ) return; 
 
     if ( deckp1.numCards == 0 || deckp2.numCards == 0 ) return;
@@ -225,7 +237,7 @@ class RunSim implements Runnable
     int bestR = 0;
     float bestScore = 0;
     long iterCount = 0;
-    multideck = deckp1.numCards > 10 || deckp1.numRunes > 4 || checkMultisim.checked;
+    multideck = deckp1.numCards > 10 || deckp1.numRunes > 4 || (checkMultisim.checked && !FOHSim);
     int selectedCards = 0;
     int selectedRunes = 0;
     int card = 0; 
@@ -295,6 +307,9 @@ class RunSim implements Runnable
       }
       //-- iterMax;
     }
+    else if (FOHSim) {
+      iterMax = FOHMatch;
+    }
           //  println("Max Iterations: " + iterMax + "\n");
 
     int cR = 0; 
@@ -315,7 +330,7 @@ class RunSim implements Runnable
         duplicatesUsed[ j ] = duplicatesCount[ j ];
     }
       // For each card combination:
-    while ( !cardsDone && !StopMe)
+    while ( !cardsDone && !StopMe && !(FOHSim))
     {
       //println(Arrays.toString(duplicatesUsed));
       // Check if card count for this deck is valid.
@@ -343,7 +358,7 @@ class RunSim implements Runnable
             {
               iterCount++;
               Deck testDeck = constructDeck( duplicatesUsed, duplicatesCards, cR );
-              if( testDeck.cost <= playerDeckCost ) // PLAYER 1 DECK COST HERE
+              if( testDeck.cost <= playerDeckCost || FOHSim) // PLAYER 1 DECK COST HERE
               {
                 String decklist = "";
                 float score = iterate( testDeck, deckp2, bestScore, multideck);
@@ -438,6 +453,28 @@ class RunSim implements Runnable
       while ( carry && index < deckp1.numCards );
       cardsDone = index == deckp1.numCards;
     }
+    int CurrentMatch = 0;
+    while (FOHSim && CurrentMatch < FOHMatch) {
+      deckp1 = deckFromFOH(FOHRound, CurrentMatch, 0, true);
+      deckp2 = deckFromFOH(FOHRound, CurrentMatch, 1, true);
+      if ( deckp1 == null ) {
+        fullResultText += "Error in constucting player 1s deck for match: " + (CurrentMatch + 1);
+        break;
+      }
+      if ( deckp2 == null ) {
+        fullResultText += "Error in constucting player 2s deck for match: " + (CurrentMatch + 1);
+        break;
+      }
+      float score = iterate( deckp1, deckp2, bestScore, multideck);
+      fullResultText += resultText;
+      fullResultText += "\n";
+      CurrentMatch++;
+    }
+    if (FOHSim) resultText = fullResultText;
+    
+    
+    
+    
     if( resultText.length() > 1 )
     {
       listresult.listItems.clear();
@@ -517,6 +554,7 @@ class RunSim implements Runnable
         d.runes[ d.numRunes ++ ] = deckp1.runes[ i ];
     return d;
   }
+
 
   // NOTE: This method is rather optimized. It functions as fast as can be expected to finish a number of matches.
   // The executor completion service is very fast for managing a pool of threads to complete a task.
@@ -644,12 +682,12 @@ class RunSim implements Runnable
     // Display result.
     float score = 0;
     //if (debug > 0) println(WorstLog);
-    if ( radall.checked )
+    if ( radall.checked || FOHSim)
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));
       if ( score >= bestScore )
-        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) +" wins " + 
-          (100*totalwin/(float)(totalwin + totalloss))+"% of the matches against " + (textdeck[1].textIn == "Unamed" ? "Player 2" : textdeck[1].textIn);
+        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + d1.name +" wins " + 
+          (100*totalwin/(float)(totalwin + totalloss))+"% of the matches against " + d2.name;
     }
     else if ( raddi.checked )
     {
@@ -695,7 +733,9 @@ class RunSim implements Runnable
     }
     return score;
   }
+
 }
+
 
 int uiTab = 0;
 void draw()

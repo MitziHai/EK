@@ -155,7 +155,7 @@ class Game implements Runnable
           Card c = p1.inPlay.get(i);
           boolean add_comma = false;
           play1 += "[";
-          for (int j = 0; j < 7; j++) {// 6 is size of status array
+          for (int j = 0; j <= 7; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play1 += ", ";
               play1 += statusNames[j];
@@ -210,7 +210,7 @@ class Game implements Runnable
           Card c = p2.inPlay.get(i);
           boolean add_comma = false;
           play2 += "[";
-          for (int j = 0; j < 7; j++) {// 6 is size of status array
+          for (int j = 0; j <= 7; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play2 += ", ";
               play2 += statusNames[j];
@@ -293,7 +293,7 @@ class Game implements Runnable
           if( debug > 1 ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
           p2.checkDead();
         }
-        if (!p2.dead || raddi.checked) {
+        if (!p2.dead || (raddi.checked)) {
           p2.playTurn(p1, round);
           p2.checkDead();
           p1.checkDead();
@@ -338,7 +338,7 @@ class Game implements Runnable
         Card c = p1.inPlay.get(i);
         boolean add_comma = false;
         play1 += "[";
-        for (int j = 0; j < 7; j++) {// 6 is size of status array
+        for (int j = 0; j <= 7; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play1 += ", ";
             play1 += statusNames[j];
@@ -392,7 +392,7 @@ class Game implements Runnable
         Card c = p2.inPlay.get(i);
         boolean add_comma = false;
         play2 += "[";
-        for (int j = 0; j < 7; j++) {// 6 is size of status array
+        for (int j = 0; j <= 7; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play2 += ", ";
             play2 += statusNames[j];
@@ -498,7 +498,7 @@ class Game implements Runnable
         ++ win;
         ++ winStreak;
       }
-      else
+      else if (winner == 2)
       {
         ++ loss;
         winStreak = 0;

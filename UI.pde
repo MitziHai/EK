@@ -251,6 +251,7 @@ TextField textEvo;
 
 Picture picPlayerAvatar[] = new Picture[8];
 Control PlayerNames[] = new Control[8];
+Control BetData[][] = new Control[3][8];
 
 CardType editedCard;
 TextField cardHp[] = new TextField[ 16 ];
@@ -482,12 +483,16 @@ void setupUI()
   
   for ( int i = 0; i < 8; ++ i )
   {
-    PlayerNames [i] = new Control("",60+(512*(i>3?1:0)), uiTop+80+(i%4)*128, 64, 64, 0);
-    picPlayerAvatar[ i ] = new Picture("test", 64+(512*(i>3?1:0)), uiTop+104+(i%4)*128, 64, 64, 1,loadImage( "PhotoCards\\img_photoCard_0.PNG" ) );
+    PlayerNames [i] = new Control("",60+(640*(i>3?1:0)), uiTop+80+(i%4)*136, 64, 64, 0);
+    picPlayerAvatar[ i ] = new Picture("test", 64+(640*(i>3?1:0)), uiTop+104+(i%4)*136, 64, 64, 1,loadImage( "PhotoCards\\img_photoCard_0.PNG" ) );
     uiFOH.add( picPlayerAvatar[ i ] );
     uiFOH.add( PlayerNames[ i ] );
+    for (int j = 0; j < 3; j++) {
+      BetData[j][i] = new Control("",(int)(60+(640*((i>3?1:0)+(i>3?-0.25*j:0.25*j)))), (int)(uiTop+80+((j==2?1.5:j*0.5) +i%4)*136+88), 64, 64, 0);
+      BetData[j][i].font = 14;
+      uiFOH.add(BetData[j][i]);
+    } 
   }
-
 
 
   servers = new DropList( "", 512, uiTop+24, 224, 24, SERVER_SELECT );
@@ -517,10 +522,10 @@ void setupUI()
   numberRuns.lastNum = numberRuns.num = numMatch;
   numberRuns.max = 1000000;
   uiDeck.add( numberRuns );
-  //uiFOH.add( numberRuns );
+  uiFOH.add( numberRuns );
   Control runsLabel = new Control( "Runs:", 226, line.y+48, 128, 32, 0);
   uiDeck.add( runsLabel );
-  //uiFOH.add (runsLabel);
+  uiFOH.add (runsLabel);
 
 
   cards = new ListBox( "Cards", 16, 16+uiTop, 224, 408, 0 );
@@ -619,7 +624,7 @@ void setupUI()
   butgo.font = 18;
   butgo.type = 2;
   uiDeck.add( butgo );
-  //uiFOH.add (butgo);
+  uiFOH.add (butgo);
 
   // Card editor
   int column1 = 256; // Image
@@ -1098,13 +1103,16 @@ class Button extends Control
       case BUTTON_GO:
         if (isRun) {
           butgo.text = "      Go!";
-//          butPause.text = "";
           StopMe = true;
         }
         else {
           butgo.text = "     Stop!";
-//          butPause.text = " Pause!";
-          if (uiTab == 4) FOH_RUN();
+          if (uiTab == 4 && FOHDownload) FOH_RUN();
+          else if (uiTab == 4) {
+            listresult.listItems.clear();
+            listresult.listItems.add( "Please select a server and Get FOH Info before attempting to sim!");
+            butgo.text = "      Go!";
+          }
           else new Thread(new RunSim()).start();
         }
         break;
