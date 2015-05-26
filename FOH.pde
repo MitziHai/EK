@@ -35,29 +35,32 @@ void FOH()
     leagueData = client.getLeagueData(servers.listItems.get(servers.currentIndex).toLowerCase());
 
     FOHRound = leagueData.getData().getLeagueNow().getRoundNow();
-
     for (int i=0;i<8;i++) 
       {
         PlayerNames[i].text = leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBattleInfo().getUser().getNickName();
         PlayerAvatar[i] = leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBattleInfo().getUser().getAvatar();
         picPlayerAvatar[ i ].img = loadImage( "PhotoCards\\img_photoCard_" + PlayerAvatar[i] + ".PNG" ) ;
+        picPlayerAvatar[i].tint = 255;
+        BetData[0][i].text = "";
         if (FOHRound == 1)
           BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(0).get(i).getBetTotal()),0);
         else if (FOHRound == 2) {
           if (!PlayerNames[i].text.equals(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i/2).getBattleInfo().getUser().getNickName())) {
             picPlayerAvatar[ i ].tint = 50;
-            noTint();
             loosers++;
           }
-          else BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetTotal()),0);
+          else {
+            BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetTotal()),0);
+          }
         }
         else if (FOHRound == 3) {
           if (!PlayerNames[i].text.equals(leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i/4).getBattleInfo().getUser().getNickName())) {
             picPlayerAvatar[ i ].tint = 50;
-            noTint();
             loosers++;
           }
-          else BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(1).get(i-loosers).getBetTotal()),0);
+          else {
+            BetData[0][i].text = "Odds: " + leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i-loosers).getBetOdds() + "\nTotal " + nfc(Float.parseFloat(leagueData.getData().getLeagueNow().getRoundResult().get(2).get(i-loosers).getBetTotal()),0);
+          }
         }
 
       }
@@ -115,7 +118,9 @@ Deck deckFromFOH( int round, int match, int player, boolean clear )
           line += ";" + ((int)((Integer.parseInt(cardRef.getEvolution())+1)/2));
         }
         evo = skillMap.get(cardRef.getSkillNew()).getName();
-        if (evo.lastIndexOf(" ") != -1 || evo.substring(evo.lastIndexOf(" ")+1).matches("\\d+$")) line += ";" + evoNames.get(evo.substring(0,evo.lastIndexOf(" "))) + evo.substring(evo.lastIndexOf(" ")+1);
+        evo = evo.replace("Quick Strike","QS");
+        evo = evo.replace("Desperation","D");
+        if (evo.lastIndexOf(" ") != -1 && evo.substring(evo.lastIndexOf(" ")+1).matches("\\d+$")) line += ";" + evoNames.get(evo.substring(0,evo.lastIndexOf(" "))) + evo.substring(evo.lastIndexOf(" ")+1);
         else line += ";" + evoNames.get(evo) + 1;
       }
       Card c = cardFromString( line );

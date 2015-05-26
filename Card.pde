@@ -659,7 +659,7 @@ class CardType
         canReanim = false;
         
       if( abil[ i ].a == AType.A_IMMUNITY )
-        immune = resist = true;
+        immune = true;
         
       if( abil[ i ].a == AType.A_RESISTANCE )
         resist = true;
@@ -1078,7 +1078,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
   {
     dmgTaken = 0;
-    if ( (immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
+    if ( (!status[SILENCED] && immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
     {
       if ( effect == NO_IMMUNE )
       {
@@ -1231,119 +1231,6 @@ Seperate Variables: BURNED, POISON, immune, resist,
   }
   
 
-  // own is player owning this card, opponent is attacker
-  int old_attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
-  {
-    if ( immune || effect == NO_IMMUNE )
-    {
-      dmgTaken = 0;
-      if ( effect == CORRUPT )
-      {
-        dmgTaken = subtractHealth( own, op, dmg * chance );
-        if( debug > 2 ) println("       Mana corruption dealt " + dmg*chance + " to immune card " + toStringNoHp() );
-      }
-      if ( effect == NO_IMMUNE )
-      {
-        dmgTaken = subtractHealth( own, op, dmg );
-        if (debug > 2) println("       Snipe dealt " + dmg + " to " + toStringNoHp());
-      }
-      else if( debug > 2 )
-      {
-        if( effect == DESTROY )
-          println("       Immunity prevented Destroy on " + toStringNoHp() );
-        else if (effect == TRAPPED)
-          println("       Immunity prevented trap to " +  toStringNoHp() );
-        else if (effect == HEAL)
-          println("       Immunity prevented " + dmg + " healing to " +  toStringNoHp() );
-        else if (effect != CORRUPT)
-          println("       Immunity prevented " + dmg + " damage to " +  toStringNoHp() );
-      }
-
-      if ( raddi.checked && !own.isP1 )
-        op.merit += dmgTaken;
-
-      return dmgTaken;
-    }
-    else if ( effect == POISONED || effect == NONE )
-    {
-      if( debug > 2 ) println("       Applied " + chance + " poison to to " + toStringNoHp() );
-      poison += chance;
-      if ( raddi.checked && !own.isP1 )
-        op.merit += dmgTaken;
-
-      dmgTaken = subtractHealth( own, op, dmg );
-      return dmgTaken;
-    }
-    else if ( effect == HEAL )
-    {
-      if( status[ LACERATED ] )
-      {
-        if( debug > 2 ) println("       Healed of " + dmg + " failed on lacerated card " + toStringNoHp() );
-      }
-      else
-      {
-        if( debug > 2 ) println("       Healed " + (min( hpBuff, hpCurr + dmg ) - hpCurr) + " to " + toStringNoHp() );
-        hpCurr = min( hpBuff, hpCurr + dmg );
-      }
-      return 0;
-    }
-    dmgTaken = dmg;
-    this.attacker = attacker;
-    reflective = false;
-        
-    checkAbilities( own, op, ON_ATTACKED_SPELL ,effect); // Checks if has magic shield or reflection ability;
-     
-    if ( reflective && ( effect == FROZEN || effect == SHOCKED || effect == FIRE || effect == CORRUPT ) )
-    {
-     if ( effect == CORRUPT )
-      {
-        dmgTaken = subtractHealth( own, op, dmg * chance );
-        if( debug > 2 ) println("       Mana corruption dealt " + dmg*chance + " to reflect card " + toStringNoHp() );
-      }
-      else
-      {
-        attacker.subtractHealth( op, own, dmgTaken );
-        if( debug > 2 ) println("       Reflected " + dmgTaken + " damage to " + attacker.toStringNoHp() );
-        dmgTaken = 0;
-      }
-    }
-    else if ( !(effect == DESTROY && resist ) )
-    {
-      if( debug > 2 )
-      {
-        if( effect == DESTROY ) {
-          println("       Destroyed " + toStringNoHp() );
-          if (reflective) dmgTaken = dmg;
-        }
-        else println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
-      }
-      dmgTaken = subtractHealth( own, op, dmgTaken );
-
-      if ( effect <= 3 && random( 0, 100 ) <= chance && !evasion)
-      {
-        if( debug > 2 )
-        {
-          println("         " + statusNames[effect] + " applied to " + toStringNoHp() );
-        }
-        status[ effect ] = true;
-      }
-      else if( debug > 2 && effect <= 3 )
-      {
-        if( evasion ) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
-        else println("         " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
-      }
-    }
-    else if( debug > 2 )
-    {
-      if( effect == DESTROY && resist )
-        println("         Resist prevented Destroy on " + toStringNoHp() );
-    }
-    if ( raddi.checked && !own.isP1 )
-      op.merit += dmgTaken;
-
-    return dmgTaken;
-  }
-
   void died(Player own, Player op)
   {
     if( debug > 3 ) println( "     Died: " + this);
@@ -1362,8 +1249,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       int l = abilityL[ when ][ i ];
       if ( when == BEFORE_ATTACK )
       {
-        println("Sileneced: " + status[SILENCED] + "  i: " + i + "  Num Orig: " + abilityNumOrig[when]);
-        if (!dead && (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) )
+        if (!dead && !status[SILENCED] )
         switch( a )
         {
         case A_ADVANCED_STRIKE:
@@ -1643,12 +1529,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if (op.playSize() == 0 && debug > 2) println("       No Target for silence");
           if ( !op.inPlay.isEmpty() ) {
             Card c = op.inPlay.get(0);
-            if (c.resist && debug > 2) println("       " +c.toStringNoHp() + "'s resistance resists silence");
-            else if (!c.resist) {
-              for ( int k = 0; k < NUM_WHEN; ++ k ) c.abilityNum[k] = 0;
-              c.status[SILENCED] = true;
-              if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
-            }
+            c.status[SILENCED] = true;
+            if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
           }
           break;
 
@@ -1702,7 +1584,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == AFTER_ATTACK )
       {
-        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
+        if (!status[SILENCED] ) 
         switch( a )
         {
         case A_REJUVENATION:
@@ -1784,7 +1666,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACK_CARD )
       {
-        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
+        if (!status[SILENCED]) 
         switch( a )
         {
         case A_ARCTIC_POLLUTION:
@@ -1912,6 +1794,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACKED )
       {
+        if (!status[SILENCED]) 
         switch( a )
         {
         case A_COUNTERATTACK:
@@ -2287,7 +2170,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_DEATH )
       {
-        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
+        if (!status[SILENCED]) 
         switch( a )
         {
         case A_GUARD:
@@ -2550,7 +2433,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACKED_SPELL )
       {
-        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
+        if (!status[SILENCED]) 
         switch( a )
         {
         case A_IMMUNITY:

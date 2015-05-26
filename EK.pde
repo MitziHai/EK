@@ -520,6 +520,7 @@ class RunSim implements Runnable
       resultsTracked = null;
     }
     isRun = false;
+    FOHSim = false;
     butgo.text = "      Go!";
   }
 
@@ -565,8 +566,8 @@ class RunSim implements Runnable
   float iterate(Deck d1, Deck d2, float bestScore, boolean multisim)
   {
     // Setup counters
-    player1 = new Player( hpPerLevel[ (int)textLevel[ 0 ].lastNum ] );
-    player2 = new Player( hpPerLevel[ (int)textLevel[ 1 ].lastNum ] );
+    player1 = new Player( hpPerLevel[ (FOHSim?d1.level:(int)textLevel[ 0 ].lastNum )] );
+    player2 = new Player( hpPerLevel[ (FOHSim?d2.level:(int)textLevel[ 1 ].lastNum )] );
     totalmpm = totalroundsAvg = 0;
     totalmeritMax = totalroundsMax = 0;
     totalmeritMin = totalroundsMin = 9999999999L;
