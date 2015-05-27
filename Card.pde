@@ -1529,6 +1529,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if (op.playSize() == 0 && debug > 2) println("       No Target for silence");
           if ( !op.inPlay.isEmpty() ) {
             Card c = op.inPlay.get(0);
+            if (op.guards.contains(c)) op.guards.remove(c);
             c.status[SILENCED] = true;
             if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
           }
@@ -2170,7 +2171,6 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_DEATH )
       {
-        if (!status[SILENCED]) 
         switch( a )
         {
         case A_GUARD:
@@ -2179,7 +2179,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_RESURRECTION:
-          if ( dead && reanimated == false )
+          if ( dead && reanimated == false && !status[SILENCED])
           {
             if( random( 0, 100 ) <= 30+l*5 )
             {
@@ -2193,7 +2193,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_BLIZZARD:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
           if( debug > 3 ) println( "     D: Blizzard for " + (20*l));
             damageAll( own, op, 20*l, FROZEN, 30 );
@@ -2201,7 +2201,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_CURSE:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
           if( debug > 3 ) println( "     D: Curse for " + (40*l));;
             op.attacked(40*l, op, true);
@@ -2210,7 +2210,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_D_ANNIHILATION:
         case A_D_DESTROY:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Destroy");
             damageRandom1( own, op, 99999999, DESTROY, 100 );
@@ -2218,7 +2218,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_ELECTRIC_SHOCK:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Electric Shock for " + (25*l));
             damageAll( own, op, 25*l, SHOCKED, 35 );
@@ -2226,7 +2226,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_FIRESTORM:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Firestorm for " + (25*l)+"-"+(50*l));
             damageAll( own, op, 25*l, 50*l, FIRE, 0 );
@@ -2234,7 +2234,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_FIRE_GOD:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Fire God for " + (20*l));
             for ( Card c : op.inPlay )
@@ -2248,7 +2248,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_GROUP_WEAKEN:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Group Weaken for " + (10*l));
             weakenAll( own, op, 10*l );
@@ -2256,7 +2256,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_HEALING:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Healing for " + (25*l));
             Card mostDamaged = null;
@@ -2284,7 +2284,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_PLAGUE:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Plague for " + (5*l));
             weakenAll( own, op, 5*l );
@@ -2293,7 +2293,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_PRAYER:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Prayer for " + (40*l));
             own.hp = min( own.hpmax, own.hp + 40*l );
@@ -2301,7 +2301,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REANIMATION:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( own.graveReanim.size() > 0 )
             {
@@ -2317,7 +2317,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REGENERATION:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Regeneration for " + (25*l));
             damageAll( own, own, 25*l, HEAL, 0 );
@@ -2325,7 +2325,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REINCARNATION:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             for ( int j = 0; j < l && !own.grave.isEmpty(); ++ j )
             {
@@ -2337,7 +2337,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_TOXIC_CLOUDS:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Toxic Clouds for " + (20*l));
             damageAll( own, op, 20*l, POISONED, 20*l );
@@ -2345,7 +2345,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_TRAP:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     D: Trap");
             if ( l == 1 )
@@ -2430,7 +2430,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_SELF_DESTRUCT:
-          if ( dead )
+          if ( dead  && !status[SILENCED])
           {
             if( debug > 3 ) println( "     Self-Destruct for " + (40*l));
             for ( int j = max( 0, pos - 1); j <= min( op.board.length - 1, pos + 1 ); ++ j )
@@ -2439,15 +2439,16 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_DIVINE_PROTECTION:
-          for ( int j = 0; j <= 2; ++ j )
-          {
-            if ( divineProtect[ j ] != null )
+          if (!status[SILENCED] || !checkSecretBit.checked) 
+            for ( int j = 0; j <= 2; ++ j )
             {
-            if( debug > 3 ) println( "     Divine Protection loss on " + divineProtect[ j ].toStringNoHp());
-              divineProtect[ j ].hpBuff -= divineProVal;
-              divineProtect[ j ].hpCurr = min( divineProtect[ j ].hpCurr, divineProtect[ j ].hpBuff );
+              if ( divineProtect[ j ] != null )
+              {
+              if( debug > 3 ) println( "     Divine Protection loss on " + divineProtect[ j ].toStringNoHp());
+                divineProtect[ j ].hpBuff -= divineProVal;
+                divineProtect[ j ].hpCurr = min( divineProtect[ j ].hpCurr, divineProtect[ j ].hpBuff );
+              }
             }
-          }
           break;
         }
       }
