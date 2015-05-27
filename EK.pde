@@ -200,6 +200,7 @@ String fullResultText = "";
 boolean multideck = false;
 ExecutorService executor = Executors.newFixedThreadPool(16);
 ExecutorCompletionService ecs = new ExecutorCompletionService(executor);
+int CurrentMatch = 0;
 
 class RunSim implements Runnable
 {
@@ -453,7 +454,7 @@ class RunSim implements Runnable
       while ( carry && index < deckp1.numCards );
       cardsDone = index == deckp1.numCards;
     }
-    int CurrentMatch = 0;
+    CurrentMatch = 0;
     while (FOHSim && CurrentMatch < FOHMatch) {
       deckp1 = deckFromFOH(FOHRound, CurrentMatch, 0, true);
       deckp2 = deckFromFOH(FOHRound, CurrentMatch, 1, true);
@@ -656,14 +657,16 @@ class RunSim implements Runnable
       {
         done = numMatch <= (radkw.checked ? totalloss : (radhydra.checked ? totalwin : totalwin + totalloss));
         String c = "";
-        if (!radkw.checked && !radhydra.checked) c = (""+((totalwin + totalloss)/(float)numMatch*100));
-        else c = (""+((radkw.checked ? totalloss : totalwin)/(float)numMatch*100));
+        if (FOHSim) c = (""+(100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*FOHMatch)));
+        else if (!radkw.checked && !radhydra.checked) c = (""+(100.0*(totalwin + totalloss)/(float)numMatch));
+        else c = (""+(100.0*(radkw.checked ? totalloss : totalwin)/(float)numMatch));
         if ( !multideck )
         {
           synchronized( listresult )
           {
             listresult.listItems.clear();
             listresult.listItems.add( "Working... Completion: " + c.substring(0, min(5, c.length())) + " %" );
+            if (FOHSim) listresult.listItems.add("Simming Match: " + player1.name + " vs " + player2.name);
           }
         }
       }
@@ -683,7 +686,17 @@ class RunSim implements Runnable
     // Display result.
     float score = 0;
     //if (debug > 0) println(WorstLog);
-    if ( radall.checked || FOHSim)
+    if ( FOHSim)
+    {
+      score = ((100*totalwin/(float)(totalwin + totalloss)));
+      if (CurrentMatch == 0)
+        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + (score >= 50.0?d1.name:d2.name) +" wins " + 
+          (100*(score >= 50.0?totalwin:totalloss)/(float)(totalwin + totalloss))+"% of the matches against " + (score >= 50.0?d2.name:d1.name);
+      else 
+        resultText = (score >= 50.0?d1.name:d2.name) +" wins " + 
+          (100*(score >= 50.0?totalwin:totalloss)/(float)(totalwin + totalloss))+"% of the matches against " + (score >= 50.0?d2.name:d1.name);
+    }
+    else if ( radall.checked)
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));
       if ( score >= bestScore )

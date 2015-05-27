@@ -321,6 +321,12 @@ class Rune
             dummyCard.damageRandom3( current, op, 20*l, POISONED, 20*l );
             break;
           
+          case A_SNIPE:
+            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
+            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            dummyCard.damageLowest1( current, op, 30*l, NO_IMMUNE, 30*l );
+            break;
+          
           case A_THUNDERBOLT:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
             if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");

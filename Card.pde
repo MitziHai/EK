@@ -2358,55 +2358,75 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_TUNDRA_ATK:
-          if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
-          applyBuffAtk( own, TUNDRA, -25*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
+            applyBuffAtk( own, TUNDRA, -25*l );
+          }
           break;
 
         case A_TUNDRA_HP:
-          if( debug > 3 ) println( "     Tundra health loss of " + (50*l));
-          applyBuffHp( own, TUNDRA, -50*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Tundra health loss of " + (50*l));
+            applyBuffHp( own, TUNDRA, -50*l );
+          }    
           break;
 
         case A_MOUNTAIN_ATK:
-          if( debug > 3 ) println( "     Mountain attack loss of " + (25*l));
-          applyBuffAtk( own, MOUNTAIN, -25*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Mountain attack loss of " + (25*l));
+            applyBuffAtk( own, MOUNTAIN, -25*l );
+          }
           break;
 
         case A_MOUNTAIN_HP:
-          if( debug > 3 ) println( "     Mountain health loss of " + (50*l));
-          applyBuffHp( own, MOUNTAIN, -50*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Mountain health loss of " + (50*l));
+            applyBuffHp( own, MOUNTAIN, -50*l );
+          }
           break;
 
         case A_SWAMP_ATK:
-          if( debug > 3 ) println( "     Swamp attack loss of " + (25*l));
-          applyBuffAtk( own, SWAMP, -25*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Swamp attack loss of " + (25*l));
+            applyBuffAtk( own, SWAMP, -25*l );
+          }
           break;
 
         case A_SWAMP_HP:
-          if( debug > 3 ) println( "     Swamp health loss of " + (50*l));
-          applyBuffHp( own, SWAMP, -50*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Swamp health loss of " + (50*l));
+            applyBuffHp( own, SWAMP, -50*l );
+          }
           break;
 
         case A_FOREST_ATK:
-          if( debug > 3 ) println( "     Forest attack loss of " + (25*l));
-          applyBuffAtk( own, FOREST, -25*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Forest attack loss of " + (25*l));
+            applyBuffAtk( own, FOREST, -25*l );
+          }
           break;
 
         case A_FOREST_HP:
-          if( debug > 3 ) println( "     Forest health loss of " + (50*l));
-          applyBuffHp( own, FOREST, -50*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Forest health loss of " + (50*l));
+            applyBuffHp( own, FOREST, -50*l );
+          }
           break;
 
         case A_ORIGINS_GUARD:
-          if( debug > 3 ) println( "     Origins Guard loss of " + (40*l));
-          for ( int j = 0; j < 4; ++ j )
-            applyBuffHp( own, j, -40*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Origins Guard loss of " + (40*l));
+            for ( int j = 0; j < 4; ++ j )
+              applyBuffHp( own, j, -40*l );
+          }
           break;
 
         case A_POWER_SOURCE:
-          if( debug > 3 ) println( "     Power Source loss of " + (20*l));
-          for ( int j = 0; j < 4; ++ j )
-            applyBuffAtk( own, j, -20*l );
+          if (!status[SILENCED] || !checkSecretBit.checked) {
+            if( debug > 3 ) println( "     Power Source loss of " + (20*l));
+            for ( int j = 0; j < 4; ++ j )
+              applyBuffAtk( own, j, -20*l );
+          }
           break;
 
         case A_SELF_DESTRUCT:

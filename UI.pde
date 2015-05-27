@@ -242,6 +242,7 @@ Checkbox checkMultisim;
 Checkbox checkMultisimResults;
 Checkbox checkKWDefend;
 Checkbox checkSingleThread;
+Checkbox checkSecretBit;
 ListBox evoList;
 DropList ListHydraCard1;
 DropList ListHydraCard2;
@@ -456,6 +457,8 @@ void setupUI()
 
   labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
   uiSettings.add(labelMultiSim);
+  checkSecretBit = new Checkbox( "", 512, uiTop+40, 240, 24, 0 );
+  uiSettings.add( checkSecretBit );
   checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+40, 240, 24, 0 );
   uiSettings.add( checkMultisimResults );
   labelKWSim = new Control( "Hydra Simulation Options\n   Choose the three event cards you want:\n                    3 *                                    4 *                                5*", 16, uiTop+100, 240, 24, 0 );
