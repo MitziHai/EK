@@ -743,6 +743,8 @@ class Card
   boolean status[] = new boolean[ 8 ];
   int time;
   int atkNow;
+  int buffGuardOffset = 0;
+  int buffAttackOffset = 0;
   int dmgTaken;
   int dmgDone[] = new int[ 10 ];
   int dmgCalculated[] = new int[ 10 ];
@@ -781,6 +783,7 @@ class Card
 
   AType[][] abilities = new AType[ NUM_WHEN ][ 10 ];
   int[][] abilityL = new int[ NUM_WHEN ][ 10 ];
+  boolean[][] abilitySilenced = new boolean[ NUM_WHEN ][ 10 ];
   int[] abilityNum = new int[ NUM_WHEN ];
   int[] abilityNumOrig = new int[NUM_WHEN];
   Card divineProtect[] = new Card[3];
@@ -796,6 +799,8 @@ class Card
     if (w == 0) this.cost = t.cost + (l>10?(int)((l - 9)/2):0);
     else this.cost = t.cost + w;
     hpMax = t.hp[lvl];
+    buffGuardOffset = 0;
+    buffAttackOffset = 0;
     atkMax = t.atk[lvl];
     this.evo = evo;
     this.evoLevel = evoLevel;
@@ -809,12 +814,13 @@ class Card
       
       for ( int j = 0; j < abilityNum[ i ]; ++ j )
       {
+        abilitySilenced[i][j] = false;
         if ( lvl < type.abilitiesReq[ i ][ j ] )
         {
           -- abilityNum[ i ];
           -- abilityNumOrig [ i ];
           if ( type.abilitiesWhen[ i ][ j ] == AType.A_IMMUNITY )
-            immune = resist = false;
+            immune = false;
           if ( type.abilitiesWhen[ i ][ j ] == AType.A_RESISTANCE )
             resist = false;
         }
@@ -827,30 +833,33 @@ class Card
       if( aw.w1 != NEVER )
         {
         abilityL[ aw.w1 ][ abilityNum[ aw.w1 ] ] = evoLevel;
+        abilitySilenced[ aw.w1 ][ abilityNum[ aw.w1 ] ] = false;
         abilities[ aw.w1 ][ abilityNum[ aw.w1 ] ++ ] = evo;
         abilityNumOrig[ aw.w1 ] ++;
       }
       if( aw.w2 != NEVER )
         {
         abilityL[ aw.w2 ][ abilityNum[ aw.w2 ] ] = evoLevel;
+        abilitySilenced[ aw.w2 ][ abilityNum[ aw.w2 ] ] = false;
         abilities[ aw.w2 ][ abilityNum[ aw.w2 ] ++ ] = evo;
         abilityNumOrig[ aw.w2 ] ++;
       }
       if( aw.w3 != NEVER )
         {
         abilityL[ aw.w3 ][ abilityNum[ aw.w3 ] ] = evoLevel;
+        abilitySilenced[ aw.w3 ][ abilityNum[ aw.w3 ] ] = false;
         abilities[ aw.w3 ][ abilityNum[ aw.w3 ] ++ ] = evo;
         abilityNumOrig[ aw.w3 ] ++;
       }
       if( evo == AType.A_RESISTANCE ) resist = true;
-      if( evo == AType.A_IMMUNITY ) immune = resist = true;
+      if( evo == AType.A_IMMUNITY ) immune = true;
     }
   }
 
   void resetAll(Player own)
   {        
-    hpCurr = hpBuff = hpMax + own.hpBuff[ type.faction ];
-    atk = atkBuff = atkMax + own.atkBuff[ type.faction ];
+    hpCurr = hpBuff = hpMax + own.hpBuff[ type.faction ] - buffGuardOffset;
+    atk = atkBuff = atkMax + own.atkBuff[ type.faction ] - buffAttackOffset;
     dex = false;
     dead = false;
     evasion = false;
@@ -873,6 +882,9 @@ class Card
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
     totalGlitchCount = 0;
     System.arraycopy( abilityNumOrig, 0, abilityNum, 0, abilityNumOrig.length );
+    for (int i=0;i< NUM_WHEN; i++)
+      for (int j=0;j<abilityNum[i];j++)
+        abilitySilenced[i][j] = false;
   }
 
   int subtractHealth( Player own, Player op, int h )
@@ -1014,10 +1026,11 @@ class Card
           boolean dex = false;
           for ( int k = 0; k < op.board[ i ].abilityNum[BEFORE_ATTACK]; ++ k ) {
             AType a = op.board[ i ].abilities[ BEFORE_ATTACK ][ k ];
-            switch (a) { 
-              case A_DEXTERITY:
-                dex = true;
-              break;
+            if (!op.board[ i ].abilitySilenced[ BEFORE_ATTACK ][ k ])
+              switch (a) { 
+                case A_DEXTERITY:
+                  dex = true;
+                break;
             }
           }
           if (!dex) {
@@ -1249,7 +1262,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       int l = abilityL[ when ][ i ];
       if ( when == BEFORE_ATTACK )
       {
-        if (!dead && !status[SILENCED] )
+        if (!dead && !abilitySilenced[when][i] )
         switch( a )
         {
         case A_ADVANCED_STRIKE:
@@ -1531,6 +1544,9 @@ Seperate Variables: BURNED, POISON, immune, resist,
             Card c = op.inPlay.get(0);
             if (op.guards.contains(c)) op.guards.remove(c);
             c.status[SILENCED] = true;
+            for (int j=0; j<NUM_WHEN;j++)
+              for (int k=0; k<c.abilityNum[j];k++)
+                c.abilitySilenced[j][k] = true;
             if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
           }
           break;
@@ -1585,7 +1601,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == AFTER_ATTACK )
       {
-        if (!status[SILENCED] ) 
+        if (!abilitySilenced[when][i] ) 
         switch( a )
         {
         case A_REJUVENATION:
@@ -1640,7 +1656,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACK_PLAYER )
       {
-        if (!status[SILENCED] || (i+1) >= abilityNumOrig[when] ) 
+        if (!abilitySilenced[when][i] ) 
         switch( a )
         {
         case A_SLAYER:
@@ -1667,7 +1683,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACK_CARD )
       {
-        if (!status[SILENCED]) 
+        if (!abilitySilenced[when][i]) 
         switch( a )
         {
         case A_ARCTIC_POLLUTION:
@@ -1795,7 +1811,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACKED )
       {
-        if (!status[SILENCED]) 
+        if (!abilitySilenced[when][i]) 
         switch( a )
         {
         case A_COUNTERATTACK:
@@ -2052,7 +2068,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             Card c = op.hand.get( j );
             if ( longest == null || c.time > longest.time ) longest = c;
           }
-          if ( longest != null && !longest.resist )
+          if ( longest != null && !(longest.resist || longest.immune))
           {
             if( debug > 3 ) println( "     QS: Teleport targetting " + longest.toStringNoHp() );
             op.removeFromHand( longest );
@@ -2179,7 +2195,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_RESURRECTION:
-          if ( dead && reanimated == false && !status[SILENCED])
+          if ( dead && reanimated == false && !abilitySilenced[when][i])
           {
             if( random( 0, 100 ) <= 30+l*5 )
             {
@@ -2193,7 +2209,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_BLIZZARD:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
           if( debug > 3 ) println( "     D: Blizzard for " + (20*l));
             damageAll( own, op, 20*l, FROZEN, 30 );
@@ -2201,7 +2217,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_CURSE:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
           if( debug > 3 ) println( "     D: Curse for " + (40*l));;
             op.attacked(40*l, op, true);
@@ -2210,7 +2226,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_D_ANNIHILATION:
         case A_D_DESTROY:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Destroy");
             damageRandom1( own, op, 99999999, DESTROY, 100 );
@@ -2218,7 +2234,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_ELECTRIC_SHOCK:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Electric Shock for " + (25*l));
             damageAll( own, op, 25*l, SHOCKED, 35 );
@@ -2226,7 +2242,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_FIRESTORM:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Firestorm for " + (25*l)+"-"+(50*l));
             damageAll( own, op, 25*l, 50*l, FIRE, 0 );
@@ -2234,7 +2250,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_FIRE_GOD:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Fire God for " + (20*l));
             for ( Card c : op.inPlay )
@@ -2248,7 +2264,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_GROUP_WEAKEN:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Group Weaken for " + (10*l));
             weakenAll( own, op, 10*l );
@@ -2256,7 +2272,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_HEALING:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Healing for " + (25*l));
             Card mostDamaged = null;
@@ -2284,7 +2300,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_PLAGUE:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Plague for " + (5*l));
             weakenAll( own, op, 5*l );
@@ -2293,7 +2309,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_PRAYER:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Prayer for " + (40*l));
             own.hp = min( own.hpmax, own.hp + 40*l );
@@ -2301,7 +2317,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REANIMATION:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( own.graveReanim.size() > 0 )
             {
@@ -2317,7 +2333,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REGENERATION:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Regeneration for " + (25*l));
             damageAll( own, own, 25*l, HEAL, 0 );
@@ -2325,7 +2341,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_REINCARNATION:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             for ( int j = 0; j < l && !own.grave.isEmpty(); ++ j )
             {
@@ -2337,7 +2353,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_TOXIC_CLOUDS:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Toxic Clouds for " + (20*l));
             damageAll( own, op, 20*l, POISONED, 20*l );
@@ -2345,7 +2361,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_D_TRAP:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     D: Trap");
             if ( l == 1 )
@@ -2358,79 +2374,89 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_TUNDRA_ATK:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
-            applyBuffAtk( own, TUNDRA, -25*l );
+            applyBuffAtk( own, TUNDRA, -25*l - buffAttackOffset );
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
           break;
 
         case A_TUNDRA_HP:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Tundra health loss of " + (50*l));
-            applyBuffHp( own, TUNDRA, -50*l );
+            applyBuffHp( own, TUNDRA, -50*l - buffGuardOffset);
           }    
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
           break;
 
         case A_MOUNTAIN_ATK:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Mountain attack loss of " + (25*l));
-            applyBuffAtk( own, MOUNTAIN, -25*l );
+            applyBuffAtk( own, MOUNTAIN, -25*l - buffAttackOffset );
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
           break;
 
         case A_MOUNTAIN_HP:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Mountain health loss of " + (50*l));
-            applyBuffHp( own, MOUNTAIN, -50*l );
+            applyBuffHp( own, MOUNTAIN, -50*l - buffGuardOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
           break;
 
         case A_SWAMP_ATK:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Swamp attack loss of " + (25*l));
-            applyBuffAtk( own, SWAMP, -25*l );
+            applyBuffAtk( own, SWAMP, -25*l - buffAttackOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
           break;
 
         case A_SWAMP_HP:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Swamp health loss of " + (50*l));
-            applyBuffHp( own, SWAMP, -50*l );
+            applyBuffHp( own, SWAMP, -50*l - buffGuardOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
           break;
 
         case A_FOREST_ATK:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Forest attack loss of " + (25*l));
-            applyBuffAtk( own, FOREST, -25*l );
+            applyBuffAtk( own, FOREST, -25*l - buffAttackOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
           break;
 
         case A_FOREST_HP:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Forest health loss of " + (50*l));
-            applyBuffHp( own, FOREST, -50*l );
+            applyBuffHp( own, FOREST, -50*l - buffGuardOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
           break;
 
         case A_ORIGINS_GUARD:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Origins Guard loss of " + (40*l));
             for ( int j = 0; j < 4; ++ j )
-              applyBuffHp( own, j, -40*l );
+              applyBuffHp( own, j, -40*l - buffGuardOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 40*l;
           break;
 
         case A_POWER_SOURCE:
-          if (!status[SILENCED] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
             if( debug > 3 ) println( "     Power Source loss of " + (20*l));
             for ( int j = 0; j < 4; ++ j )
-              applyBuffAtk( own, j, -20*l );
+              applyBuffAtk( own, j, -20*l - buffAttackOffset);
           }
+          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 20*l;
           break;
 
         case A_SELF_DESTRUCT:
-          if ( dead  && !status[SILENCED])
+          if ( dead  && !abilitySilenced[when][i])
           {
             if( debug > 3 ) println( "     Self-Destruct for " + (40*l));
             for ( int j = max( 0, pos - 1); j <= min( op.board.length - 1, pos + 1 ); ++ j )
@@ -2439,7 +2465,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_DIVINE_PROTECTION:
-          if (!status[SILENCED] || !checkSecretBit.checked) 
+          if (!abilitySilenced[when][i] || !checkSecretBit.checked) 
             for ( int j = 0; j <= 2; ++ j )
             {
               if ( divineProtect[ j ] != null )
@@ -2454,7 +2480,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
       else if ( when == ON_ATTACKED_SPELL )
       {
-        if (!status[SILENCED]) 
+        if (!abilitySilenced[when][i]) 
         switch( a )
         {
         case A_IMMUNITY:

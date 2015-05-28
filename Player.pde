@@ -117,8 +117,8 @@ class Player
       Card c = hand.get( i );
       if ( --c.time <= 0 )
       {
-        c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.type.faction ];
-        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.type.faction ];
+        c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.type.faction ] - c.buffGuardOffset;
+        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.type.faction ] - c.buffAttackOffset;
         addToPlay( c );
         removeFromHand( i -- );
         c.checkAbilities(this, op, ON_ENTER, -1);

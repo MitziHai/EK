@@ -361,6 +361,7 @@ class Rune
         {
 //          if (type.ability == AType.A_EVASION && type.abilityWhen == ON_ATTACKED_SPELL) println("GOT HERE 2");
           c.abilityL[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ] = type.abilityL[ level ];
+          c.abilitySilenced[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ] = false;
           c.abilities[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ++ ] = type.ability;
 
         }
