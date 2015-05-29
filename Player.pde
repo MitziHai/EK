@@ -111,7 +111,18 @@ class Player
 
   void playTurn(Player op, int round)
   {
-    // First, reduce all timers in hand and play any 0 timer card.
+    // First, draw.
+    if ( deck.size() > 0 && handSize() < 5 && (hp > 0 || invul) && (op.hp > 0 || op.invul))
+    {
+      Card c = deck.remove( deck.size() - 1 );
+      if(debug>0)
+        println("   Draw:"+c);
+      c.resetAll(this);
+      c.time++;
+      addToHand( c );
+    }
+    
+    // Second, reduce all timers in hand and play any 0 timer card.
     for ( int i = 0; i < hand.size(); ++ i )
     {
       Card c = hand.get( i );
@@ -128,16 +139,6 @@ class Player
     for( Card c : op.hand )
     {
       -- c.time;
-    }
-    
-    // Second, draw.
-    if ( deck.size() > 0 && handSize() < 5 && (hp > 0 || invul) && (op.hp > 0 || op.invul))
-    {
-      Card c = deck.remove( deck.size() - 1 );
-      if(debug>0)
-        println("   Draw:"+c);
-      c.resetAll(this);
-      addToHand( c );
     }
     
     // Third, reset runes, activate runes, then compact empty slots from dead cards.
