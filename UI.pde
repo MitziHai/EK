@@ -55,6 +55,7 @@ static final int BUTTON_GET_FOH_DECKS = 40;
 static final int TAB6 = 41;
 static final int SERVER_SELECT = 42;
 static final int NUMBER_RUNS = 43;
+static final int BUTTON_SAVERESULTS = 44;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -270,6 +271,7 @@ Button cardSave;
 Button cardsSave;
 Button butgo;
 Button butConvert;
+Button butSaveResults;
 Picture pic;
 Picture picStars[] = new Picture[5];
 Control labelCardName;
@@ -427,9 +429,12 @@ void setupUI()
   }
 
 
-  listresult = new ListBox("", 512-96, 640+16+uiTop, 600+offsetLeft, 104, 0);
+  listresult = new ListBox("", 512, 640+16+uiTop, 600+offsetLeft-96, 104, 0);
   uiDeck.add( listresult );
   uiFOH.add( listresult);
+  butSaveResults = new Button( "   Save\n Results", 512-96, 640+16+uiTop, 85, 60, BUTTON_SAVERESULTS );
+  uiDeck.add( butSaveResults );
+  uiFOH.add( butSaveResults);
 
   Control line = new Control( "--------------------------------------------------------------------------------------------------------------------------------------------", 0, 640+uiTop, width, 24, 0 );
   uiDeck.add( line );
@@ -466,6 +471,9 @@ void setupUI()
   ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
   ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
   ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
+
+
+
  
   Control labelConvertLegacy = new Control( "Convert Old Version Decks", 16, uiTop+220, 240, 24, 0 );
   uiSettings.add(labelConvertLegacy);
@@ -1081,9 +1089,12 @@ class Button extends Control
         selectInput("Select a decks file to convert:", "convertSelectedDecks");
         break;
 
+      case BUTTON_SAVERESULTS:
+        selectInput("Select a a file to save decks and results to:", "saveResults");
+        break;
+
       case BUTTON_GET_FOH_DECKS:
           FOH();
-  
         break;
 
       case BUTTON_LOAD_DECKS:
@@ -2363,4 +2374,35 @@ void drawEKnumber( PGraphics pg, int num, int x, int y, boolean whiteFont, float
   }
   pg.popMatrix();
 }
+
+void saveResults(File selection) {
+  try {
+    if (selection != null) {  
+      PrintWriter writer = new PrintWriter(selection.getAbsolutePath(), "UTF-8");
+      if (!FOHSim){
+        for (int p=0;p<2;p++){
+          writer.println("Deck #" + p+1 + " Name:" + textdeck[ p ].textIn);
+          writer.println("  Level: " + (int)textLevel[ p ].lastNum);
+          writer.println("  Cards:");
+          for( int i = 0; i < deckList[p].listItems.size(); ++ i )
+            {
+              writer.println("    " + deckList[p].listItems.get( i ));
+            }
+          writer.println("");
+        }
+      }
+      writer.println("Results:");
+      for( int i = 0; i < listresult.listItems.size(); ++ i )
+      {
+        writer.println("  " + listresult.listItems.get(i));
+      }
+      writer.close();
+    }
+  }  
+  catch(Exception e)
+  {
+    println(e);
+  }      
+}
+
 

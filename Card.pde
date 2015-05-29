@@ -1344,7 +1344,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 //          break;
 //
         case A_EXILE:
-          if ( op.board[ pos ] != null && !op.board[ pos ].resist )
+          if ( op.board[ pos ] != null && !op.board[ pos ].resist && !op.board[pos].immune)
           {
             Card c = op.board[ pos ];
             if( c != null )
@@ -1944,7 +1944,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_QS_EXILE:
-          if ( op.board[ pos ] != null && !op.board[ pos ].resist )
+          if ( op.board[ pos ] != null && !op.board[ pos ].resist && !op.board[ pos ].immune )
           {
             Card c = op.board[ pos ];
             if( c != null )
