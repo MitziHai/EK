@@ -2379,7 +2379,7 @@ void saveResults(File selection) {
   try {
     if (selection != null) {  
       PrintWriter writer = new PrintWriter(selection.getAbsolutePath(), "UTF-8");
-      if (!FOHSim){
+      if (uiTab != 4){
         for (int p=0;p<2;p++){
           writer.println("Deck #" + p+1 + " Name:" + textdeck[ p ].textIn);
           writer.println("  Level: " + (int)textLevel[ p ].lastNum);
@@ -2390,6 +2390,33 @@ void saveResults(File selection) {
             }
           writer.println("");
         }
+      }
+      else if (uiTab == 4 && FOHDownload) 
+      {  
+        if (FOHRound == 1) FOHMatch = 4;
+        else if (FOHRound == 2) FOHMatch = 2;
+        else FOHMatch = 1;
+        for (int m=0;m<FOHMatch;m++)
+          for (int p=0;p<2;p++) {
+            Deck d = deckFromFOH( FOHRound, m, p, false );
+            writer.println("Match: " + (m+1) + " Deck #" + (p+1) + " Name: " + d.name);
+            writer.println("  Level: " + d.level);
+            writer.println("  Cards:");
+            for( int c = 0; c < d.numCards; ++ c )
+            {
+              writer.println("    " +  d.cards[ c ]);
+            }
+            for( int r = 0; r < d.numRunes; ++ r )
+            {
+              writer.println("    " +  d.runes[ r ]);
+            }
+            writer.println("");
+          }
+      }
+      else {
+        listresult.listItems.clear();
+        listresult.listItems.add("FOH Tab selected and FOH information not downloaded");
+        return;
       }
       writer.println("Results:");
       for( int i = 0; i < listresult.listItems.size(); ++ i )
