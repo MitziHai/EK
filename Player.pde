@@ -118,8 +118,8 @@ class Player
       if(debug>0)
         println("   Draw:"+c);
       c.resetAll(this);
-      c.time++;
       addToHand( c );
+      c.time++;
     }
     
     // Second, reduce all timers in hand and play any 0 timer card.

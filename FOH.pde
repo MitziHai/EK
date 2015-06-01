@@ -33,6 +33,53 @@ void FOH()
     cardMap = client.getServerCards(servers.listItems.get(servers.currentIndex).toLowerCase());
     runeMap = client.getServerRunes(servers.listItems.get(servers.currentIndex).toLowerCase());
     leagueData = client.getLeagueData(servers.listItems.get(servers.currentIndex).toLowerCase());
+    
+//    String faction = "";
+//    String hp = "";
+//    String atk = "";
+//    String skill1 = "";
+//    String skill2 = "";
+//    String skill3 = "";
+//    String skill4 = "";
+//    for (servconn.dto.card.Card card: cardMap.values()) {
+//      if (card.getRace().equals("1"))  faction = "Tundra";
+//      else if (card.getRace().equals("2"))  faction = "Forest";
+//      else if (card.getRace().equals("3"))  faction = "Swamp";
+//      else if (card.getRace().equals("4"))  faction = "Mountain";
+//      else if (card.getRace().equals("97"))  faction = "Demon";
+//      else if (card.getRace().equals("100"))  faction = "Demon";
+//      else faction = "Special";
+//      hp = card.getHpArray().toString();
+//      atk = card.getAttackArray().toString();
+//      
+//      if (!card.getSkill().equals("")) skill1 = skillMap.get(card.getSkill()).getName();
+//      else skill1 = " ";
+//      if (!card.getLockSkill1().equals("")) skill2 = skillMap.get(card.getLockSkill1()).getName();
+//      else skill2 = " ";
+//      if (card.getLockSkill2().equals("")) {
+//        skill3 = " ";
+//        skill4 = " ";
+//      }
+//      else if (!card.getLockSkill2().contains("_")) {
+//        skill3 = skillMap.get(card.getLockSkill2()).getName();
+//        skill4 = " ";
+//      }
+//      else {
+//        skill3 = skillMap.get(card.getLockSkill2().substring(0,card.getLockSkill2().indexOf("_"))).getName();
+//        skill4 = skillMap.get(card.getLockSkill2().substring(card.getLockSkill2().indexOf("_")+1,card.getLockSkill2().length())).getName();
+//      }
+//      hp = card.getHpArray().toString();
+//      hp = hp.substring(1,hp.length()-1);
+//      atk = card.getAttackArray().toString();
+//      atk = atk.substring(1,atk.length()-1);
+//      if(card.getCardName().contains("Legendary)"))
+//        println("\"" + card.getCardName() + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1 + "," + skill2 + "," + skill3 + "," + skill4 + ","  + 
+//          hp + ","  + atk + "\",");
+//    }
+
+    
+
+
 
     FOHRound = leagueData.getData().getLeagueNow().getRoundNow();
     for (int i=0;i<8;i++) 
