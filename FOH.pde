@@ -52,11 +52,11 @@ void FOH()
 //      hp = card.getHpArray().toString();
 //      atk = card.getAttackArray().toString();
 //      
-//      if (!card.getSkill().equals("")) skill1 = skillMap.get(card.getSkill()).getName();
+//      if (!card.getSkill().equals("") && !card.getSkill().equals("8106")) skill1 = skillMap.get(card.getSkill()).getName();
 //      else skill1 = " ";
-//      if (!card.getLockSkill1().equals("")) skill2 = skillMap.get(card.getLockSkill1()).getName();
+//      if (!card.getLockSkill1().equals("") && !card.getLockSkill1().equals("1905")) skill2 = skillMap.get(card.getLockSkill1()).getName();
 //      else skill2 = " ";
-//      if (card.getLockSkill2().equals("")) {
+//      if (card.getLockSkill2().equals("") || card.getLockSkill2().equals("1906") || card.getLockSkill2().equals("1903")) {
 //        skill3 = " ";
 //        skill4 = " ";
 //      }
@@ -72,7 +72,7 @@ void FOH()
 //      hp = hp.substring(1,hp.length()-1);
 //      atk = card.getAttackArray().toString();
 //      atk = atk.substring(1,atk.length()-1);
-//      if(card.getCardName().contains("Legendary)"))
+//      if(!cardsMap.containsKey(card.getCardName().replace("(","[").replace(")","]")))
 //        println("\"" + card.getCardName() + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1 + "," + skill2 + "," + skill3 + "," + skill4 + ","  + 
 //          hp + ","  + atk + "\",");
 //    }

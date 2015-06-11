@@ -59,6 +59,7 @@ void loadAbils()
   abilities.put( "Combustion", AType.A_COMBUSTION );
   abilities.put( "Concentration", AType.A_CONCENTRATION );
   abilities.put( "Confusion", AType.A_CONFUSION );
+  abilities.put( "Corruption", AType.A_CORRUPTION );
   abilities.put( "Counterattack", AType.A_COUNTERATTACK );
   abilities.put( "Craze", AType.A_CRAZE );
   abilities.put( "Curse", AType.A_CURSE );
@@ -140,6 +141,7 @@ void loadAbils()
   abilities.put( "QS: Mass Attrition", AType.A_QS_MASS_ATTRITION );
   abilities.put( "QS: Plague", AType.A_QS_PLAGUE );
   abilities.put( "QS: Prayer", AType.A_QS_PRAYER );
+  abilities.put( "QS: Purification", AType.A_QS_PURIFICATION );
   abilities.put( "QS: Regeneration", AType.A_QS_REGENERATION );
   abilities.put( "QS: Reincarnation", AType.A_QS_REINCARNATION );
   abilities.put( "QS: Teleportation", AType.A_QS_TELEPORT );
@@ -198,6 +200,7 @@ void loadAbils()
   evoNames.put( "Combustion", "cmb" );
   evoNames.put( "Concentration", "con" );
   evoNames.put( "Confusion", "cf" );
+  evoNames.put( "Corruption", "cor" );
   evoNames.put( "Counterattack", "cnt" );
   evoNames.put( "Craze", "cz" );
   evoNames.put( "Curse", "crs" );
@@ -279,6 +282,7 @@ void loadAbils()
   evoNames.put( "QS: Teleportation", "q:tel" );
   evoNames.put( "QS: Toxic Clouds", "q:tc" );
   evoNames.put( "QS: Prayer", "q:pyr" );
+  evoNames.put( "QS: Purification", "q:pur" );
   evoNames.put( "QS: Trap", "q:trp" );
   evoNames.put( "Reanimation", "rean" );
   evoNames.put( "Reflection", "ref" );

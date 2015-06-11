@@ -155,7 +155,7 @@ class Game implements Runnable
           Card c = p1.inPlay.get(i);
           boolean add_comma = false;
           play1 += "[";
-          for (int j = 0; j <= 7; j++) {// 6 is size of status array
+          for (int j = 0; j <= 8; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play1 += ", ";
               play1 += statusNames[j];
@@ -210,7 +210,7 @@ class Game implements Runnable
           Card c = p2.inPlay.get(i);
           boolean add_comma = false;
           play2 += "[";
-          for (int j = 0; j <= 7; j++) {// 6 is size of status array
+          for (int j = 0; j <= 8; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play2 += ", ";
               play2 += statusNames[j];
@@ -245,9 +245,15 @@ class Game implements Runnable
         println("---------- Start of Turn ----------");
         println("Player " + ((p1.name == "Unamed") ? "1" : p1.name) + ":");
         println("   Health: " + p1.hp);
-        println("   Deck  (" + p1.deck.size() + "): " + deck1);
-        println("   Hand  (" + p1.hand.size() + "): " + hand1);
-        println("   Grave (" + p1.grave.size() + "): " + grave1);
+        print("   Deck  (" + p1.deck.size() + "): ");
+        for (int i=0; i< p1.deck.size();i++) print(p1.deck.get(i).toStringNoHp() + (i+1==p1.deck.size()?"":", "));
+        println("");
+        print("   Hand  (" + p1.hand.size() + "): " );
+        for (int i=0; i< p1.hand.size();i++) print(p1.hand.get(i).toStringNoHp() + (i+1==p1.hand.size()?"\n":", "));
+        println("");
+        print("   Grave (" + p1.grave.size() + "): ");
+        for (int i=0; i< p1.grave.size();i++) print(p1.grave.get(i).toStringNoHp() + (i+1==p1.grave.size()?"\n":", "));
+        println("");
         println("   Play  (" + p1.inPlay.size() + "): " + play1);
         print("   Runes (" + p1.numRunes + "): " );
         for (int i = 0; i < p1.numRunes; ++ i) {
@@ -258,9 +264,15 @@ class Game implements Runnable
         println("");
         println("Player " + ((p2.name == "Unamed") ? "2" : p2.name) + ":");
         println("   Health: " + p2.hp);
-        println("   Deck  (" + p2.deck.size() + "): " + deck2);
-        println("   Hand  (" + p2.hand.size() + "): " + hand2);
-        println("   Grave (" + p2.grave.size() + "): " + grave2);
+        print("   Deck  (" + p2.deck.size() + "): ");
+        for (int i=0; i< p2.deck.size();i++) print(p2.deck.get(i).toStringNoHp() + (i+1==p2.deck.size()?"":", "));
+        println("");
+        print("   Hand  (" + p2.hand.size() + "): " );
+        for (int i=0; i< p2.hand.size();i++) print(p2.hand.get(i).toStringNoHp() + (i+1==p2.hand.size()?"\n":", "));
+        println("");
+        print("   Grave (" + p2.grave.size() + "): ");
+        for (int i=0; i< p2.grave.size();i++) print(p2.grave.get(i).toStringNoHp() + (i+1==p2.grave.size()?"\n":", "));
+        println("");
         println("   Play  (" + p2.inPlay.size() + "): " + play2);
         print("   Runes (" + p2.numRunes + "): " );
         for (int i = 0; i < p2.numRunes; ++ i) {
@@ -338,7 +350,7 @@ class Game implements Runnable
         Card c = p1.inPlay.get(i);
         boolean add_comma = false;
         play1 += "[";
-        for (int j = 0; j <= 7; j++) {// 6 is size of status array
+        for (int j = 0; j <= 8; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play1 += ", ";
             play1 += statusNames[j];
@@ -392,7 +404,7 @@ class Game implements Runnable
         Card c = p2.inPlay.get(i);
         boolean add_comma = false;
         play2 += "[";
-        for (int j = 0; j <= 7; j++) {// 6 is size of status array
+        for (int j = 0; j <= 8; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play2 += ", ";
             play2 += statusNames[j];
@@ -432,9 +444,15 @@ class Game implements Runnable
       println("----------- End of Match -----------");
       println("Player " + ((p1.name == "Unamed") ? "1" : p1.name) + ":");
       println("   Health: " + p1.hp);
-      println("   Deck  (" + p1.deck.size() + "): " + deck1);
-      println("   Hand  (" + p1.hand.size() + "): " + hand1);
-      println("   Grave (" + p1.grave.size() + "): " + grave1);
+      print("   Deck  (" + p1.deck.size() + "): ");
+      for (int i=0; i< p1.deck.size();i++) print(p1.deck.get(i).toStringNoHp() + (i+1==p1.deck.size()?"":", "));
+      println("");
+      print("   Hand  (" + p1.hand.size() + "): " );
+      for (int i=0; i< p1.hand.size();i++) print(p1.hand.get(i).toStringNoHp() + (i+1==p1.hand.size()?"\n":", "));
+      println("");
+      print("   Grave (" + p1.grave.size() + "): ");
+      for (int i=0; i< p1.grave.size();i++) print(p1.grave.get(i).toStringNoHp() + (i+1==p1.grave.size()?"\n":", "));
+      println("");
       println("   Play  (" + p1.inPlay.size() + "): " + play1);
       print("   Runes (" + p1.numRunes + "): " );
       for (int i = 0; i < p1.numRunes; ++ i) {
@@ -444,9 +462,15 @@ class Game implements Runnable
       println("");
       println("Player " + ((p2.name == "Unamed") ? "2" : p2.name) + ":");
       println("   Health: " + p2.hp);
-      println("   Deck  (" + p2.deck.size() + "): " + deck2);
-      println("   Hand  (" + p2.hand.size() + "): " + hand2);
-      println("   Grave (" + p2.grave.size() + "): " + grave2);
+      print("   Deck  (" + p1.deck.size() + "): ");
+      for (int i=0; i< p2.deck.size();i++) print(p2.deck.get(i).toStringNoHp() + (i+1==p2.deck.size()?"":", "));
+      println("");
+      print("   Hand  (" + p2.hand.size() + "): " );
+      for (int i=0; i< p2.hand.size();i++) print(p2.hand.get(i).toStringNoHp() + (i+1==p2.hand.size()?"\n":", "));
+      println("");
+      print("   Grave (" + p2.grave.size() + "): ");
+      for (int i=0; i< p2.grave.size();i++) print(p2.grave.get(i).toStringNoHp() + (i+1==p2.grave.size()?"\n":", "));
+      println("");
       println("   Play  (" + p2.inPlay.size() + "): " + play2);
       print("   Runes (" + p2.numRunes + "): " );
       for (int i = 0; i < p2.numRunes; ++ i) {

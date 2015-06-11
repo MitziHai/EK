@@ -128,8 +128,8 @@ class Player
       Card c = hand.get( i );
       if ( --c.time <= 0 )
       {
-        c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.type.faction ] - c.buffGuardOffset;
-        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.type.faction ] - c.buffAttackOffset;
+        c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.faction ] - c.buffGuardOffset;
+        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.faction ] - c.buffAttackOffset;
         addToPlay( c );
         removeFromHand( i -- );
         c.checkAbilities(this, op, ON_ENTER, -1);
@@ -282,7 +282,7 @@ class Player
     if( handSize() < 5 )
     {
       hand.add( c );
-      cardCount[ HAND ][ c.type.faction ] += 1;
+      cardCount[ HAND ][ c.faction ] += 1;
       c.time = c.type.timer;
     }
     else
@@ -294,13 +294,13 @@ class Player
   void removeFromHand( Card c )
   {
     if( hand.remove( c ) )
-      cardCount[ HAND ][ c.type.faction ] -= 1;
+      cardCount[ HAND ][ c.faction ] -= 1;
   }
   
   Card removeFromHand( int i )
   {
     Card c = hand.remove( i );
-    cardCount[ HAND ][ c.type.faction ] -= 1;
+    cardCount[ HAND ][ c.faction ] -= 1;
     return c;
   }
   
@@ -315,7 +315,7 @@ class Player
     if( debug > 3 ) println( "   Enter Play: " + c);
     c.pos = inPlay.isEmpty() ? 0 : inPlay.get( inPlay.size() - 1 ).pos + 1;
     inPlay.add( c );
-    cardCount[ PLAY ][ c.type.faction ] += 1;
+    cardCount[ PLAY ][ c.faction ] += 1;
     board[ c.pos ] = c;
     c.resetAll(this);
     
@@ -361,7 +361,7 @@ class Player
         after.divineProtect[ 0 ] = null;
       }
       board[ c.pos ] = null;
-      cardCount[ PLAY ][ c.type.faction ] -= 1;
+      cardCount[ PLAY ][ c.faction ] -= 1;
       inPlay.remove( index );
     }
   }
@@ -372,7 +372,7 @@ class Player
     if( c == null ) return null;
     if( debug > 3 ) println( "   Leave Play: " + c);
     inPlay.remove( c );
-    cardCount[ PLAY ][ c.type.faction ] -= 1;
+    cardCount[ PLAY ][ c.faction ] -= 1;
     board[ i ] = null;
     return c;
   }
@@ -388,7 +388,7 @@ class Player
     if( debug > 3 ) println( "       Enter Grave: " + c);
     grave.add( c );
     if( c.type.canReanim ) graveReanim.add( c );
-    cardCount[ GRAVE ][ c.type.faction ] += 1;
+    cardCount[ GRAVE ][ c.faction ] += 1;
   }
   
   void removeFromGrave( Card c )
@@ -396,7 +396,7 @@ class Player
     if( grave.remove( c ) )
     {
       if( debug > 3 ) println( "       Leave Grave: " + c);
-      cardCount[ GRAVE ][ c.type.faction ] -= 1;
+      cardCount[ GRAVE ][ c.faction ] -= 1;
       if( c.type.canReanim ) graveReanim.remove( c );
     }
   }
@@ -405,7 +405,7 @@ class Player
   {
     Card c = grave.remove( i );
     if( debug > 3 ) println( "     Leave Grave: " + c);
-    cardCount[ GRAVE ][ c.type.faction ] -= 1;
+    cardCount[ GRAVE ][ c.faction ] -= 1;
     if( c.type.canReanim ) graveReanim.remove( c );
     return c;
   }

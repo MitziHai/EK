@@ -208,6 +208,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK;
     when2 = NEVER;
     break;
+  case A_CORRUPTION:
+    when = BEFORE_ATTACK;
+    when2 = NEVER;
+    break;
   case A_COUNTERATTACK:
     when = ON_ATTACKED;
     when2 = NEVER;
@@ -445,6 +449,7 @@ AbilityWhen2 getAbilityWhen( AType ability )
   case A_QS_HEALING:
   case A_QS_PLAGUE:
   case A_QS_PRAYER:
+  case A_QS_PURIFICATION:
   case A_QS_REGENERATION:
   case A_QS_REINCARNATION:
   case A_QS_TELEPORT:
@@ -721,6 +726,7 @@ static final int POISONED = 14;
 static final int FIRE = 15;
 static final int BLOOD = 16;
 static final int NONE = 17;
+static final int MANA_CORRUPTION = 18;
 
 
 class Card
@@ -736,11 +742,13 @@ class Card
   int atkMax;
   int burn;
   int cost;
+
+  int faction;
   boolean fireGod[] = {false, false, false, false, false, false, false, false, false, false, false};
   boolean combust[] = {false, false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
   int poison;
-  boolean status[] = new boolean[ 8 ];
+  boolean status[] = new boolean[ 9 ];
   int time;
   int atkNow;
   int buffGuardOffset = 0;
@@ -804,6 +812,8 @@ class Card
     atkMax = t.atk[lvl];
     this.evo = evo;
     this.evoLevel = evoLevel;
+    
+    this.faction = t.faction;
     
     for ( int i = 0; i < NUM_WHEN; ++ i )
     {
@@ -870,13 +880,14 @@ class Card
     backstab = 0;
     ward = 0;
     burn = 0;
+    faction = type.faction;
     for (int i = 0; i <= 9; ++ i) {
       fireGod[i] = false;
       combust[i] = false;
     }
     poison = 0;
     morale = 0;
-    for ( int i = 0; i <= 7; ++ i )
+    for ( int i = 0; i <= 8; ++ i )
       status[ i ] = false;
     alreadySealed = false;
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
@@ -983,6 +994,12 @@ class Card
       if( burn > 0 ) println( "     " + toStringNoHp() + " takes " + burn + " burn damage." );
     }
     poison = 0;
+    if (status[CORRUPT]) {
+      own.cardCount[ PLAY ][ faction ] -= 1;
+      faction = type.faction;
+      own.cardCount[ PLAY ][ faction ] += 1;
+      status[CORRUPT] = false;
+    }
     status[ FROZEN ] = false;
     status[ SHOCKED ] = false;
     status[ TRAPPED ] = false;
@@ -1091,14 +1108,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
   {
     dmgTaken = 0;
-    if ( (!status[SILENCED] && immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == CORRUPT)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
+    if ( (!status[SILENCED] && immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == MANA_CORRUPTION)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
     {
       if ( effect == NO_IMMUNE )
       {
         dmgTaken = subtractHealth( own, op, dmg );
         if (debug > 2) println("       " + dmg + " unavoidable damage  to " + toStringNoHp());
       }
-      else if (effect == CORRUPT)  // Mana Corruption deals chance * dmg damage to card
+      else if (effect == MANA_CORRUPTION)  // Mana Corruption deals chance * dmg damage to card
       {
         dmgTaken = subtractHealth( own, op, dmg * (immune ? chance : 1) );
         if( debug > 2 ) println("       Mana corruption dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
@@ -1185,7 +1202,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           evasion = true;
         break;
       }
-    }
+    }  // SHOULD BELOW BE type.faction or just faction (queston is does corruption affect demons and remove some of their innate protections)
     if (effect == TRAPPED || effect == CONFUSED || effect == STUNNED) {  // abilities affected by evasion but not by magic shield and/or reflection
       if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
       else if( immune && type.faction == DEMON && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s demon immunity");
@@ -1248,6 +1265,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
   {
     if( debug > 3 ) println( "     Died: " + this);
     checkAbilities(own, op, ON_DEATH,-1);
+    if (status[CORRUPT]) 
+    {        
+      status[CORRUPT] = false;
+      own.cardCount[ PLAY ][ faction ] -= 1;
+      faction = type.faction;
+      own.cardCount[ PLAY ][ faction ] += 1;
+    }
     if (!reanimated) own.addToGrave( this );
     own.removeFromPlay(this);
   }
@@ -1296,6 +1320,19 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_CONFUSION:
           if( debug > 3 ) println( "     Confusion, " + (30+5*l) + "% chance");
           damageRandom1( own, op, 0, CONFUSED, 30+5*l );
+          break;
+
+        case A_CORRUPTION:
+          if( debug > 3 ) println( "     Corruption");
+          for ( Card c : op.inPlay )
+          {
+            if (c.faction != DEMON) {
+              c.status[CORRUPT] = true;
+              op.cardCount[ PLAY ][ c.faction ] -= 1;
+              c.faction = SWAMP;
+              op.cardCount[ PLAY ][ c.faction ] += 1;
+            }
+          }
           break;
 
         case A_CURSE:
@@ -1463,7 +1500,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_MANA_CORRUPTION:
           if( debug > 3 ) println( "     Mana corruption for " + (20*l));
-          damageRandom1( own, op, 20*l, CORRUPT, 3 );
+          damageRandom1( own, op, 20*l, MANA_CORRUPTION, 3 );
           break;
 
         case A_MANIA:
@@ -1687,7 +1724,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
         case A_ARCTIC_POLLUTION:
-          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == TUNDRA )
+          if ( op.board[ pos ] != null && op.board[ pos ].faction == TUNDRA )
           {
             if( debug > 3 ) println( "     Arctic pollution increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
@@ -1695,7 +1732,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_FOREST_FIRE:
-          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == FOREST )
+          if ( op.board[ pos ] != null && op.board[ pos ].faction == FOREST )
           {
             if( debug > 3 ) println( "     Forest Fire increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
@@ -1777,7 +1814,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_MOUNTAIN_GLACIER:
-          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == MOUNTAIN )
+          if ( op.board[ pos ] != null && op.board[ pos ].faction == MOUNTAIN )
           {
             if( debug > 3 ) println( "     Mountain Glacier increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
@@ -1785,7 +1822,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_SWAMP_PURITY:
-          if ( op.board[ pos ] != null && op.board[ pos ].type.faction == SWAMP )
+          if ( op.board[ pos ] != null && op.board[ pos ].faction == SWAMP )
           {
             if( debug > 3 ) println( "     Swamp Purity increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
@@ -1849,7 +1886,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_GLACIAL_BARRIER:
-          if ( attacker.type.faction == MOUNTAIN )
+          if ( attacker.faction == MOUNTAIN )
           {
             if( debug > 3 ) println( "       " + toStringNoHp() + "'s Glacial Berrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
@@ -1857,7 +1894,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_JUNGLE_BARRIER:
-          if ( attacker.type.faction == SWAMP )
+          if ( attacker.faction == SWAMP )
           {
             if( debug > 3 ) println( "       " + toStringNoHp() + "'s Jungle Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
@@ -1865,7 +1902,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_MARSH_BARRIER:
-          if ( attacker.type.faction == TUNDRA )
+          if ( attacker.faction == TUNDRA )
           {
             if( debug > 3 ) println( "       " + toStringNoHp() + "'s Marsh Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
@@ -1878,7 +1915,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_VOLCANO_BARRIER:
-          if ( attacker.type.faction == FOREST )
+          if ( attacker.faction == FOREST )
           {
             if( debug > 3 ) println( "       " + toStringNoHp() + "'s Volcano Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
@@ -2026,6 +2063,26 @@ Seperate Variables: BURNED, POISON, immune, resist,
           own.hp = min( own.hpmax, own.hp + 40*l );
           break;
 
+        case A_QS_PURIFICATION:
+          if( debug > 3 ) println( "     QS: Purification");
+          for ( Card c : own.inPlay ) {
+            c.burn = 0;
+            for (int j = 0; j <= 9; ++ j) {
+              c.fireGod[j] = false;
+              c.combust[j] = false;
+            }
+            c.poison = 0;
+            if (c.status[CORRUPT]) {
+              own.cardCount[ PLAY ][ c.faction ] -= 1;
+              c.faction = c.type.faction;
+              own.cardCount[ PLAY ][ c.faction ] += 1;
+            }
+            for ( int j = 0; j <= 8; ++ j ) {
+              c.status[ j ] = false;
+            }
+          }
+          break;
+
         case A_QS_REGENERATION:
           if( debug > 3 ) println( "     QS: Regeneration for " + (25*l));
           damageAll( own, own, 25*l, HEAL, 0 );
@@ -2099,10 +2156,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
             if ( !c.immune && c != this && !c.dead )
             {
               if( debug > 3 ) println( "     Sacrifice targetting " + c.toStringNoHp() );
-              this.atk *= ( 1 + 0.20+0.10*l );
-              this.atkBuff *= ( 1 + 0.20+0.10*l );
-              this.hpCurr *= ( 1 + 0.20+0.10*l );
-              this.hpBuff *= ( 1 + 0.20+0.10*l );
+              this.atk = (int)(( 1 + 0.20+0.10*l )*this.atkMax + (this.atk-this.atkMax));
+              this.atkBuff = (int)(( 1 + 0.20+0.10*l )*this.atkMax + (this.atkBuff-this.atkMax));
+              this.hpCurr = (int)(( 1 + 0.20+0.10*l )*this.hpMax + (this.hpCurr-this.hpMax));
+              this.hpBuff = (int)(( 1 + 0.20+0.10*l )*this.hpMax + (this.hpBuff-this.hpMax));
               //own.removeFromPlay( c );
               //own.addToGrave( c );
               c.hpCurr = -1000;
@@ -2374,85 +2431,85 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_TUNDRA_ATK:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
             applyBuffAtk( own, TUNDRA, -25*l - buffAttackOffset );
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
+          else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
           break;
 
         case A_TUNDRA_HP:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Tundra health loss of " + (50*l));
             applyBuffHp( own, TUNDRA, -50*l - buffGuardOffset);
           }    
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
+          else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
           break;
 
         case A_MOUNTAIN_ATK:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Mountain attack loss of " + (25*l));
             applyBuffAtk( own, MOUNTAIN, -25*l - buffAttackOffset );
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
+          else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
           break;
 
         case A_MOUNTAIN_HP:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Mountain health loss of " + (50*l));
             applyBuffHp( own, MOUNTAIN, -50*l - buffGuardOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
+          else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
           break;
 
         case A_SWAMP_ATK:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Swamp attack loss of " + (25*l));
             applyBuffAtk( own, SWAMP, -25*l - buffAttackOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
+          else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
           break;
 
         case A_SWAMP_HP:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Swamp health loss of " + (50*l));
             applyBuffHp( own, SWAMP, -50*l - buffGuardOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
+          else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
           break;
 
         case A_FOREST_ATK:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Forest attack loss of " + (25*l));
             applyBuffAtk( own, FOREST, -25*l - buffAttackOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 25*l;
+          else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
           break;
 
         case A_FOREST_HP:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Forest health loss of " + (50*l));
             applyBuffHp( own, FOREST, -50*l - buffGuardOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 50*l;
+          else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
           break;
 
         case A_ORIGINS_GUARD:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Origins Guard loss of " + (40*l));
             for ( int j = 0; j < 4; ++ j )
               applyBuffHp( own, j, -40*l - buffGuardOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffGuardOffset += 40*l;
+          else if (abilitySilenced[when][i]) buffGuardOffset += 40*l;
           break;
 
         case A_POWER_SOURCE:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) {
+          if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Power Source loss of " + (20*l));
             for ( int j = 0; j < 4; ++ j )
               applyBuffAtk( own, j, -20*l - buffAttackOffset);
           }
-          else if (abilitySilenced[when][i] && checkSecretBit.checked) buffAttackOffset += 20*l;
+          else if (abilitySilenced[when][i]) buffAttackOffset += 20*l;
           break;
 
         case A_SELF_DESTRUCT:
@@ -2465,7 +2522,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_DIVINE_PROTECTION:
-          if (!abilitySilenced[when][i] || !checkSecretBit.checked) 
+          if (!abilitySilenced[when][i]) 
             for ( int j = 0; j <= 2; ++ j )
             {
               if ( divineProtect[ j ] != null )
@@ -2490,7 +2547,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_MAGIC_SHIELD:
           int d = dmgTaken;
-          if(effect != CORRUPT && effect != NO_REFLECT) { // magic shield disabled if corruption damage
+          if(effect != MANA_CORRUPTION && effect != NO_REFLECT) { // magic shield disabled if corruption damage
             dmgTaken = min( dmgTaken, 160 - 10*l );
             if( debug > 3 && d > dmgTaken ) println( "       " + toStringNoHp() + "'s Magic Shield reduces to maximum of " + (160 - 10*l));
           }
@@ -2513,7 +2570,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     own.hpBuff[ faction ] += amount;
     for ( Card c : own.inPlay )
     {
-      if ( c == this || c.type.faction != faction ) continue;
+      if ( c == this || c.faction != faction ) continue;
       c.hpBuff += amount;
       if ( amount > 0 )
         c.hpCurr += amount;
@@ -2527,7 +2584,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     own.atkBuff[ faction ] += amount;
     for ( Card c : own.inPlay )
     {
-      if ( c == this || c.type.faction != faction ) continue;
+      if ( c == this || c.faction != faction ) continue;
       c.atkBuff += amount;
       if ( amount > 0 )
         c.atk += amount;
@@ -2776,8 +2833,8 @@ Seperate Variables: BURNED, POISON, immune, resist,
     if ( isRun && debug > 0 )
     {
       if( evo == AType.A_NONE )
-        return type.name + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkBuff +", Health: "+ hpCurr+" / " + hpBuff + "]";
-      else return type.name + "-" + evoNames.get( abilityName.get( evo ) ) + evoLevel + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkBuff +", Health: "+ hpCurr+" / " + hpBuff + "]";
+        return type.name + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkMax +", Health: "+ hpCurr+" / " + hpMax + "]";
+      else return type.name + "-" + evoNames.get( abilityName.get( evo ) ) + evoLevel + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkMax +", Health: "+ hpCurr+" / " + hpMax + "]";
     }
     if ( evo != AType.A_NONE )
       return type.name + ";" + lvl + ((wash > 0) ? (";" + wash):"") + ";" + evoNames.get( abilityName.get( evo ) ) + evoLevel;// + "[t"+time+"]" + abilityL[0];
