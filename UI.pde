@@ -81,6 +81,17 @@ boolean cardMatch(String s, String sf )
 }
 
 
+void filterEvos( boolean stricter )
+{
+  evoList.scroll = cards.scrollStart = 0;
+  // If the filters are only stricter than previous (text only), filter the current list instead of starting a new list.
+  evoList.listItems.clear();
+    evoList.listItems.add( "None" );
+  for ( String s : evoNames.keySet() )
+    if (evoNamesEvo.get(s) || !checkEvo.checked) evoList.listItems.add( s + " (" + evoNames.get(s) + ")" );
+
+}
+
 void filterCards( boolean stricter )
 {
   cards.scroll = cards.scrollStart = 0;
@@ -242,6 +253,7 @@ Control labelc[] = new Control[2];
 Checkbox checkMultisim;
 Checkbox checkMultisimResults;
 Checkbox checkKWDefend;
+Checkbox checkEvo;
 Checkbox checkSingleThread;
 ListBox evoList;
 DropList ListHydraCard1;
@@ -408,10 +420,10 @@ void setupUI()
   {
     offsetLeft = 256;
 
-    evoList = new ListBox( "", 256, 16+uiTop, 240, 624 - 32*2 + 8, 0 );
+    evoList = new ListBox( "", 256, 16+uiTop, 240, 624 - 32*3 + 8, 0 );
     evoList.listItems.add( "None" );
     for ( String s : evoNames.keySet() )
-      evoList.listItems.add( s + " (" + evoNames.get(s) + ")" );
+      if (evoNamesEvo.get(s)) evoList.listItems.add( s + " (" + evoNames.get(s) + ")" );
     evoList.multiselect = false;
     uiDeck.add( evoList );
     uiCard.add( evoList );
@@ -419,6 +431,11 @@ void setupUI()
     Control labelEvo = new Control( "Evolution level:", 256, evoList.y + evoList.h + 4, 240, 24, 0 );
     uiDeck.add( labelEvo );
     uiCard.add( labelEvo );
+
+    checkEvo = new Checkbox( "Show Only Valid Evos", 256, evoList.y + evoList.h + 8 + 16 + 4+32, 240, 24, 0 );
+    checkEvo.checked = true;
+    uiDeck.add( checkEvo );
+    uiCard.add( checkEvo );
 
     textEvo = new TextField( "1", 256, evoList.y + evoList.h + 8 + 16 + 4, 240, 24, 0 );
     textEvo.isNumeric = true;
@@ -1407,10 +1424,11 @@ class Checkbox extends Control
   {
     super.handleMouseReleased();
     checked = mouseIsOn() ? !checked : checked;
-    if ( mouseIsOn() )
+    if ( mouseIsOn() && this != checkEvo)
     {
       filterCards(false);
     }
+    else if (mouseIsOn()) filterEvos(false);
   }
 }
 
@@ -1887,7 +1905,22 @@ class ListBox extends Control
     
     scroll = min(scroll,h-lineSize);
     int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
-    for ( int i = 0; i + scrollOffset >=0 && i + scrollOffset <= listItems.size() && i < h/lineSize; ++ i )
+    int TopRow = (this == evoList ? 1 :0);
+    if (this == evoList) {
+      text = listItems.get(0) + ((selected && current.contains(0) && millis() % 1000 < 500) ? "|" : "");
+      if ( current.contains( 0 ) )
+      {
+        pg.image( imgSelected[ 1 ], x, y, w-(hasScroll?lineSize:0), lineSize);
+      }
+      if ( 0 == selectIndex )
+      {
+        pg.image( imgSelected[ 1 ], x, y, w-(hasScroll?lineSize:0), lineSize);
+        pg.image( imgSelected[ 0 ], x, y, w-(hasScroll?lineSize:0), lineSize);
+      }
+      super.draw(pg);
+      pg.translate( 0, lineSize );
+    }
+    for ( int i = TopRow; i + scrollOffset >=0 && i + scrollOffset <= listItems.size() && i < h/lineSize; ++ i )
     {
       if( i + scrollOffset == listItems.size() && !( this == deckList[ 0 ] || this == deckList[ 1 ] ) ) continue;
       if( i + scrollOffset < listItems.size() )
@@ -1953,7 +1986,7 @@ class ListBox extends Control
         selected = true;
         selectedList = this;
         int scrollOffset = round(scroll / float(h-lineSize) * (listItems.size()-h/lineSize));
-        int newCurrentIndex = (mousey - y)/lineSize + scrollOffset;
+        int newCurrentIndex = (mousey - y)/lineSize + (((mousey - y)/lineSize == 0 & this == evoList) ? 0 : scrollOffset);
         // Clicked a list item
         if ( newCurrentIndex >= 0 && newCurrentIndex < listItems.size() )
         {

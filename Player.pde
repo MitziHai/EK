@@ -75,6 +75,9 @@ class Player
   
   void resetForKW()
   {
+    for ( Card c: inPlay) {
+      if (c.summoned) inPlay.remove(c); // remove any summoned cards before moving forward
+    }
     deck.addAll(hand);
     deck.addAll(inPlay);
     hand.clear();

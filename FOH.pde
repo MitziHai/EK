@@ -24,6 +24,7 @@ void FOH()
 
   try
   {
+    
     radall.checked = true;
     raddi.checked = radkw.checked = radhydra.checked = false;
     listresult.listItems.clear();
@@ -33,6 +34,15 @@ void FOH()
     cardMap = client.getServerCards(servers.listItems.get(servers.currentIndex).toLowerCase());
     runeMap = client.getServerRunes(servers.listItems.get(servers.currentIndex).toLowerCase());
     leagueData = client.getLeagueData(servers.listItems.get(servers.currentIndex).toLowerCase());
+
+
+//    ArenaDeckUtils adu = new ArenaDeckUtils("mitzitest@danj.com", "deh206", servers.listItems.get(servers.currentIndex).toLowerCase());
+//    adu.setEvoNames(evoNames); // This is your evonames, we had used it before
+//    adu.setStart(1); //download from this rank, default:1
+//    adu.setAmount(1);//amount of decks to be downloaded, default & max 100
+//    String decks = adu.printArenaDecks();
+//    println(decks);
+    
     
 //    String faction = "";
 //    String hp = "";
@@ -156,6 +166,7 @@ Deck deckFromFOH( int round, int match, int player, boolean clear )
     fohPrinter.setGameInfo(cardMap, skillMap, runeMap);
     fohPrinter.setEvoNames(evoNames);
     
+
     for (servconn.dto.league.Card cardRef : cardList) {
       servconn.dto.card.Card card = cardMap.get(cardRef.getCardId());
       //Card c = cardFromString(card.getCardName()+";"+cardRef.Level)

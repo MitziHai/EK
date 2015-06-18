@@ -328,6 +328,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_GANG_UP: 
+    when = ON_ENTER; 
+    when2 = NEVER; 
+    break;
   case A_GLACIAL_BARRIER: 
     when = ON_ATTACKED; 
     when2 = NEVER; 
@@ -524,6 +528,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_SUMMON_DRAGON: 
+    when = ON_ENTER; 
+    when2 = NEVER; 
+    break;
   case A_SWAMP_ATK: 
     when = ON_ENTER; 
     when2 = ON_DEATH; 
@@ -534,6 +542,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_SWAMP_PURITY: 
     when = ON_ATTACK_CARD; 
+    when2 = NEVER; 
+    break;
+  case A_DONS_BODYGUARD: 
+    when = ON_DEATH; 
     when2 = NEVER; 
     break;
   case A_THUNDERBOLT: 
@@ -742,6 +754,7 @@ class Card
   int atkMax;
   int burn;
   int cost;
+  Card summoner;
 
   int faction;
   boolean fireGod[] = {false, false, false, false, false, false, false, false, false, false, false};
@@ -749,6 +762,7 @@ class Card
   int combustion = 0;
   int poison;
   boolean status[] = new boolean[ 9 ];
+  boolean summoned = false;
   int time;
   int atkNow;
   int buffGuardOffset = 0;
@@ -1272,7 +1286,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       faction = type.faction;
       own.cardCount[ PLAY ][ faction ] += 1;
     }
-    if (!reanimated) own.addToGrave( this );
+    if (!reanimated && !summoned) own.addToGrave( this );
     own.removeFromPlay(this);
   }
 
@@ -1381,6 +1395,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 //          break;
 //
         case A_EXILE:
+          if ( op.board[ pos ] != null) {println(op.board[pos]);            println(op.board[pos].resist);}
           if ( op.board[ pos ] != null && !op.board[ pos ].resist && !op.board[pos].immune)
           {
             Card c = op.board[ pos ];
@@ -1960,7 +1975,59 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if( debug > 3 ) println( "     Guard enter play");
           own.guards.add( this );
           break;
-        case A_QS_BLIZZARD:
+        case A_SUMMON_DRAGON:
+          boolean failed = false;
+          for ( Card c : own.inPlay )
+          {
+            if (c.summoner == this && c.type.name.equals("Omniscient Dragon")) {
+              if( debug > 3 ) println( "     Summon Dragon fails due to Omniscient Dragon already being on the field for this card");
+              failed = true;
+            }
+          }
+          if (!failed) 
+          {
+            if( debug > 3 ) println( "     Summon Dragon summons Omniscient Dragon");
+            Card cs = cardFromString( "Omniscient Dragon" );
+            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
+            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
+            cs.summoner = this;
+            cs.summoned = true;
+            if (this.status[ SICK ]) cs.status[SICK] = true;
+            own.addToPlay( cs );
+            cs.checkAbilities(own, op, ON_ENTER, -1);
+          }
+          break;
+        case A_GANG_UP:
+          failed = false;
+          for ( Card c : own.inPlay )
+          {
+            if (c.summoner == this && c.type.name.equals("Swamp Rider")) {
+              if( debug > 3 ) println( "     Gang Up! fails due to a Swamp Rider already being on the field for this card");
+              failed = true;
+            }
+          }
+          if (!failed) 
+          {
+            if( debug > 3 ) println( "     Gang Up! summons two Swamp Riders");
+            Card cs = cardFromString( "Swamp Rider" );
+            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
+            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
+            cs.summoned = true;
+            cs.summoner = this;
+            if (this.status[ SICK ]) cs.status[SICK] = true;
+            own.addToPlay( cs );
+            cs.checkAbilities(own, op, ON_ENTER, -1);
+            cs = cardFromString( "Swamp Rider" );
+            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
+            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
+            cs.summoned = true;
+            cs.summoner = this;
+            if (this.status[ SICK ]) cs.status[SICK] = true;
+            own.addToPlay( cs );
+            cs.checkAbilities(own, op, ON_ENTER, -1);
+          }
+         break;
+       case A_QS_BLIZZARD:
           if( debug > 3 ) println( "     QS: BLizzard for " + (20*l));
           damageAll( own, op, 20*l, FROZEN, 30 );
           break;
@@ -2246,6 +2313,31 @@ Seperate Variables: BURNED, POISON, immune, resist,
       {
         switch( a )
         {
+        case A_DONS_BODYGUARD:
+          if ( dead && !abilitySilenced[when][i]) 
+          {
+            boolean failed = false;
+            for ( Card c : own.inPlay )
+            {
+              if (c.summoner == this && c.type.name.equals("Behemoth")) {
+                if( debug > 3 ) println( "     Gang Up! fails due to a Swamp Rider already being on the field for this card");
+                failed = true;
+              }
+            }
+            if (!failed) 
+            {
+              if( debug > 3 ) println( "     The Don's Bodyguard summons a Behemoth");
+              Card cs = cardFromString( "Behemoth" );
+              cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
+              cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
+              cs.summoned = true;
+              cs.summoner = this;
+              if (this.status[ SICK ]) cs.status[SICK] = true;
+              own.addToPlay( cs );
+              cs.checkAbilities(own, op, ON_ENTER, -1);
+            }
+          }
+          break;
         case A_GUARD:
           if( debug > 3 ) println( "     Guard leave play");
           own.guards.remove( this );
