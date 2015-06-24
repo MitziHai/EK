@@ -1591,9 +1591,9 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_SILENCE:
           if( debug > 3 ) println( "     Silence");
-          if (op.playSize() == 0 && debug > 2) println("       No Target for silence");
-          if ( !op.inPlay.isEmpty() ) {
-            Card c = op.inPlay.get(0);
+          if (op.board[ pos ] == null && debug > 2) println("       No Target for silence");
+          if ( op.board[ pos ] != null ) {
+            Card c = op.board[ pos ];
             if (op.guards.contains(c)) op.guards.remove(c);
             c.status[SILENCED] = true;
             for (int j=0; j<NUM_WHEN;j++)
