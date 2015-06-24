@@ -331,7 +331,7 @@ void loadAbils()
   evoNamesEvo.put( "Blitz", false );
   evoNamesEvo.put( "Blizzard", true );
   evoNamesEvo.put( "Bloodsucker", true );
-  evoNamesEvo.put( "Bloodthirsty", false );
+  evoNamesEvo.put( "Bloodthirsty", true );
   evoNamesEvo.put( "Chain Attack", false );
   evoNamesEvo.put( "Chain Lightning", true );
   evoNamesEvo.put( "Clean Sweep", false );

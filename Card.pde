@@ -107,11 +107,19 @@ void loadCards()
       if (ct.stars == 4)  {
         ListHydraCard2.listItems.add( ct.name );
         if (Event4Star.equals(ct.name)) ListHydraCard2.currentIndex = index4;
+        listMeritCard1.listItems.add (ct.name);
+        if (MeritCard1.equals(ct.name)) listMeritCard1.currentIndex = index4 + index5;
+        listMeritCard2.listItems.add (ct.name);
+        if (MeritCard2.equals(ct.name)) listMeritCard2.currentIndex = index4 + index5;
         index4++;
       }
       if (ct.stars == 5)  {
         ListHydraCard3.listItems.add( ct.name );
         if (Event5Star.equals(ct.name)) ListHydraCard3.currentIndex = index5;
+        listMeritCard1.listItems.add (ct.name);
+        if (MeritCard1.equals(ct.name)) listMeritCard1.currentIndex = index4 + index5;
+        listMeritCard2.listItems.add (ct.name);
+        if (MeritCard2.equals(ct.name)) listMeritCard2.currentIndex = index4 + index5;
         index5++;
       }
     }
@@ -119,7 +127,7 @@ void loadCards()
   }
   catch( Exception e )
   {
-    //println(e);
+    println(e);
     error = ""+e;
   }
 

@@ -111,6 +111,8 @@ boolean pressV = false;
 String Event3Star = "";
 String Event4Star = "";
 String Event5Star = "";
+String MeritCard1 = "";
+String MeritCard2 = "";
 
 void setup()
 {
@@ -157,6 +159,10 @@ void loadSettings() {
       Event5Star = br.readLine();
       numMatch = Integer.parseInt(br.readLine());
       server = br.readLine();
+      MeritCard1 = br.readLine();
+      MeritCard2 = br.readLine();
+      if (MeritCard1 == null) MeritCard1 = "";
+      if (MeritCard2 == null) MeritCard2 = "";
       br.close();
     }
   }
@@ -177,6 +183,8 @@ void saveSettings() {
     writer.println(ListHydraCard3.listItems.get(ListHydraCard3.currentIndex));
     writer.println(numMatch);
     writer.println(servers.listItems.get(servers.currentIndex));
+    writer.println(listMeritCard1.listItems.get(listMeritCard1.currentIndex));
+    writer.println(listMeritCard2.listItems.get(listMeritCard2.currentIndex));
     writer.close();
   }
   catch( Exception e )

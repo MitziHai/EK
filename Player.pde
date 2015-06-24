@@ -42,13 +42,16 @@ class Player
     name = p.name;
     initative = p.hp;
     if (p.hp == 0) initative += 999999;
+    merit = 0;
     for ( Card c : p.deck )
     {
       if( c == null ) break;
       Card c2 = new Card( c.type, c.lvl, c.evo, c.evoLevel,c.cost );
-      if (ListHydraCard1 != null && ListHydraCard1.listItems.get(ListHydraCard1.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)(c2.hpMax*1.5); c2.atkMax = (int)(c2.atkMax*1.5);}
-      if (ListHydraCard2 != null && ListHydraCard2.listItems.get(ListHydraCard2.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*2; c2.atkMax = (int)c2.atkMax*2; }
-      if (ListHydraCard3 != null && ListHydraCard3.listItems.get(ListHydraCard3.currentIndex) == c2.type.name && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
+      if (ListHydraCard1 != null && c2.type.name.equals(ListHydraCard1.listItems.get(ListHydraCard1.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)(c2.hpMax*1.5); c2.atkMax = (int)(c2.atkMax*1.5);}
+      if (ListHydraCard2 != null && c2.type.name.equals(ListHydraCard2.listItems.get(ListHydraCard2.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*2; c2.atkMax = (int)c2.atkMax*2; }
+      if (ListHydraCard3 != null && c2.type.name.equals(ListHydraCard3.listItems.get(ListHydraCard3.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
+      if (listMeritCard1 != null && c2.type.name.equals(listMeritCard1.listItems.get(listMeritCard1.currentIndex)) && raddi.checked ) merit += 8000;
+      if (listMeritCard2 != null && c2.type.name.equals(listMeritCard2.listItems.get(listMeritCard2.currentIndex)) && raddi.checked ) merit += 8000;
       c2.lvl = c.lvl;
       c2.resetAll(this);
       deck.add( c2 );
@@ -60,12 +63,12 @@ class Player
       runes[ i ] = new Rune( p.runes[ i ].type, p.runes[ i ].level );
     }
     numRunes = p.numRunes;
-    merit = 0;
     hpmax = hp = p.hp;
     invul = (hpmax == 0);
     checkDead();
     long seed = System.nanoTime();
-    Collections.shuffle(deck, new Random(seed));
+    if (!checkSetOrder.checked) Collections.shuffle(deck, new Random(seed));
+    else Collections.reverse(deck);
     
     for ( int i = 0; i < board.length; ++ i )
     {
@@ -105,6 +108,8 @@ class Player
       atkBuff[ i ] = 0;
     }
     checkDead();
+    long seed = System.nanoTime();
+    Collections.shuffle(deck, new Random(seed));
   }
   
   void checkDead()

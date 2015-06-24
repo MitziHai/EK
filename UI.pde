@@ -255,12 +255,18 @@ Checkbox checkMultisimResults;
 Checkbox checkKWDefend;
 Checkbox checkEvo;
 Checkbox checkSingleThread;
+Checkbox checkSetOrder;
 ListBox evoList;
 DropList ListHydraCard1;
 DropList ListHydraCard2;
 DropList ListHydraCard3;
 DropList servers;
+Control labelSetOrder;
 TextField textEvo;
+
+DropList listMeritCard1;
+DropList listMeritCard2;
+Control labelMeritCards;
 
 Picture picPlayerAvatar[] = new Picture[8];
 Control PlayerNames[] = new Control[8];
@@ -485,8 +491,21 @@ void setupUI()
   ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
   ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
   ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
+  uiSettings.add(ListHydraCard1);
+  uiSettings.add(ListHydraCard2);
+  uiSettings.add(ListHydraCard3);
 
+  labelSetOrder = new Control( "Card Order", 16, uiTop+360, 240, 24, 0 );
+  uiSettings.add(labelSetOrder);
+  checkSetOrder = new Checkbox( "Play cards in set order", 16, uiTop+390, 240, 24, 0 );
+  uiSettings.add( checkSetOrder );
 
+  labelMeritCards = new Control( "Choose Merit cards for Demon Invasion", 740, uiTop+100, 240, 24, 0 );
+  uiSettings.add(labelMeritCards);
+  listMeritCard1 = new DropList( "Choose Merit Card 1", 740, uiTop+130, 240, 24, 0 );
+  listMeritCard2 = new DropList( "Choose Merit Card 2", 956, uiTop+130, 240, 24, 0 );
+  uiSettings.add(listMeritCard1);
+  uiSettings.add(listMeritCard2);
 
  
   Control labelConvertLegacy = new Control( "Convert Old Version Decks", 16, uiTop+220, 240, 24, 0 );
@@ -502,9 +521,6 @@ void setupUI()
   uiSettings.add( checkSingleThread );
 
 
-  uiSettings.add(ListHydraCard1);
-  uiSettings.add(ListHydraCard2);
-  uiSettings.add(ListHydraCard3);
   
   for ( int i = 0; i < 8; ++ i )
   {
