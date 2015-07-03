@@ -155,7 +155,7 @@ class Game implements Runnable
           Card c = p1.inPlay.get(i);
           boolean add_comma = false;
           play1 += "[";
-          for (int j = 0; j <= 8; j++) {// 6 is size of status array
+          for (int j = 0; j < STATUS_SIZE; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play1 += ", ";
               play1 += statusNames[j];
@@ -210,7 +210,7 @@ class Game implements Runnable
           Card c = p2.inPlay.get(i);
           boolean add_comma = false;
           play2 += "[";
-          for (int j = 0; j <= 8; j++) {// 6 is size of status array
+          for (int j = 0; j < STATUS_SIZE; j++) {// 6 is size of status array
             if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
               if (add_comma) play2 += ", ";
               play2 += statusNames[j];
@@ -350,7 +350,7 @@ class Game implements Runnable
         Card c = p1.inPlay.get(i);
         boolean add_comma = false;
         play1 += "[";
-        for (int j = 0; j <= 8; j++) {// 6 is size of status array
+        for (int j = 0; j < STATUS_SIZE; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play1 += ", ";
             play1 += statusNames[j];
@@ -404,7 +404,7 @@ class Game implements Runnable
         Card c = p2.inPlay.get(i);
         boolean add_comma = false;
         play2 += "[";
-        for (int j = 0; j <= 8; j++) {// 6 is size of status array
+        for (int j = 0; j < STATUS_SIZE; j++) {// 6 is size of status array
           if (c.status[j] && j != SICK) {// don't print out reanimated sickness status
             if (add_comma) play2 += ", ";
             play2 += statusNames[j];

@@ -51,6 +51,7 @@ void loadAbils()
   abilities.put( "Bite", AType.A_BITE );
   abilities.put( "Bloodsucker", AType.A_BLOODSUCKER );
   abilities.put( "Bloodthirsty", AType.A_BLOODTHIRSTY );
+  abilities.put( "Bloody Battle", AType.A_BLOODY_BATTLE );
   abilities.put( "Blight", AType.A_BLIGHT );
   abilities.put( "Blitz", AType.A_BLITZ );
   abilities.put( "Blizzard", AType.A_BLIZZARD );
@@ -81,13 +82,15 @@ void loadAbils()
   abilities.put( "D: Toxic Clouds", AType.A_D_TOXIC_CLOUDS );
   abilities.put( "D: Trap", AType.A_D_TRAP );
   abilities.put( "Damnation", AType.A_DAMNATION );
+  abilities.put( "Death Marker", AType.A_DEATH_MARKER );
   abilities.put( "Destroy", AType.A_DESTROY );
   abilities.put( "Devil's Armor", AType.A_DEVILS_ARMOR );
   abilities.put( "Devil's Blade", AType.A_DEVILS_BLADE );
   abilities.put( "Devil's Curse", AType.A_DEVILS_CURSE );
   abilities.put( "Dexterity", AType.A_DEXTERITY );
-  abilities.put( "Dodge", AType.A_DODGE );
   abilities.put( "Divine Protection", AType.A_DIVINE_PROTECTION );
+  abilities.put( "Dodge", AType.A_DODGE );
+  abilities.put( "Dread Roar", AType.A_DREAD_ROAR );
   abilities.put( "Dual Snipe", AType.A_DUAL_SNIPE );
   abilities.put( "Electric Shock", AType.A_ELECTRIC_SHOCK );
   abilities.put( "Evasion", AType.A_EVASION );
@@ -115,6 +118,7 @@ void loadAbils()
   abilities.put( "Infiltrator", AType.A_INFILTRATOR );
   abilities.put( "Jungle Barrier", AType.A_JUNGLE_BARRIER );
   abilities.put( "Laceration", AType.A_LACERATION );
+  abilities.put( "Last Chance", AType.A_LAST_CHANCE );
   abilities.put( "Magic Shield", AType.A_MAGIC_SHIELD );
   abilities.put( "Mana Corruption", AType.A_MANA_CORRUPTION );
   abilities.put( "Mania", AType.A_MANIA );
@@ -198,6 +202,7 @@ void loadAbils()
   evoNames.put( "Blizzard", "bzd" );
   evoNames.put( "Bloodsucker", "bs" );
   evoNames.put( "Bloodthirsty", "blt" );
+  evoNames.put( "Bloody Battle", "blb" );
   evoNames.put( "Chain Attack", "ca" );
   evoNames.put( "Chain Lightning", "cl" );
   evoNames.put( "Clean Sweep", "cs" );
@@ -223,13 +228,15 @@ void loadAbils()
   evoNames.put( "D: Prayer", "d:pyr" );
   evoNames.put( "D: Trap", "d:trp" );
   evoNames.put( "Damnation", "damn" );
+  evoNames.put( "Death Marker", "dm");
   evoNames.put( "Destroy", "des" );
   evoNames.put( "Devil's Armor", "da" );
   evoNames.put( "Devil's Blade", "db" );
   evoNames.put( "Devil's Curse", "dc" );
   evoNames.put( "Dexterity", "dex" );
-  evoNames.put( "Dodge", "dge" );
   evoNames.put( "Divine Protection", "dp" );
+  evoNames.put( "Dodge", "dge" );
+  evoNames.put( "Dread Roar", "dr");
   evoNames.put( "Dual Snipe", "ds" );
   evoNames.put( "Electric Shock", "es" );
   evoNames.put( "Evasion", "eva" );
@@ -257,6 +264,7 @@ void loadAbils()
   evoNames.put( "Infiltrator", "infl" );
   evoNames.put( "Jungle Barrier", "jb" );
   evoNames.put( "Laceration", "lct" );
+  evoNames.put( "Last Chance", "lc");
   evoNames.put( "Magic Shield", "ms" );
   evoNames.put( "Mana Corruption", "mc" );
   evoNames.put( "Mania", "man" );
@@ -322,6 +330,7 @@ void loadAbils()
   evoNames.put( "Weaken", "weak" );
   evoNames.put( "Wicked Leech", "wl" );
 
+
   evoNamesEvo.put( "Advanced Strike", false );
   evoNamesEvo.put( "Arctic Guard", true );
   evoNamesEvo.put( "Arctic Pollution", true );
@@ -332,6 +341,7 @@ void loadAbils()
   evoNamesEvo.put( "Blizzard", true );
   evoNamesEvo.put( "Bloodsucker", true );
   evoNamesEvo.put( "Bloodthirsty", true );
+  evoNamesEvo.put( "Bloody Battle", false );
   evoNamesEvo.put( "Chain Attack", false );
   evoNamesEvo.put( "Chain Lightning", true );
   evoNamesEvo.put( "Clean Sweep", false );
@@ -357,13 +367,15 @@ void loadAbils()
   evoNamesEvo.put( "D: Prayer", true );
   evoNamesEvo.put( "D: Trap", false );
   evoNamesEvo.put( "Damnation", false );
+  evoNamesEvo.put( "Death Marker", false );
   evoNamesEvo.put( "Destroy", false );
   evoNamesEvo.put( "Devil's Armor", false );
   evoNamesEvo.put( "Devil's Blade", false );
   evoNamesEvo.put( "Devil's Curse", false );
   evoNamesEvo.put( "Dexterity", false );
-  evoNamesEvo.put( "Dodge", false );
   evoNamesEvo.put( "Divine Protection", false );
+  evoNamesEvo.put( "Dodge", false );
+  evoNamesEvo.put( "Dread Roar", false );
   evoNamesEvo.put( "Dual Snipe",false );
   evoNamesEvo.put( "Electric Shock", true );
   evoNamesEvo.put( "Evasion", false );
@@ -391,6 +403,7 @@ void loadAbils()
   evoNamesEvo.put( "Infiltrator", false );
   evoNamesEvo.put( "Jungle Barrier", false );
   evoNamesEvo.put( "Laceration", false );
+  evoNamesEvo.put( "Last Chance", false );
   evoNamesEvo.put( "Magic Shield", true );
   evoNamesEvo.put( "Mana Corruption", false );
   evoNamesEvo.put( "Mania", false );

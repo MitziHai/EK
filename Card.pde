@@ -172,6 +172,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_BLOODY_BATTLE: 
+    when = ON_ATTACK_CARD; 
+    when2 = ON_ATTACK_PLAYER; 
+    break;
   case A_BLOODSUCKER: 
     when = ON_ATTACK_CARD; 
     when2 = NEVER; 
@@ -275,14 +279,22 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
-  case A_DODGE: 
-    when = ON_ATTACKED; 
-    when2 = NEVER; 
-    break;
   case A_DIVINE_PROTECTION: 
     when = ON_ENTER; 
     when2 = ON_DEATH; 
     when3 = NEVER; 
+    break;
+  case A_DODGE: 
+    when = ON_ATTACKED; 
+    when2 = NEVER; 
+    break;
+  case A_DONS_BODYGUARD: 
+    when = ON_DEATH; 
+    when2 = NEVER; 
+    break;
+  case A_DREAD_ROAR: 
+    when = BEFORE_ATTACK; 
+    when2 = NEVER; 
     break;
   case A_DUAL_SNIPE: 
     when = BEFORE_ATTACK; 
@@ -388,6 +400,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_LACERATION: 
     when = AFTER_ATTACK; 
+    when2 = NEVER; 
+    break;
+  case A_LAST_CHANCE: 
+    when = ON_DEATH; 
     when2 = NEVER; 
     break;
   case A_MAGIC_SHIELD: 
@@ -550,10 +566,6 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_SWAMP_PURITY: 
     when = ON_ATTACK_CARD; 
-    when2 = NEVER; 
-    break;
-  case A_DONS_BODYGUARD: 
-    when = ON_DEATH; 
     when2 = NEVER; 
     break;
   case A_THUNDERBOLT: 
@@ -727,7 +739,7 @@ static final int ON_DEATH = 6;
 static final int ON_ATTACKED_SPELL = 7;
 static final int NUM_WHEN = 8;
 
-static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none"};
+static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "last chance", "dread roar", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
 static final int FROZEN = 0;
 static final int SHOCKED = 1;
 static final int TRAPPED = 2;
@@ -737,17 +749,20 @@ static final int SICK = 5;
 static final int LACERATED = 6;
 static final int STUNNED = 7;
 static final int CORRUPT = 8;
-static final int HEAL = 9;
-static final int HEAL_MIST = 10;
-static final int DESTROY = 11;
-static final int NO_IMMUNE = 12;
-static final int NO_REFLECT = 13;
-static final int POISONED = 14;
-static final int FIRE = 15;
-static final int BLOOD = 16;
-static final int NONE = 17;
-static final int MANA_CORRUPTION = 18;
+static final int LAST_CHANCE = 9;
+static final int DREAD_ROAR = 10;
+static final int HEAL = 11;
+static final int HEAL_MIST = 12;
+static final int DESTROY = 13;
+static final int NO_IMMUNE = 14;
+static final int NO_REFLECT = 15;
+static final int POISONED = 16;
+static final int FIRE = 17;
+static final int BLOOD = 18;
+static final int NONE = 19;
+static final int MANA_CORRUPTION = 20;
 
+static final int STATUS_SIZE = 11;
 
 class Card
 {
@@ -756,6 +771,7 @@ class Card
   int lvl;
   int hpCurr;
   int hpBuff;
+  int last_chance;
   int hpMax;
   int atk;
   int atkBuff;
@@ -769,7 +785,7 @@ class Card
   boolean combust[] = {false, false, false, false, false, false, false, false, false, false, false};
   int combustion = 0;
   int poison;
-  boolean status[] = new boolean[ 9 ];
+  boolean status[] = new boolean[ STATUS_SIZE ];
   boolean summoned = false;
   int time;
   int atkNow;
@@ -897,6 +913,7 @@ class Card
     evasion = false;
     reanimated = false;
     infiltrator = false;
+    last_chance = 0;
     bloodsuck = 0;
     time = type.timer;
     backstab = 0;
@@ -909,7 +926,7 @@ class Card
     }
     poison = 0;
     morale = 0;
-    for ( int i = 0; i <= 8; ++ i )
+    for ( int i = 0; i < STATUS_SIZE; ++ i )
       status[ i ] = false;
     alreadySealed = false;
     divineProtect[ 0 ] = divineProtect[ 1 ] = divineProtect[ 2 ] = null;
@@ -922,14 +939,15 @@ class Card
 
   int subtractHealth( Player own, Player op, int h )
   {
+    int dmg = 0;
     boolean wasDead = dead;
     if (ward > 0 && h > 0 && debug > 2) println("       " + min(h, ward) + " damage mitigated by " + toStringNoHp() + "'s ward");
-    int dmg = max( 0, h - ward );
+    dmg = max( 0, h - ward );
     ward -= ( h - dmg );
     dmg = min( dmg, hpCurr );
     hpCurr -= dmg;
     dead = hpCurr <= 0;
-    if ( !wasDead && dead ) died(own, op);
+    if ( !wasDead && dead ) died(own, op,false);
     return dmg;
   }
 
@@ -960,9 +978,13 @@ class Card
 
       if ( status[ CONFUSED ] )
       {
+        if (status[DREAD_ROAR]) {
+          atkNow = atk/2;
+          if (debug > 2) println("     " + toStringNoHp() + " attack is halfed due to dread roar. New attack is: " + atkNow );
+        }
         if ( debug > 1 )
-          println("     " + toStringNoHp() + " attacks its controller for " + atk );
-        own.attacked( atk, op, false );
+          println("     " + toStringNoHp() + " attacks its controller for " + atkNow );
+        own.attacked( atkNow, op, false );
       }
       else
       {
@@ -980,6 +1002,10 @@ class Card
           if ( op.board[ pos ] == null || op.board[ pos ].dead  )
           {
             checkAbilities(own, op, ON_ATTACK_PLAYER,-1);
+            if (status[DREAD_ROAR]) {
+              atkNow = atkNow - atk/2;
+              if (debug > 2) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
+            }
             if ( debug > 1 )
               println("     " + toStringNoHp() + " attacks player for " + atkNow );
             op.attacked( atkNow, own, false ); //should be own not op
@@ -991,6 +1017,10 @@ class Card
             targets[ 0 ] = op.board[ pos ];
             targetNum = 1;
             checkAbilities(own, op, ON_ATTACK_CARD,-1);
+            if (status[DREAD_ROAR]) {
+              atkNow = atkNow - atk/2;
+              if (debug > 2) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
+            }
             for ( int i = 0; i < targetNum; ++ i )
             {
               dmgDone[ i ] = targets[ i ].attacked(op, own, atkNow, this, infiltrator, bloodsuck, i );
@@ -1027,6 +1057,7 @@ class Card
     status[ TRAPPED ] = false;
     if (isStunned) status[ STUNNED ] = false;
     status[ CONFUSED ] = false;
+    status[ DREAD_ROAR] = false;
   }
 
   // own is player owning this card, opponent is attacker
@@ -1046,6 +1077,10 @@ class Card
     checkAbilities( own, op, ON_ATTACKED,-1);
     //dmgCalculated caculates damage done with abilities
     dmgTaken = min(( int)(dmgTaken * dmgMult), dmgMax ) - dmgMinus;
+    if (status[LAST_CHANCE]) {
+      dmgTaken = 0;
+      if (debug > 1)       println("       Damage prevented by " + toStringNoHp() + " last chance");
+    }
     attacker.dmgCalculated[AttackID] = dmgTaken;
     //dmgTaken reduces damage to damage done to kill card if applicable
     dmgTaken = subtractHealth( own, op, dmgTaken );
@@ -1130,7 +1165,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int attackedSpell( Player own, Player op, int dmg, Card attacker, int effect, int chance )
   {
     dmgTaken = 0;
-    if ( (!status[SILENCED] && immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == MANA_CORRUPTION)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
+    if (status[LAST_CHANCE] && effect != HEAL && effect != STUNNED) {
+      if (debug > 2) {
+        if (effect == TRAPPED)
+          println("       Last chance prevented trap to " +  toStringNoHp() );
+        else if( effect == CONFUSED )
+          println("       Last chance prevented confused to " + toStringNoHp() );
+        else if( effect == DESTROY )
+          println("       Last chance prevented destroy to " + toStringNoHp() );
+        else  // FROZEN, SHOCKED, NO_REFLECT, POISONED, FIRE, BLOOD
+          println("       Last chance prevented " + dmg + " damage to " +  toStringNoHp() );
+      }
+      return dmgTaken;
+    }
+    else if ( (!status[SILENCED] && immune  && !(effect == STUNNED)) || effect == NO_IMMUNE || effect == MANA_CORRUPTION)  // If card is immune and not ability is not stunning (affects immunity but doesn't affect evasion) or damage is snipe or Devils Blade, or mana corruption 
     {
       if ( effect == NO_IMMUNE )
       {
@@ -1162,16 +1210,21 @@ Seperate Variables: BURNED, POISON, immune, resist,
         op.merit += dmgTaken;
 
       return dmgTaken;
-    }
+      }
     else if (effect == DESTROY) {  // Abilities affected by resistance
       if( resist ) {
         if (debug > 2) println("         Resist prevented Destroy on " + toStringNoHp() );
       } 
+      if (status[LAST_CHANCE]) {
+        if (debug > 2) println("         Last Chance prevented Destroy on " + toStringNoHp() );
+      }
       else {
-        dmgTaken = subtractHealth( own, op, dmg);
+        dead = true;
+        died(own,op,true);
         if (debug > 2) println("       Destroyed " + toStringNoHp() );
       }
-      return dmgTaken;
+      dmg = 0;
+      return dmg;
     }
     else if (effect == HEAL) {  // abilities affected by Laceration
       if( status[ LACERATED ] )
@@ -1228,6 +1281,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     if (effect == TRAPPED || effect == CONFUSED || effect == STUNNED) {  // abilities affected by evasion but not by magic shield and/or reflection
       if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
       else if( immune && type.faction == DEMON && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s demon immunity");
+      else if( status[LAST_CHANCE] && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s last chance");
       else if (random( 0, 100 ) <= chance) {
         if( debug > 2 ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
         status[ effect ] = true;
@@ -1283,19 +1337,22 @@ Seperate Variables: BURNED, POISON, immune, resist,
   }
   
 
-  void died(Player own, Player op)
+  void died(Player own, Player op, boolean destroyed)
   {
     if( debug > 3 ) println( "     Died: " + this);
-    checkAbilities(own, op, ON_DEATH,-1);
-    if (status[CORRUPT]) 
-    {        
-      status[CORRUPT] = false;
-      own.cardCount[ PLAY ][ faction ] -= 1;
-      faction = type.faction;
-      own.cardCount[ PLAY ][ faction ] += 1;
+    if (destroyed) checkAbilities(own, op, ON_DEATH,DESTROY);
+    else checkAbilities(own,op,ON_DEATH,-1);
+    if (!status[LAST_CHANCE]) {
+      if (status[CORRUPT]) 
+      {        
+        status[CORRUPT] = false;
+        own.cardCount[ PLAY ][ faction ] -= 1;
+        faction = type.faction;
+        own.cardCount[ PLAY ][ faction ] += 1;
+      }
+      if (!reanimated && !summoned) own.addToGrave( this );
+      own.removeFromPlay(this);
     }
-    if (!reanimated && !summoned) own.addToGrave( this );
-    own.removeFromPlay(this);
   }
 
   void checkAbilities( Player own, Player op, int when, int effect )
@@ -1385,6 +1442,16 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_DEXTERITY:
           if( debug > 3 ) println( "     Dexterity");
           dex = true;
+          break;
+
+        case A_DREAD_ROAR:
+          if( debug > 3 ) println( "     Dread Roar");
+          for ( Card c : op.inPlay )
+          {
+            if (c.faction != DEMON) {
+              c.status[DREAD_ROAR] = true;
+            }
+          }
           break;
 
         case A_DUAL_SNIPE:
@@ -1598,16 +1665,21 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_SILENCE:
-          if( debug > 3 ) println( "     Silence");
           if (op.board[ pos ] == null && debug > 2) println("       No Target for silence");
           if ( op.board[ pos ] != null ) {
+            if( debug > 3 ) println( "     Silence");
             Card c = op.board[ pos ];
-            if (op.guards.contains(c)) op.guards.remove(c);
-            c.status[SILENCED] = true;
-            for (int j=0; j<NUM_WHEN;j++)
-              for (int k=0; k<c.abilityNum[j];k++)
-                c.abilitySilenced[j][k] = true;
-            if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
+            if (c.type.faction == DEMON) 
+               if (debug > 2) println("       Demons can not be silenced");
+            else 
+            {
+              if (op.guards.contains(c)) op.guards.remove(c);
+              c.status[SILENCED] = true;
+              for (int j=0; j<NUM_WHEN;j++)
+                for (int k=0; k<c.abilityNum[j];k++)
+                  c.abilitySilenced[j][k] = true;
+              if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
+            }
           }
           break;
 
@@ -1723,6 +1795,15 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if( debug > 3 ) println( "     Slayer increases attack by " + (0.15f*l*atk));
           atkNow += 0.15f * l * atk;
           break;
+
+        case A_BLOODY_BATTLE:
+          if ( op.board[ pos ] == null)
+          {
+            if( debug > 3 ) println( "     Bloody Battle increases attack by " + (( 0 + l*0.15 ) * atk));
+            atkNow += max(0,hpMax - hpCurr);
+          }
+          break;
+
         case A_HOT_CHASE:
           // if ( op.board[ pos ] != null ) Should not have been here
           {
@@ -1771,6 +1852,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if( debug > 3 ) println( "     Blitz increases attack by " + (( 0 + l*0.15 ) * atk));
             atkNow += ( l*0.15 ) * atk;
+          }
+          break;
+
+        case A_BLOODY_BATTLE:
+          if ( op.board[ pos ] != null)
+          {
+            if( debug > 3 ) println( "     Bloody Battle increases attack by " + (hpMax - hpCurr));
+            atkNow += max(0,hpMax - hpCurr);
           }
           break;
 
@@ -1987,15 +2076,15 @@ Seperate Variables: BURNED, POISON, immune, resist,
           boolean failed = false;
           for ( Card c : own.inPlay )
           {
-            if (c.summoner == this && c.type.name.equals("Omniscient Dragon")) {
+            if (c.summoner == this && c.type.name.equals("Thunder Dragon")) {
               if( debug > 3 ) println( "     Summon Dragon fails due to Omniscient Dragon already being on the field for this card");
               failed = true;
             }
           }
           if (!failed) 
           {
-            if( debug > 3 ) println( "     Summon Dragon summons Omniscient Dragon");
-            Card cs = cardFromString( "Omniscient Dragon" );
+            if( debug > 3 ) println( "     Summon Dragon summons Thunder Dragon");
+            Card cs = cardFromString( "Thunder Dragon" );
             cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
             cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
             cs.summoner = this;
@@ -2239,7 +2328,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
               //own.addToGrave( c );
               c.hpCurr = -1000;
               c.dead = true;
-              c.died(own, op);
+              c.died(own, op,true);
             }
             else if( debug > 3 && c.immune) println( "     Sacrifice failed targetting immune card " + c.toStringNoHp() );
           }
@@ -2351,8 +2440,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
           own.guards.remove( this );
           break;
 
+        case A_LAST_CHANCE:
+          if ( dead  && !abilitySilenced[when][i] && effect != DESTROY && last_chance == 0)
+          {
+            if( debug > 3 ) println( "     " + toStringNoHp() + " gets a Last Chance. HP set to 1");
+            hpCurr = 1;
+            last_chance++;
+            dead = false;
+            this.status[LAST_CHANCE] = true;
+          }
+          break;
+
+
         case A_RESURRECTION:
-          if ( dead && reanimated == false && !abilitySilenced[when][i])
+          if ( dead && summoned == false && reanimated == false && !abilitySilenced[when][i])
           {
             if( random( 0, 100 ) <= 30+l*5 )
             {

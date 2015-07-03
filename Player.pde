@@ -181,6 +181,8 @@ class Player
     // Last, dead cards again and compact the board.
     removeDeadCards( op );
     checkDead();
+    for( Card c : inPlay )
+      c.status[LAST_CHANCE] = false;
   }
   
   void removeDeadCards(Player op)

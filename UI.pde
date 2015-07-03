@@ -230,6 +230,13 @@ ArrayList< Deck > savedDecks = new ArrayList< Deck >();
 Deck deckp1 = new Deck();
 Deck deckp2 = new Deck();
 
+Control fohDeck;
+Control fohPlayer;
+Control fohLevel;
+Control fohDeckCost;
+Control fohInitativeCost;
+Control fohHealth;
+
 ListBox cards;
 ListBox deckList[] = new ListBox[2];
 Control search;
@@ -535,6 +542,18 @@ void setupUI()
     } 
   }
 
+  fohPlayer = new Control("Player: ",900, uiTop+80, 64, 64, 0);
+  uiFOH.add(fohPlayer);
+  fohLevel = new Control("Level: ",900, uiTop+110, 64, 64, 0);
+  uiFOH.add(fohLevel);
+  fohHealth = new Control("Health: ",900, uiTop+140, 64, 64, 0);
+  uiFOH.add(fohHealth);
+  fohInitativeCost = new Control("Initative: ",900, uiTop+170, 64, 64, 0);
+  uiFOH.add(fohInitativeCost);
+  fohDeckCost = new Control("Deck Cost: ",900, uiTop+200, 64, 64, 0);
+  uiFOH.add(fohDeckCost);
+  fohDeck = new Control("Deck: ",900, uiTop+240, 64, 64, 0);
+  uiFOH.add(fohDeck);
 
   servers = new DropList( "", 512, uiTop+24, 224, 24, SERVER_SELECT );
   servers.listItems.addAll(Arrays.asList(new String[] {
@@ -2405,6 +2424,38 @@ class Picture extends Control
       pg.image( img, x, y, w, h );
     }
   }
+
+  void handleMousePressed()
+  {
+    super.handleMousePressed();
+    if ( mouseIsOn() && clicked && FOHDownload) {
+      for (int i=0;i<8;i++) {
+        if (this == picPlayerAvatar[i]) {
+          fohPlayer.text = "Player: " + PlayerNames[i].text;
+          Deck deckPlayer = deckFromFOH(1, i/2, i%2, true);
+          fohLevel.text = "Level: " + deckPlayer.level;
+          fohHealth.text = "Health: " + hpPerLevel[deckPlayer.level];
+          int deckCost = 0;
+          int initative = hpPerLevel[deckPlayer.level];
+          fohDeck.text = "Deck: \n";
+          for ( int j = 0; j < min(10,deckPlayer.numCards); ++ j )
+          {
+            initative += deckPlayer.cards[j].type.hp[deckPlayer.cards[j].lvl];
+            initative += deckPlayer.cards[j].type.atk[deckPlayer.cards[j].lvl];
+            deckCost += deckPlayer.cards[j].cost;
+            fohDeck.text += "   " + deckPlayer.cards[j].toStringNoHp() + "\n";
+          }
+          for ( int j = 0; j < deckPlayer.numRunes; ++ j )
+          {
+            fohDeck.text += "   " + deckPlayer.runes[j] + "\n";
+          }
+          fohDeckCost.text = "Deck Cost: " + deckCost;
+          fohInitativeCost.text = "Initative: " + initative;
+        }
+      }
+    }
+  }
+
 }
 
 void drawEKnumber( PGraphics pg, int num, int x, int y, boolean whiteFont, float scale )
