@@ -50,11 +50,11 @@ void drawGraph(PGraphics pg)
   }
   else if( raddi.checked )
   {
-   // println("counter\tmerit\trounds");
+   // println("bar\tmerit");
     for( Result res : resultsBest )
     {
       counter++;
-     //println(counter + "\t" + res.score + "\t" + res.rounds);
+     //println(min( (int)((res.score - totalmeritMin) / meritPerBar), bars-1 ) + "\t" + res.score);
       ++ barValues1[ min( (int)((res.score - totalmeritMin) / meritPerBar), bars-1 ) ];
       ++ barValues2[ min( (int)((res.rounds - totalroundsMin) / roundsPerBar), bars-1 ) ];
     }
@@ -148,13 +148,19 @@ void drawGraph(PGraphics pg)
     pg.strokeWeight(1);
     pg.stroke(col);
     drawBar( 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128, (int)(max(barWidth-4,4)/2*0.85), val1, lastValue1, lastX1, isBar );
-    pg.text( ((i*meritPerBar+totalmeritMin)+"-\n"+((i+1)*meritPerBar+totalmeritMin)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
+    if (i == bars -1)
+      pg.text( ((i*meritPerBar+totalmeritMin)+"-\n"+(totalmeritMax)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
+    else
+      pg.text( ((i*meritPerBar+totalmeritMin)+"-\n"+((i+1)*meritPerBar+totalmeritMin)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
     pg.text(String.format("%.1f",float(100*barValues1[i]) / float(resultsBest.size()))+"%",64 + 4 + max((barWidth-4),4)*i,listresult.y - 128 + val1 - 5);
 
     pg.fill(col2);
     pg.stroke(col2);
     drawBar( (int)(64 + 4 + max((barWidth-4),4)*(i+0.5)), listresult.y - 128, (int)(max(barWidth-4,4)/2*0.85), val2, lastValue2, lastX2, isBar );
-    pg.text( ((i*roundsPerBar+totalroundsMin)+"-\n"+((i+1)*roundsPerBar+totalroundsMin)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 + 32 + 32 );
+    if (i == bars -1)
+      pg.text( ((i*roundsPerBar+totalroundsMin)+"-\n"+(totalroundsMax)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 + 32 + 32 );
+    else
+      pg.text( ((i*roundsPerBar+totalroundsMin)+"-\n"+((i+1)*roundsPerBar+totalroundsMin)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 + 32 + 32 );
     pg.text(String.format("%.1f",float(100*barValues2[i]) / float(resultsBest.size()))+"%",64 + 4 + max((barWidth-4),4)*(i+0.5),listresult.y - 128 + val2 - 5);
 
     lastValue1 = val1;

@@ -2848,7 +2848,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom3( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2870,7 +2870,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom4( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2892,7 +2892,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom5( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2914,7 +2914,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom3( Player own, Player target, int dmgMin, int dmgMax, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     ArrayList< Card > targets = new ArrayList< Card >();

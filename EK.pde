@@ -630,6 +630,7 @@ class RunSim implements Runnable
     // Begin threads.
     int cores = 2*8;
     if (checkSingleThread.checked ) cores = 1;
+    if (checkDebug.checked ) {cores = 1; debug = 4;}
     // debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 

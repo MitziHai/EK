@@ -263,6 +263,7 @@ Checkbox checkKWDefend;
 Checkbox checkEvo;
 Checkbox checkSingleThread;
 Checkbox checkSetOrder;
+Checkbox checkDebug;
 ListBox evoList;
 DropList ListHydraCard1;
 DropList ListHydraCard2;
@@ -526,6 +527,8 @@ void setupUI()
   uiSettings.add(labelRunOptions);
   checkSingleThread = new Checkbox( "Run all simulations single threaded", 16, uiTop+320, 240, 24, 0 );
   uiSettings.add( checkSingleThread );
+  checkDebug = new Checkbox( "Run Debug Mode (also single threaded)", 360, uiTop+320, 240, 24, 0 );
+  uiSettings.add( checkDebug );
 
 
   
