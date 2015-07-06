@@ -1215,7 +1215,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       if( resist ) {
         if (debug > 2) println("         Resist prevented Destroy on " + toStringNoHp() );
       } 
-      if (status[LAST_CHANCE]) {
+      else if (status[LAST_CHANCE]) {
         if (debug > 2) println("         Last Chance prevented Destroy on " + toStringNoHp() );
       }
       else {
