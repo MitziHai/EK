@@ -792,6 +792,7 @@ class Card
   int atkNow;
   int buffGuardOffset = 0;
   int buffAttackOffset = 0;
+  int buffSummonedOffset = 0;
   int dmgTaken;
   int dmgDone[] = new int[ 40 ];
   int dmgCalculated[] = new int[ 40 ];
@@ -848,6 +849,7 @@ class Card
     hpMax = t.hp[lvl];
     buffGuardOffset = 0;
     buffAttackOffset = 0;
+    buffSummonedOffset = 0;
     atkMax = t.atk[lvl];
     this.evo = evo;
     this.evoLevel = evoLevel;
@@ -908,7 +910,7 @@ class Card
   void resetAll(Player own)
   {        
     hpCurr = hpBuff = hpMax + own.hpBuff[ type.faction ] - buffGuardOffset;
-    atk = atkBuff = atkMax + own.atkBuff[ type.faction ] - buffAttackOffset;
+    atk = atkBuff = atkMax + own.atkBuff[ type.faction ] - buffAttackOffset + buffSummonedOffset;
     dex = false;
     dead = false;
     evasion = false;
@@ -1352,7 +1354,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         own.cardCount[ PLAY ][ faction ] += 1;
       }
       if (!reanimated && !summoned) own.addToGrave( this );
-      if (summoned) own.addToSummoned(this);
+      else if (summoned) own.addToSummoned(this);
       own.removeFromPlay(this);
     }
   }
@@ -2093,7 +2095,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
               if ( c.summoner == this )
               {
                 c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
-                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
                 own.addToPlay( c );
                 own.removeFromSummoned( k -- );
                 c.checkAbilities(own, op, ON_ENTER, -1);
@@ -2120,7 +2122,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
               if ( c.summoner == this && c.type.name.equals("Swamp Rider"))
               {
                 c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
-                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
                 own.addToPlay( c );
                 own.removeFromSummoned( k -- );
                 c.checkAbilities(own, op, ON_ENTER, -1);
@@ -2435,7 +2437,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
                 if ( c.summoner == this && c.type.name.equals("Behemoth"))
                 {
                   c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
-                  c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                  c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
                   own.addToPlay( c );
                   own.removeFromSummoned( k-- );
                   c.checkAbilities(own, op, ON_ENTER, -1);

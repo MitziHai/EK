@@ -169,7 +169,7 @@ class Player
       if ( --c.time <= 0 )
       {
         c.hpCurr = c.hpBuff = c.hpMax + hpBuff[ c.faction ] - c.buffGuardOffset;
-        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.faction ] - c.buffAttackOffset;
+        c.atk = c.atkBuff = c.atkMax + atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
         addToPlay( c );
         removeFromHand( i -- );
         c.checkAbilities(this, op, ON_ENTER, -1);
@@ -435,7 +435,7 @@ class Player
   void addToSummoned( Card c )
   {
     if( debug > 3 ) println( "       Removed from Game: " + c);
-    c.buffAttackOffset -= c.atkBuff - c.atkMax;
+    c.buffSummonedOffset = c.atkBuff - c.atkMax;
     summoned.add( c );
   }
   
