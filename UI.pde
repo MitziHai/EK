@@ -246,6 +246,7 @@ Checkbox cardsCheck;
 DropList faction;
 DropList stars;
 DropList levels;
+DropList listThreads;
 TextField textLevel[] = new TextField[2];
 TextField textdeck[] = new TextField[2];
 ListBox decks;
@@ -489,6 +490,11 @@ void setupUI()
   radhydra.setStart = radall;
   checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 180, 24, 0 );
   uiDeck.add( checkMultisim );
+  labelSetOrder = new Control( "Card Order", 16, uiTop+360, 240, 24, 0 );
+  uiSettings.add(labelSetOrder);
+  checkSetOrder = new Checkbox( "Play cards in set order", 16, uiTop+390, 240, 24, 0 );
+  uiSettings.add( checkSetOrder );
+
 
   labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
   uiSettings.add(labelMultiSim);
@@ -496,17 +502,6 @@ void setupUI()
   uiSettings.add( checkMultisimResults );
   labelKWSim = new Control( "Hydra Simulation Options\n   Choose the three event cards you want:\n                    3 *                                    4 *                                5*", 16, uiTop+100, 240, 24, 0 );
   uiSettings.add(labelKWSim);
-  ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
-  ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
-  ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
-  uiSettings.add(ListHydraCard1);
-  uiSettings.add(ListHydraCard2);
-  uiSettings.add(ListHydraCard3);
-
-  labelSetOrder = new Control( "Card Order", 16, uiTop+360, 240, 24, 0 );
-  uiSettings.add(labelSetOrder);
-  checkSetOrder = new Checkbox( "Play cards in set order", 16, uiTop+390, 240, 24, 0 );
-  uiSettings.add( checkSetOrder );
 
   labelMeritCards = new Control( "Choose Merit cards for Demon Invasion", 740, uiTop+100, 240, 24, 0 );
   uiSettings.add(labelMeritCards);
@@ -525,8 +520,7 @@ void setupUI()
 
   Control labelRunOptions = new Control( "Run Options", 16, uiTop+290, 280, 24, 0 );
   uiSettings.add(labelRunOptions);
-  checkSingleThread = new Checkbox( "Run all simulations single threaded", 16, uiTop+320, 240, 24, 0 );
-  uiSettings.add( checkSingleThread );
+
   checkDebug = new Checkbox( "Run Debug Mode (also single threaded)", 360, uiTop+320, 240, 24, 0 );
   uiSettings.add( checkDebug );
 
@@ -681,6 +675,21 @@ void setupUI()
   Control butdeckfile = new Button( " Load Decks", 768+offsetLeft+125, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_LOAD_DECKS );
   uiDeck.add( butdeckfile );
 
+  Control labThreads = new Control( "Threads:", 32, uiTop+320, 240, 24, 0 );
+  uiSettings.add( labThreads );
+  listThreads = new DropList( "Threads:", 128, uiTop+320, 240, 24, 0 );
+  uiSettings.add( listThreads );
+  listThreads.listItems.addAll(Arrays.asList(new String[] {
+    "1", "2", "4", "8", "16","32","64","128","256","512","1024"
+  }
+  ));  
+
+  ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
+  ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
+  ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
+  uiSettings.add(ListHydraCard1);
+  uiSettings.add(ListHydraCard2);
+  uiSettings.add(ListHydraCard3);
 
 
   butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );

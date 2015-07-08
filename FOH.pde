@@ -39,7 +39,7 @@ void FOH()
 //    ArenaDeckUtils adu = new ArenaDeckUtils("mitzitest@danj.com", "deh206", servers.listItems.get(servers.currentIndex).toLowerCase());
 //    adu.setEvoNames(evoNames); // This is your evonames, we had used it before
 //    adu.setStart(1); //download from this rank, default:1
-//    adu.setAmount(1);//amount of decks to be downloaded, default & max 100
+//    adu.setAmount(10);//amount of decks to be downloaded, default & max 100
 //    String decks = adu.printArenaDecks();
 //    println(decks);
     

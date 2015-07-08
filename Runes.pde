@@ -4,6 +4,7 @@ TreeMap<RType, RuneType> runesMapR = new TreeMap<RType, RuneType>();
 
 TreeMap<AType,AbilityWhen> groupAbilMap = new TreeMap<AType,AbilityWhen>();
 
+static final int DIFFERENCE_IN_PLAY = 10;
 static final int PLAYER_IN_PLAY = 0;
 static final int PLAYER_GRAVE = 1;
 static final int PLAYER_HAND = 2;
@@ -105,6 +106,11 @@ class Rune
     boolean activate = false;
     switch( type.requirement )
     {
+      case DIFFERENCE_IN_PLAY:
+        activate = ( type.requirement2 == ANY && op.playSize() - current.playSize() > type.requirementVal )
+          || ( type.requirement2 != ANY && op.cardCount[ PLAY ][ type.requirement2 ] - current.cardCount[ PLAY ][ type.requirement2 ] > type.requirementVal );
+        break;
+      
       case PLAYER_IN_PLAY:
         activate = ( type.requirement2 == ANY && current.playSize() > type.requirementVal )
           || ( type.requirement2 != ANY && current.cardCount[ PLAY ][ type.requirement2 ] > type.requirementVal );
@@ -283,6 +289,40 @@ class Rune
             dummyCard.damageAll( current, op, 5*l, NO_REFLECT, 0 );
             break;
           
+          case A_PURIFICATION:
+            if( current.playSize() > 0) {
+              activate = false;
+              for ( Card c : current.inPlay ) {
+                if (c.burn > 0) activate = true;
+                c.burn = 0;
+                for (int j = 0; j < COMBUST_SIZE; ++ j) {
+                  if (c.fireGod[j] || c.combust[j]) activate = true;
+                  c.fireGod[j] = false;
+                  c.combust[j] = false;
+                }
+                if (c.poison > 0) activate = true;
+                c.poison = 0;
+                if (c.status[CORRUPT]) {
+                  activate = true;
+                  current.cardCount[ PLAY ][ c.faction ] -= 1;
+                  c.faction = c.type.faction;
+                  current.cardCount[ PLAY ][ c.faction ] += 1;
+                }
+                for ( int j = 0; j < STATUS_SIZE - 1; ++ j ) {
+                  if (c.status[j]) activate = true;
+                  c.status[ j ] = false;
+                }
+              }
+              if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+              if( debug > 3 && activate) println( "     Purification");
+              if (!activate) ++ remainingUses;
+            }
+            else {
+              activate = false;
+              ++ remainingUses;
+            }
+            break;
+  
           case A_PRAYER:
             if( debug > 3) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             current.hp = min( current.hpmax, current.hp + 40*l );
@@ -344,7 +384,15 @@ class Rune
             if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom1( current, op, 20*l, POISONED, 20*l );
             break;
-          
+
+          case A_WARCRY:
+            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug > 3  && activate) println( "     Warcry for " + (1*l));
+            for ( Card c : current.hand )
+            {
+              c.time -= l;
+            }
+            break;          
         }
       }
       else
@@ -439,7 +487,9 @@ void loadRunes()
   runesMap.put( "Lore", new RuneType( "Lore", 4, 5, RType.R_LORE, MOUNTAIN, AType.A_GROUP_WARPATH, 6, 7, 8, 9, 10, PLAYER_GRAVE, MOUNTAIN, 2, false ) );
   runesMap.put( "Nimble Soul", new RuneType( "Nimble Soul", 3, 5, RType.R_NIMBLE_SOUL, FOREST, AType.A_GROUP_DODGE, 5, 6, 7, 8, 9, PLAYER_GRAVE, FOREST, 2, false ) );
   runesMap.put( "Ghost Step", new RuneType( "Ghost Step", 5, 5, RType.R_GHOST_STEP, MOUNTAIN, AType.A_GROUP_EVASION, 1, 1, 1, 1, 1, PLAYER_IN_PLAY, MOUNTAIN, 2, false ) );
-  runesMap.put( "Permafrost", new RuneType( "Permafrost",4, 5, RType. R_PERMAFROST, TUNDRA, AType.A_BLIZZARD, 6, 7, 8, 9, 10, PLAYER_IN_PLAY, TUNDRA, 1, true ) );
+  runesMap.put( "Permafrost", new RuneType( "Permafrost",4, 5, RType.R_PERMAFROST, TUNDRA, AType.A_BLIZZARD, 6, 7, 8, 9, 10, PLAYER_IN_PLAY, TUNDRA, 1, true ) );
+  runesMap.put( "Blight Stone", new RuneType( "Blight Stone",3, 5, RType.R_BLIGHT_STONE, SWAMP, AType.A_WARCRY, 2, 2, 2, 2, 2, DIFFERENCE_IN_PLAY, ANY, 2, true ) );
+  runesMap.put( "Divine Plea", new RuneType( "Divine Plea",3, 5, RType.R_DIVINE_PLEA, FOREST, AType.A_PURIFICATION, 1, 1, 1, 1, 1, PLAYER_IN_PLAY, FOREST, 2, true ) );
 }
 
 Rune runeFromString( String s )

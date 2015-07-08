@@ -15,6 +15,7 @@ class Player
   int initative;
   boolean dead = false;
   ArrayList< Card > hand = new ArrayList< Card >();
+  ArrayList< Card > summoned = new ArrayList< Card >();
   ArrayList< Card > deck = new ArrayList< Card >();
   ArrayList< Card > inPlay = new ArrayList< Card >(); // Collection of cards in play which does not maintain empty slots until end of turn. Used to pick random targets.
   ArrayList< Card > grave = new ArrayList< Card >();
@@ -25,7 +26,7 @@ class Player
   int numRunes = 0;
   Rune runes[] = new Rune[ 4 ];
 
-  Card board[] = new Card[15]; // Maintains position until end of turn. Implemented for exile.
+  Card board[] = new Card[40]; // Maintains position until end of turn. Implemented for exile.
   int hpBuff[] = new int[ 6 ];
   int atkBuff[] = new int[ 6 ];
   
@@ -55,7 +56,38 @@ class Player
       c2.lvl = c.lvl;
       c2.resetAll(this);
       deck.add( c2 );
-      
+      if (c2.type.name.equals("The Don")) {
+        c  = cardFromString("Behemoth");
+        Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+        c  = cardFromString("Swamp Rider");
+        cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+        c  = cardFromString("Swamp Rider");
+        cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+      }
+      if (c2.type.name.equals("Dragon Summoner")) {
+        c  = cardFromString("Thunder Dragon");
+        Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+      }     
       initative += c2.type.hp[c2.lvl] + c2.type.atk[c2.lvl];
     }
     for( int i = 0; i < p.numRunes; ++ i )
@@ -306,6 +338,14 @@ class Player
     if( hand.remove( c ) )
       cardCount[ HAND ][ c.faction ] -= 1;
   }
+ 
+  
+  Card removeFromSummoned( int i )
+  {
+    Card c = summoned.remove( i );
+    return c;
+  }
+   
   
   Card removeFromHand( int i )
   {
@@ -391,6 +431,15 @@ class Player
   {
     return inPlay.size();
   }
+
+  void addToSummoned( Card c )
+  {
+    if( debug > 3 ) println( "       Removed from Game: " + c);
+    c.buffAttackOffset -= c.atkBuff - c.atkMax;
+    summoned.add( c );
+  }
+  
+
   
   // GRAVE
   void addToGrave( Card c )

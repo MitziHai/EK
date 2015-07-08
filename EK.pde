@@ -68,6 +68,7 @@ import java.nio.*;
 
 int debug = 0; 
 boolean evoTab = true;
+String Threads = "";
 
 long numMatch = 10000;
 String server = "";
@@ -123,8 +124,8 @@ void setup()
   pg = new PGraphics();
   pg = createGraphics(1280, 768+32);
   loadAbils();
-  loadSettings();
   setupUI();
+  loadSettings();
   loadCards();
   loadRunes();
   loadDecks("decks_KW.txt",false,KWdecksList);
@@ -161,8 +162,14 @@ void loadSettings() {
       server = br.readLine();
       MeritCard1 = br.readLine();
       MeritCard2 = br.readLine();
+      Threads = br.readLine();
       if (MeritCard1 == null) MeritCard1 = "";
       if (MeritCard2 == null) MeritCard2 = "";
+      listThreads.currentIndex = 0; 
+      for (int i=0;i<listThreads.listItems.size();i++) {
+        if (listThreads.listItems.get(i).equals(Threads)) listThreads.currentIndex = i;
+      }
+      //if (Threads == null) Threads = 1;
       br.close();
     }
   }
@@ -185,6 +192,7 @@ void saveSettings() {
     writer.println(servers.listItems.get(servers.currentIndex));
     writer.println(listMeritCard1.listItems.get(listMeritCard1.currentIndex));
     writer.println(listMeritCard2.listItems.get(listMeritCard2.currentIndex));
+    writer.println(listThreads.listItems.get(listThreads.currentIndex));
     writer.close();
   }
   catch( Exception e )
@@ -628,8 +636,8 @@ class RunSim implements Runnable
     long patience = 1000 * 60 * 60;
 
     // Begin threads.
-    int cores = 2*8;
-    if (checkSingleThread.checked ) cores = 1;
+    int cores = Integer.parseInt(listThreads.listItems.get(listThreads.currentIndex));
+    //if (checkSingleThread.checked ) cores = 1;
     if (checkDebug.checked ) {cores = 1; debug = 4;}
     // debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);

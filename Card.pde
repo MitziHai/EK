@@ -739,7 +739,7 @@ static final int ON_DEATH = 6;
 static final int ON_ATTACKED_SPELL = 7;
 static final int NUM_WHEN = 8;
 
-static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "last chance", "dread roar", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
+static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "dread roar", "last chance", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
 static final int FROZEN = 0;
 static final int SHOCKED = 1;
 static final int TRAPPED = 2;
@@ -749,8 +749,8 @@ static final int SICK = 5;
 static final int LACERATED = 6;
 static final int STUNNED = 7;
 static final int CORRUPT = 8;
-static final int LAST_CHANCE = 9;
-static final int DREAD_ROAR = 10;
+static final int DREAD_ROAR = 9;
+static final int LAST_CHANCE = 10;
 static final int HEAL = 11;
 static final int HEAL_MIST = 12;
 static final int DESTROY = 13;
@@ -763,6 +763,7 @@ static final int NONE = 19;
 static final int MANA_CORRUPTION = 20;
 
 static final int STATUS_SIZE = 11;
+static final int COMBUST_SIZE = 11;
 
 class Card
 {
@@ -792,8 +793,8 @@ class Card
   int buffGuardOffset = 0;
   int buffAttackOffset = 0;
   int dmgTaken;
-  int dmgDone[] = new int[ 10 ];
-  int dmgCalculated[] = new int[ 10 ];
+  int dmgDone[] = new int[ 40 ];
+  int dmgCalculated[] = new int[ 40 ];
   int backstab = 0;
   int ward = 0;
   boolean infiltrator = false;
@@ -824,7 +825,7 @@ class Card
   
   int totalGlitchCount = 0;
 
-  Card targets[] = new Card[ 10 ];
+  Card targets[] = new Card[ 40 ];
   int targetNum = 0;
 
   AType[][] abilities = new AType[ NUM_WHEN ][ 10 ];
@@ -920,7 +921,7 @@ class Card
     ward = 0;
     burn = 0;
     faction = type.faction;
-    for (int i = 0; i <= 9; ++ i) {
+    for (int i = 0; i < COMBUST_SIZE; ++ i) {
       fireGod[i] = false;
       combust[i] = false;
     }
@@ -1351,6 +1352,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         own.cardCount[ PLAY ][ faction ] += 1;
       }
       if (!reanimated && !summoned) own.addToGrave( this );
+      if (summoned) own.addToSummoned(this);
       own.removeFromPlay(this);
     }
   }
@@ -1669,8 +1671,9 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if ( op.board[ pos ] != null ) {
             if( debug > 3 ) println( "     Silence");
             Card c = op.board[ pos ];
-            if (c.type.faction == DEMON) 
+            if (c.type.faction == DEMON) {
                if (debug > 2) println("       Demons can not be silenced");
+            }
             else 
             {
               if (op.guards.contains(c)) op.guards.remove(c);
@@ -2084,14 +2087,19 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if (!failed) 
           {
             if( debug > 3 ) println( "     Summon Dragon summons Thunder Dragon");
-            Card cs = cardFromString( "Thunder Dragon" );
-            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
-            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
-            cs.summoner = this;
-            cs.summoned = true;
-            if (this.status[ SICK ]) cs.status[SICK] = true;
-            own.addToPlay( cs );
-            cs.checkAbilities(own, op, ON_ENTER, -1);
+            for ( int k = 0; k < own.summoned.size(); ++ k )
+            {
+              Card c = own.summoned.get( k );
+              if ( c.summoner == this )
+              {
+                c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                own.addToPlay( c );
+                own.removeFromSummoned( k -- );
+                c.checkAbilities(own, op, ON_ENTER, -1);
+                if (this.status[ SICK ]) c.status[SICK] = true;
+              }
+            }
           }
           break;
         case A_GANG_UP:
@@ -2106,22 +2114,19 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if (!failed) 
           {
             if( debug > 3 ) println( "     Gang Up! summons two Swamp Riders");
-            Card cs = cardFromString( "Swamp Rider" );
-            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
-            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
-            cs.summoned = true;
-            cs.summoner = this;
-            if (this.status[ SICK ]) cs.status[SICK] = true;
-            own.addToPlay( cs );
-            cs.checkAbilities(own, op, ON_ENTER, -1);
-            cs = cardFromString( "Swamp Rider" );
-            cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
-            cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
-            cs.summoned = true;
-            cs.summoner = this;
-            if (this.status[ SICK ]) cs.status[SICK] = true;
-            own.addToPlay( cs );
-            cs.checkAbilities(own, op, ON_ENTER, -1);
+            for ( int k = 0; k < own.summoned.size(); ++ k )
+            {
+              Card c = own.summoned.get( k );
+              if ( c.summoner == this && c.type.name.equals("Swamp Rider"))
+              {
+                c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                own.addToPlay( c );
+                own.removeFromSummoned( k -- );
+                c.checkAbilities(own, op, ON_ENTER, -1);
+                if (this.status[ SICK ]) c.status[SICK] = true;
+              }
+            }
           }
          break;
        case A_QS_BLIZZARD:
@@ -2417,21 +2422,26 @@ Seperate Variables: BURNED, POISON, immune, resist,
             for ( Card c : own.inPlay )
             {
               if (c.summoner == this && c.type.name.equals("Behemoth")) {
-                if( debug > 3 ) println( "     Gang Up! fails due to a Swamp Rider already being on the field for this card");
+                if( debug > 3 ) println( "     The Don's Bodyguard fails due to a Behemoth already being on the field for this card");
                 failed = true;
               }
             }
             if (!failed) 
             {
               if( debug > 3 ) println( "     The Don's Bodyguard summons a Behemoth");
-              Card cs = cardFromString( "Behemoth" );
-              cs.hpCurr = cs.hpBuff = cs.hpMax + own.hpBuff[ cs.faction ] - cs.buffGuardOffset;
-              cs.atk = cs.atkBuff = cs.atkMax + own.atkBuff[ cs.faction ] - cs.buffAttackOffset;
-              cs.summoned = true;
-              cs.summoner = this;
-              if (this.status[ SICK ]) cs.status[SICK] = true;
-              own.addToPlay( cs );
-              cs.checkAbilities(own, op, ON_ENTER, -1);
+              for ( int k = 0; k < own.summoned.size(); ++ k )
+              {
+                Card c = own.summoned.get( k );
+                if ( c.summoner == this && c.type.name.equals("Behemoth"))
+                {
+                  c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
+                  c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset;
+                  own.addToPlay( c );
+                  own.removeFromSummoned( k-- );
+                  c.checkAbilities(own, op, ON_ENTER, -1);
+                  if (this.status[ SICK ]) c.status[SICK] = true;
+                }
+              }
             }
           }
           break;
@@ -2820,7 +2830,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     int ret = 0;
 
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
-    for ( int i = 0; i < 10; ++ i )
+    for ( int i = 0; i < 40; ++ i )
     {
       Card c = target.board[ i ];
       if ( c != null && !c.dead )
@@ -2834,10 +2844,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
   {
     int ret = 0;
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
-    for ( int i = 0; i < 10; ++ i )
+    for ( int i = 0; i < 40; ++ i )
     {
-      int dmg = (int)random( dmgMin, dmgMax );
       Card c = target.board[ i ];
+      int dmg = (int)random( dmgMin, dmgMax );
       if ( c != null && !c.dead )
         ret += c.attackedSpell( target, own, dmg, this, effect, chance );
       if( dead && effect == BLOOD) return ret; //Cards continue their spell attack even if died except for feast of blood
@@ -2848,7 +2858,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom3( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2870,7 +2880,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom4( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2892,7 +2902,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom5( Player own, Player target, int dmg, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     
@@ -2914,7 +2924,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   void damageRandom3( Player own, Player target, int dmgMin, int dmgMax, int effect, int chance )
   {
     int list[] = { 
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
     if (target.playSize() == 0 && debug > 2) println("       No Targets");
     ArrayList< Card > targets = new ArrayList< Card >();
