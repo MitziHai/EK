@@ -422,6 +422,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = ON_ATTACKED; 
     when2 = NEVER; 
     break;
+  case A_MASS_ATTRITION:
+    when = BEFORE_ATTACK;
+    when2 = NEVER;
+    break;
   case A_MOUNTAIN_ATK: 
     when = ON_ENTER; 
     when2 = ON_DEATH; 
@@ -1603,6 +1607,16 @@ Seperate Variables: BURNED, POISON, immune, resist,
           atk += 20*l;
           atkNow += 20*l;
           subtractHealth( own, op, 20*l );
+          break;
+
+        case  A_MASS_ATTRITION:
+          if( debug > 3 )
+          { 
+            for ( Card c : op.hand )
+              println( "     Mass Attrition increased time of " + c.toStringNoHp() + " by " + l);
+          }
+          for ( Card c : op.hand )
+            c.time += l;
           break;
 
         case A_NOVA_FROST:

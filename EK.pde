@@ -160,6 +160,18 @@ void loadSettings() {
       Event5Star = br.readLine();
       numMatch = Integer.parseInt(br.readLine());
       server = br.readLine();
+      if (server.equals("Chaos")) servers.currentIndex = 0;
+      if (server.equals("Harmony")) servers.currentIndex = 1;
+      if (server.equals("Legacy")) servers.currentIndex = 2;
+      if (server.equals("Destiny")) servers.currentIndex = 3;
+      if (server.equals("Fury")) servers.currentIndex = 4;
+      if (server.equals("Serenity")) servers.currentIndex = 5;
+      if (server.equals("Serenity")) servers.currentIndex = 6;
+      if (server.equals("Apollo")) servers.currentIndex = 7;
+      if (server.equals("")) server = "Chaos";
+      for (int i=0;i<listThreads.listItems.size();i++) {
+        if (listThreads.listItems.get(i).equals(Threads)) listThreads.currentIndex = i;
+      }
       MeritCard1 = br.readLine();
       MeritCard2 = br.readLine();
       Threads = br.readLine();

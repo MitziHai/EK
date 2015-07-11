@@ -1,3 +1,128 @@
+2015.07.11
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Made Ressurrection a valid evo ability
+    - Added the ability Mass Attrition
+    - Fixed saving of server for FOH
+    - Gang Up!, Dragon Summoner and Don's Bodyguard are no longer dependent on specific cards (so can be added to new cards)
+    - The summoned card keeping buffs bug has been removed (watch in games, it's visual only attack is still correct)
+    - The following cards have some fix (faction, hps/atk, skills, etc):
+	Abominable Rabbit [Elite] (hps/atk)
+	Ancient Dragon Skull (faction)
+	Angelia The Pure (Quick Strike: Purification should have been QS: Purification)
+	Arctic Priest[Elite] (hps/atk)
+	Armored Turkey (level 2/3 hps swapped)
+	Astral Sentienl (Level 0 & 5 abilities swapped)
+	Bahamut (new hps)
+	Beetleisk (Desperation: Destroy replace with Reflection 7)
+	Boreal Wolf[ELite] (wrong abilities, hps/atk)
+	Cerebus[Elite] (hps/atk)
+	Dark Titan (new hps)
+	Death Knight (Death Marker 7 replaced with Resurrection 6)
+	Deucalion (new hps)
+	Dire Raider (faction)
+	Dragon SUmmoner (Magic SHield, Swamp PUrity replaced with Prayer 8, Mana COrruption 7)
+	Electtree-Folk (faction)
+	Electric Eel[Elite] (hps/atk)
+	Elf Guard[Elite] (hps/atk)
+	Euryale[Elite] (hps/atk)
+	Evil Spirit (Faction)
+	Flowerbud Pixie[Elite] (hps/atk)
+	Gas Spore[Elite] (hps/atk)
+	Giant Centipede (faction)
+	Goblin Warrior (D: Annihliation replaced with D: Destroy)
+	Guath[Elite] (hps/atk)
+	All LEgendary Cards updated (all are demons)
+	Ice Dancer (had Nova fOrst now has proper Nova Frost)
+	Ice ELemental[ELite] (hps/atk)
+	Ice Sprite (faction)
+	Ice Sprite[Elite] (Faction, hps/atk)
+	Lycan (faction)
+	Magma Fish[Elite] (hps/atk)
+	Mephisto (4 timer was in db as 3 timer)
+	Norther Pioneer[Elite] (hps/atk)
+	Plague Ogryn (new hps)
+	Sea King (new hps)
+	Sickle Beast (faction)
+	SPectre[Elite] (hps/atk)
+	Treant Guard[Elite] (Abilties, hps/atk)
+	Undead Hunter[Elite] (faction, hps/atk)
+	Void Blademaster (faction)
+	Vulture[Elite] (hps/atk)
+
+  Enhancements:
+    - Added a get Check Cards (will check your current cards data base against given server and exceptions will be written to log)
+	NOTE: Hydras will show incorrect hps/atk but are fine...EK has implemented them with a multiplier
+	NOTE: THe Don doesn't check out ability Gang Up! properly because of ! waiting for new code from Sari
+	NOTE: There are 2 Light Paladin Legendards (one wiht 17 and one with 18 cost...so one will always appear here)
+
+  Known bugs
+    - THere are a number of things that are wierd with summoning that are not totally implemented like the game but for the most part it works
+    - Possible that some effects with corruption (guard/force) are not properly done in sim, more in game testing needed.
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
+2015.07.08
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - 07.08 introduced a bug causing atk of summoned cards and other cards in play with summoned cards to grow unrealisticly
+
+  Known bugs
+    - THere are a number of things that are wierd with summoning that are not totally implemented like the game but for the most part it works
+    - Possible that some effects with corruption (guard/force) are not properly done in sim, more in game testing needed.
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
 2015.07.08
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing

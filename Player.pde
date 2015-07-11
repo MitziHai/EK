@@ -56,8 +56,8 @@ class Player
       c2.lvl = c.lvl;
       c2.resetAll(this);
       deck.add( c2 );
-      if (c2.type.name.equals("The Don")) {
-        c  = cardFromString("Behemoth");
+      if (c2.type.abilities[0] == AType.A_GANG_UP || c2.type.abilities[1] == AType.A_GANG_UP || c2.type.abilities[2] == AType.A_GANG_UP || c2.evo == AType.A_GANG_UP) {
+        c  = cardFromString("Swamp Rider");
         Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
         cs.lvl = c.lvl;
         cs.resetAll(this);
@@ -71,15 +71,17 @@ class Player
         cs.summoner = c2;
         cs.summoned = true;
         summoned.add(cs);
-        c  = cardFromString("Swamp Rider");
-        cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+      }
+      if (c2.type.abilities[0] == AType.A_DONS_BODYGUARD || c2.type.abilities[1] == AType.A_DONS_BODYGUARD || c2.type.abilities[2] == AType.A_DONS_BODYGUARD || c2.evo == AType.A_DONS_BODYGUARD) {
+        c  = cardFromString("Behemoth");
+        Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
         cs.lvl = c.lvl;
         cs.resetAll(this);
         cs.summoner = c2;
         cs.summoned = true;
         summoned.add(cs);
       }
-      if (c2.type.name.equals("Dragon Summoner")) {
+      if (c2.type.abilities[0] == AType.A_SUMMON_DRAGON || c2.type.abilities[1] == AType.A_SUMMON_DRAGON || c2.type.abilities[2] == AType.A_SUMMON_DRAGON || c2.evo == AType.A_SUMMON_DRAGON) {
         c  = cardFromString("Thunder Dragon");
         Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
         cs.lvl = c.lvl;
@@ -435,7 +437,7 @@ class Player
   void addToSummoned( Card c )
   {
     if( debug > 3 ) println( "       Removed from Game: " + c);
-    c.buffSummonedOffset = c.atkBuff - c.atkMax;
+    c.buffSummonedOffset = 0;
     summoned.add( c );
   }
   

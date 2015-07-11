@@ -123,6 +123,7 @@ void loadAbils()
   abilities.put( "Mana Corruption", AType.A_MANA_CORRUPTION );
   abilities.put( "Mania", AType.A_MANIA );
   abilities.put( "Marsh Barrier", AType.A_MARSH_BARRIER );
+  abilities.put( "Mass Attrition", AType.A_MASS_ATTRITION );
   abilities.put( "Mountain Force", AType.A_MOUNTAIN_ATK );
   abilities.put( "Mountain Guard", AType.A_MOUNTAIN_HP );
   abilities.put( "Mountain Glacier", AType.A_MOUNTAIN_GLACIER );
@@ -269,6 +270,7 @@ void loadAbils()
   evoNames.put( "Mana Corruption", "mc" );
   evoNames.put( "Mania", "man" );
   evoNames.put( "Marsh Barrier", "mb" );
+  evoNames.put( "Mass Attrition", "ma" );
   evoNames.put( "Mountain Force", "mf" );
   evoNames.put( "Mountain Glacier", "mgr" );
   evoNames.put( "Mountain Guard", "mg" );
@@ -290,6 +292,7 @@ void loadAbils()
   evoNames.put( "QS: Firestorm", "q:fs" );
   evoNames.put( "QS: Group Weaken", "q:gw" );
   evoNames.put( "QS: Healing", "q:h" );
+  evoNames.put( "QS: Mass Attrition", "q:ma" );
   evoNames.put( "QS: Plague", "q:plg" );
   evoNames.put( "QS: Regeneration", "q:reg" );
   evoNames.put( "QS: Teleportation", "q:tel" );
@@ -408,7 +411,8 @@ void loadAbils()
   evoNamesEvo.put( "Mana Corruption", false );
   evoNamesEvo.put( "Mania", false );
   evoNamesEvo.put( "Marsh Barrier", false );
-  evoNamesEvo.put( "Mountain Force", true );
+  evoNamesEvo.put( "Mass Attrition", false );
+  evoNamesEvo.put( "Mountain Force",  true );
   evoNamesEvo.put( "Mountain Glacier", true );
   evoNamesEvo.put( "Mountain Guard",  true );
   evoNamesEvo.put( "Nova Frost", true );
@@ -430,6 +434,7 @@ void loadAbils()
   evoNamesEvo.put( "QS: Group Weaken", true );
   evoNamesEvo.put( "QS: Healing", true );
   evoNamesEvo.put( "QS: Plague", true );
+  evoNamesEvo.put( "QS: Mass Attrition", false );
   evoNamesEvo.put( "QS: Regeneration",  true );
   evoNamesEvo.put( "QS: Teleportation", false );
   evoNamesEvo.put( "QS: Toxic Clouds", true );
@@ -442,7 +447,7 @@ void loadAbils()
   evoNamesEvo.put( "Reincarnation", false );
   evoNamesEvo.put( "Rejuvenation", true );
   evoNamesEvo.put( "Retaliation", true );
-  evoNamesEvo.put( "Resurrection", false );
+  evoNamesEvo.put( "Resurrection", true );
   evoNamesEvo.put( "Resistance", true );
   evoNamesEvo.put( "Sacrifice", false );
   evoNamesEvo.put( "Sacred Flame", false );

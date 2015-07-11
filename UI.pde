@@ -56,6 +56,7 @@ static final int TAB6 = 41;
 static final int SERVER_SELECT = 42;
 static final int NUMBER_RUNS = 43;
 static final int BUTTON_SAVERESULTS = 44;
+static final int BUTTON_CARDDIFF = 45;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -296,6 +297,7 @@ Button cardLoad;
 Button cardSave;
 Button cardsSave;
 Button butgo;
+Button butCardDiff;
 Button butConvert;
 Button butSaveResults;
 Picture pic;
@@ -518,6 +520,13 @@ void setupUI()
   butConvert.type = 2;
   uiSettings.add( butConvert );
 
+  Control labelCardDiff = new Control( "Check Card Database Differences", 320, uiTop+220, 240, 24, 0 );
+  uiSettings.add(labelCardDiff);
+  butCardDiff = new Button( "Check Cards", 340, uiTop+250, 160, 32, BUTTON_CARDDIFF );
+  butCardDiff.font = 18;
+  butCardDiff.type = 2;
+  uiSettings.add( butCardDiff );
+
   Control labelRunOptions = new Control( "Run Options", 16, uiTop+290, 280, 24, 0 );
   uiSettings.add(labelRunOptions);
 
@@ -558,15 +567,6 @@ void setupUI()
   }
   ));
   uiFOH.add(servers);
-  if (server.equals("Chaos")) servers.currentIndex = 0;
-  if (server.equals("Harmony")) servers.currentIndex = 1;
-  if (server.equals("Legacy")) servers.currentIndex = 2;
-  if (server.equals("Destiny")) servers.currentIndex = 3;
-  if (server.equals("Fury")) servers.currentIndex = 4;
-  if (server.equals("Serenity")) servers.currentIndex = 5;
-  if (server.equals("Serenity")) servers.currentIndex = 6;
-  if (server.equals("Apollo")) servers.currentIndex = 7;
-  if (server.equals("")) server = "Chaos";
   
   
   Button butFOHDecks = new Button( "Get FOH Info", 36, line.y+24, 160, 32, BUTTON_GET_FOH_DECKS );
@@ -691,6 +691,7 @@ void setupUI()
   uiSettings.add(ListHydraCard2);
   uiSettings.add(ListHydraCard3);
 
+  uiSettings.add(servers);
 
   butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );
   butgo.font = 18;
@@ -1156,6 +1157,10 @@ class Button extends Control
 
       case BUTTON_GET_FOH_DECKS:
           FOH();
+        break;
+
+      case BUTTON_CARDDIFF:
+          GetCardListDifferences();
         break;
 
       case BUTTON_LOAD_DECKS:
