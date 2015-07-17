@@ -302,7 +302,6 @@ class Player
         }
         int mitigate = min( dmg, c.hpCurr );
         dmg = max( 0, dmg - mitigate );
-
         c.subtractHealth( this, op, mitigate );
         if( c.dead ) -- i;
         if( debug > 2 ) println("       " + c.toStringNoHp() + "'s guard mitigated " + mitigate + " and " + dmg + " remains");

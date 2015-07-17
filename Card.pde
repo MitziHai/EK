@@ -1800,7 +1800,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           for ( int j = 0; j < targetNum; ++ j )
           {
             if( debug > 3 ) println( "     Puncture for " + (int)(dmgDone[ j ] * 0.15 * l));
-            op.attacked( (int)( dmgDone[ j ] * 0.15 * l ), op, false );
+            op.attacked( (int)( dmgDone[ j ] * 0.15 * l ), own, false );
           }
           break;
         }
