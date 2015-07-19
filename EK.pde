@@ -129,6 +129,7 @@ void setup()
   loadCards();
   loadRunes();
   loadDecks("decks_KW.txt",false,KWdecksList);
+  loadDecks("decks_EW.txt",false,EWdecksList);
   loadDecks("decks_Hydra.txt",false,HydradecksList);
   loadDecks("decks_Demons.txt",false,DemondecksList);
   loadDecks("decks_Thiefs.txt",false,ThiefdecksList);
@@ -155,11 +156,18 @@ void loadSettings() {
     {
       BufferedReader br = createReader("settings.txt");
       DecksFileName = br.readLine();
+      if (DecksFileName == null) DecksFileName = "decks_Demons.txt";
       Event3Star = br.readLine();
       Event4Star = br.readLine();
       Event5Star = br.readLine();
-      numMatch = Integer.parseInt(br.readLine());
+      if (Event3Star == null) Event3Star = "";
+      if (Event4Star == null) Event4Star = "";
+      if (Event5Star == null) Event5Star = "";
+      String strMatch = br.readLine();
+      if (strMatch == null) strMatch = "10000";
+      numMatch = Integer.parseInt(strMatch);
       server = br.readLine();
+      if (server == null) server = "Chaos";
       if (server.equals("Chaos")) servers.currentIndex = 0;
       if (server.equals("Harmony")) servers.currentIndex = 1;
       if (server.equals("Legacy")) servers.currentIndex = 2;
@@ -169,19 +177,16 @@ void loadSettings() {
       if (server.equals("Serenity")) servers.currentIndex = 6;
       if (server.equals("Apollo")) servers.currentIndex = 7;
       if (server.equals("")) server = "Chaos";
-      for (int i=0;i<listThreads.listItems.size();i++) {
-        if (listThreads.listItems.get(i).equals(Threads)) listThreads.currentIndex = i;
-      }
       MeritCard1 = br.readLine();
       MeritCard2 = br.readLine();
-      Threads = br.readLine();
       if (MeritCard1 == null) MeritCard1 = "";
       if (MeritCard2 == null) MeritCard2 = "";
+      Threads = br.readLine();
+      if (Threads == null) Threads = "1";
       listThreads.currentIndex = 0; 
       for (int i=0;i<listThreads.listItems.size();i++) {
         if (listThreads.listItems.get(i).equals(Threads)) listThreads.currentIndex = i;
       }
-      //if (Threads == null) Threads = 1;
       br.close();
     }
   }

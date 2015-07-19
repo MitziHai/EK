@@ -54,9 +54,9 @@ void loadCards()
         continue;
       }
       StringTokenizer defaultTokenizer = new StringTokenizer(line, ",");
-      String data[] = new String [41];
+      String data[] = new String [42];
       int i = 0;
-      while (defaultTokenizer.hasMoreTokens () && i < 41 )
+      while (defaultTokenizer.hasMoreTokens () && i < 42 )
       {
         data[ i ++ ] = defaultTokenizer.nextToken().trim();
       }
@@ -64,16 +64,16 @@ void loadCards()
       int atk[] = new int[16];
       for ( int j = 0; j < 16; ++ j )
       {
-        hp[j] = Integer.parseInt( data[ 9+j ] );
-        atk[j] = Integer.parseInt( data[ 16+9+j ] );
+        hp[j] = Integer.parseInt( data[ 10+j ] );
+        atk[j] = Integer.parseInt( data[ 16+10+j ] );
       }
       AType abil[] = {
-        AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE
+        AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE
       };
       int abilLvl[] = {
-        -1, -1, -1, -1
+        -1, -1, -1, -1, -1
       };
-      for ( int j = 0; j < 4; ++ j )
+      for ( int j = 0; j < 5; ++ j )
       {
         String a = data[5+j];
         if (a.length() > 1 )
@@ -96,7 +96,6 @@ void loadCards()
         }
       }
       CardType ct = new CardType(data[0], hp, atk, factions.get(data[3]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), Integer.parseInt(data[4]), abil, abilLvl);
-      
 
       cardsMap.put( ct.name, ct );
       if (ct.stars == 3)  {
@@ -644,9 +643,9 @@ class CardType
   boolean resist = false;
   boolean immune = false;
   boolean canReanim = true;
-  AType[][] abilitiesWhen = new AType[NUM_WHEN][4];
-  int[][] abilitiesLevel = new int[NUM_WHEN][4];
-  int[][] abilitiesReq = new int[NUM_WHEN][4];
+  AType[][] abilitiesWhen = new AType[NUM_WHEN][5];
+  int[][] abilitiesLevel = new int[NUM_WHEN][5];
+  int[][] abilitiesReq = new int[NUM_WHEN][5];
   int[] abilitiesNum = new int[NUM_WHEN];
 
   CardType( String n, int hp[], int atk[], int f, int c, int s, int t, AType[] a, int[] al )
