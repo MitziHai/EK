@@ -377,7 +377,7 @@ void loadAbils()
   evoNamesEvo.put( "Devil's Curse", false );
   evoNamesEvo.put( "Dexterity", false );
   evoNamesEvo.put( "Divine Protection", false );
-  evoNamesEvo.put( "Dodge", false );
+  evoNamesEvo.put( "Dodge", true );
   evoNamesEvo.put( "Dread Roar", false );
   evoNamesEvo.put( "Dual Snipe",false );
   evoNamesEvo.put( "Electric Shock", true );

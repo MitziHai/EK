@@ -61,12 +61,26 @@ class Game implements Runnable
         }
 //        p2 = new Player(player2,false);
       } 
+      else if (radew.checked)
+      {
+        p1 = new Player(player1,true);
+        p2 = new Player(player2,false);
+        while(!p2.dead && !(p2.deck.size() == 1)) 
+        {
+          playMatch(1);
+//          p2.checkDead();
+          p1 = new Player(player1,true);
+          p2.resetForKW();
+          if (win >= 1000) break;
+        }
+        if (p2.deck.size() == 1) win++;
+      } 
       else {
-        p1 = new Player(player1,false);
+        p1 = new Player(player1,true);
         p2 = new Player(player2,false);
         playMatch(i % 2);
       }
-      if ( i % 1000 == 0 || radkw.checked || radhydra.checked)
+      if ( i % 1000 == 0 || radkw.checked || radew.checked || radhydra.checked)
       {
         totalUpMatches();
       }
@@ -80,7 +94,7 @@ class Game implements Runnable
   {
     synchronized( m )
     {
-      if ( raddi.checked)
+      if ( raddi.checked || radewboss.checked)
       {
         totalmerit += meritTotal;
         totalmeritMax = totalmeritMax > meritMax ? totalmeritMax : meritMax;
@@ -240,7 +254,7 @@ class Game implements Runnable
         println("");
         println("---------- Start of Turn ----------");
         println("Start of Round #" + round + " for Player "+ (round % 2==goFirst?((p1.name == "Unamed") ? "1" : p1.name):((p2.name == "Unamed") ? "2" : p2.name)) + " as follows");
-        if( raddi.checked && (round % 2==goFirst?1:2) == 1 )
+        if( (radewboss.checked || raddi.checked) && (round % 2==goFirst?1:2) == 1 )
           println("Player merit: " + p1.merit);
         println("---------- Start of Turn ----------");
         println("Player " + ((p1.name == "Unamed") ? "1" : p1.name) + ":");
@@ -305,7 +319,7 @@ class Game implements Runnable
           if( debug > 1 ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
           p2.checkDead();
         }
-        if (!p2.dead || (raddi.checked)) {
+        if (!p2.dead || (radewboss.checked || raddi.checked)) {
           p2.playTurn(p1, round);
           p2.checkDead();
           p1.checkDead();
@@ -313,7 +327,7 @@ class Game implements Runnable
         else winner = 1;
       }
       
-      if ( round % 2 == goFirst ) winner = ((p2.inPlay.isEmpty() && p2.deck.isEmpty() && p2.hand.isEmpty()) || (!raddi.checked && p2.hp <= 0 && !p2.invul)) ? 1 : 0;
+      if ( round % 2 == goFirst ) winner = ((p2.inPlay.isEmpty() && p2.deck.isEmpty() && p2.hand.isEmpty()) || (!(raddi.checked ||radewboss.checked) && p2.hp <= 0 && !p2.invul)) ? 1 : 0;
       else winner = ((p1.inPlay.isEmpty() && p1.deck.isEmpty() && p1.hand.isEmpty()) || (p1.hp <= 0&&!p1.invul)) ? 2 : 0;
       
       done = done || (winner > 0);
@@ -435,7 +449,7 @@ class Game implements Runnable
       println("");
       println("----------- End of Match -----------");
       println("End of Match after round #" + round + " as follows");
-      if( raddi.checked && (round % 2==goFirst?1:2) == 1 )
+      if( (radewboss.checked || raddi.checked) && (round % 2==goFirst?1:2) == 1 )
         println("Player merit: " + p1.merit);
       else if (winner == 1)
         println ("!!!!!!!!!!!!!!!!!!!!!!Player " + ((p1.name == "Unamed") ? "1" : p1.name) + " is the winner!!!!!!!!!!!!!!!!!!!!!!");
@@ -482,7 +496,7 @@ class Game implements Runnable
     }
 
     // Player has died in di mode.
-    if ( raddi.checked && ( (p1.hp <= 0&&!p1.invul) ||(p1.inPlay.isEmpty() && p1.deck.isEmpty() && p1.hand.isEmpty()) ) )
+    if ( (radewboss.checked || raddi.checked) && ( (p1.hp <= 0&&!p1.invul) ||(p1.inPlay.isEmpty() && p1.deck.isEmpty() && p1.hand.isEmpty()) ) )
     {
       meritTotal += p1.merit;
       meritMax = p1.merit > meritMax ? p1.merit : meritMax;

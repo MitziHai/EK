@@ -913,7 +913,7 @@ class Card
   void resetAll(Player own)
   {        
     hpCurr = hpBuff = hpMax + own.hpBuff[ type.faction ] - buffGuardOffset;
-    atk = atkBuff = atkMax + own.atkBuff[ type.faction ] - buffAttackOffset + buffSummonedOffset;
+    atk = atkBuff = atkMax + own.atkBuff[ type.faction ] - buffAttackOffset; // + buffSummonedOffset;
     dex = false;
     dead = false;
     evasion = false;
@@ -1115,7 +1115,7 @@ class Card
           }
           if (!dex) {
             if (debug > 2) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
-            if (raddi.checked && own.isP1) own.merit += retaliate[j]; 
+            if ((radewboss.checked || raddi.checked) && own.isP1) own.merit += retaliate[j]; 
             op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
           }
           else if (debug > 2) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
@@ -1135,7 +1135,7 @@ class Card
       if ( debug > 1 && wickedLeech > 0 )
         println("     " + attacker.toStringNoHp() + " loses " + reduced + " attack to " + toStringNoHp() + "'s Wicked Leach");
     }
-    if ( raddi.checked && !own.isP1 )
+    if ( (radewboss.checked || raddi.checked) && !own.isP1 )
     {
       op.merit += dmgTaken;
     }
@@ -1212,7 +1212,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           println("       Immunity prevented " + dmg + " damage to " +  toStringNoHp() );
       }
 
-      if ( raddi.checked && !own.isP1 )
+      if ( (radewboss.checked || raddi.checked) && !own.isP1 )
         op.merit += dmgTaken;
 
       return dmgTaken;
@@ -1249,7 +1249,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
       dmgTaken = subtractHealth( own, op, dmg );
 
-      if ( raddi.checked && !own.isP1 )
+      if ( (raddi.checked || radewboss.checked) && !own.isP1 )
         op.merit += dmgTaken;
 
       return dmgTaken;
@@ -1260,7 +1260,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
       dmgTaken = subtractHealth( own, op, dmg );
 
-      if ( raddi.checked && !own.isP1 )
+      if ( (radewboss.checked || raddi.checked) && !own.isP1 )
         op.merit += dmgTaken;
 
       return dmgTaken;
@@ -1303,7 +1303,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         println("         Reflected " + dmgTaken + " damage to " + attacker.toStringNoHp() );
       }
 
-      if ( raddi.checked && !op.isP1 )
+      if ( (radewboss.checked || raddi.checked) && !op.isP1 )
         own.merit += dmgTaken;
 
       dmgTaken = 0;
@@ -1334,7 +1334,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         attacker.hpCurr = min( attacker.hpCurr + dmgTaken, attacker.hpBuff );
       }
 
-      if ( raddi.checked && !own.isP1 )
+      if ( (radewboss.checked || raddi.checked) && !own.isP1 )
         op.merit += dmgTaken;
 
       return dmgTaken;
@@ -1477,7 +1477,6 @@ Seperate Variables: BURNED, POISON, immune, resist,
 //          break;
 //
         case A_EXILE:
-          if ( op.board[ pos ] != null) {println(op.board[pos]);            println(op.board[pos].resist);}
           if ( op.board[ pos ] != null && !op.board[ pos ].resist && !op.board[pos].immune)
           {
             Card c = op.board[ pos ];
@@ -2659,6 +2658,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_TUNDRA_ATK:
           if (!abilitySilenced[when][i]) {
             if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
+            
             applyBuffAtk( own, TUNDRA, -25*l - buffAttackOffset );
           }
           else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
@@ -2819,8 +2819,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         
         int used = min(-amount, c.totalGlitchCount);
         c.totalGlitchCount = max(0, c.totalGlitchCount - used );
-        amount = -max(-amount - used, 0);
-        c.atk = max( c.atk+amount, c.atkBuff );
+        c.atk = max( c.atk-max(-amount - used, 0), c.atkBuff );
         c.atkBuff = c.atk;
       }
     }

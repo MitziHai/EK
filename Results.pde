@@ -48,7 +48,7 @@ void drawGraph(PGraphics pg)
       ++ barValues2[ min( (int)((res.rounds - totalroundsMin) / roundsPerBar), bars-1 ) ];
     }
   }
-  else if( raddi.checked )
+  else if( raddi.checked || radewboss.checked)
   {
    // println("bar\tmerit");
     for( Result res : resultsBest )
@@ -90,13 +90,13 @@ void drawGraph(PGraphics pg)
   pg.line( 64, listresult.y - 128, 1280-64, listresult.y - 128 );
   pg.textSize(min(12/(bars/20.0),12));
   
-  if( raddi.checked )
+  if( raddi.checked || radewboss.checked)
   {
     pg.fill(col);
     pg.stroke(col);
     pg.text( "Merit", 4, listresult.y - 128 + 32 );
   }
-  else if( radkw.checked )
+  else if( radkw.checked)
   {
     pg.fill(col);
     pg.stroke(col);
@@ -118,7 +118,7 @@ void drawGraph(PGraphics pg)
     int val2 = 0;
     if( verticalZero.checked ) // Start at minimum instead of 0 on vertical axis TODO ADD CHECKBOX FOR THIS
     {
-      if( raddi.checked )
+      if( raddi.checked || radewboss.checked)
       {
         val1 = (int)(-(barValues1[i])/float(maxBar1)*((listresult.y - 128)-(64)));
         //val1 = (int)(-(barValues1[i]-(minBar1-1))/float(maxBar1-minBar1)*((listresult.y - 128)-(64)));
@@ -132,7 +132,7 @@ void drawGraph(PGraphics pg)
     }
     else
     {
-      if( raddi.checked )
+      if( raddi.checked || radewboss.checked)
       {
         val1 = (int)(-(barValues1[i]-(minBar1-1))/float(maxBar1-minBar1)*((listresult.y - 128)-(64)));
       }

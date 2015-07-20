@@ -254,6 +254,8 @@ ListBox decks;
 RadioButton radall;
 RadioButton raddi;
 RadioButton radkw;
+RadioButton radew;
+RadioButton radewboss;
 RadioButton radhydra;
 Control labelh[] = new Control[2];
 ListBox listresult;
@@ -482,14 +484,22 @@ void setupUI()
   uiDeck.add( radkw );
   radhydra = new RadioButton( "Show Hydra Results", 16, line.y+24*4, 200, 24, 0 );
   uiDeck.add( radhydra );
+  radew = new RadioButton( "Show EW Results", 16+200, line.y+24*3-2, 200, 24, 0 );
+  uiDeck.add( radew );
+  radewboss = new RadioButton( "Show EWB Results", 16+200, line.y+24*4, 200, 24, 0 );
+  uiDeck.add( radewboss );
   radall.setNext = raddi;
   radall.setStart = radall;
   raddi.setNext = radkw;
   raddi.setStart = radall;
   radkw.setNext = radhydra;
   radkw.setStart = radall;
-  radhydra.setNext = null;
+  radhydra.setNext = radew;
   radhydra.setStart = radall;
+  radew.setNext = radewboss;
+  radew.setStart = radall;
+  radewboss.setNext = null;
+  radewboss.setStart = radall;
   checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 180, 24, 0 );
   uiDeck.add( checkMultisim );
   labelSetOrder = new Control( "Card Order", 16, uiTop+360, 240, 24, 0 );
@@ -574,13 +584,13 @@ void setupUI()
   butFOHDecks.type = 2;
   uiFOH.add( butFOHDecks );
 
-  numberRuns = new TextField(Integer.toString((int)numMatch), 275, line.y+48, 128, 24, NUMBER_RUNS); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
+  numberRuns = new TextField(Integer.toString((int)numMatch), 275, line.y+42, 128, 24, NUMBER_RUNS); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
   numberRuns.isNumeric = true;
   numberRuns.lastNum = numberRuns.num = numMatch;
   numberRuns.max = 1000000;
   uiDeck.add( numberRuns );
   uiFOH.add( numberRuns );
-  Control runsLabel = new Control( "Runs:", 226, line.y+48, 128, 32, 0);
+  Control runsLabel = new Control( "Runs:", 226, line.y+42, 128, 32, 0);
   uiDeck.add( runsLabel );
   uiFOH.add (runsLabel);
 
@@ -693,7 +703,7 @@ void setupUI()
 
   uiSettings.add(servers);
 
-  butgo = new Button( "      Go!", 256+8, line.y+32+56, 120, 32, BUTTON_GO );
+  butgo = new Button( "    Go!", 256+148, line.y+32+56, 100, 32, BUTTON_GO );
   butgo.font = 18;
   butgo.type = 2;
   uiDeck.add( butgo );
@@ -1182,11 +1192,11 @@ class Button extends Control
 
       case BUTTON_GO:
         if (isRun) {
-          butgo.text = "      Go!";
+          butgo.text = "    Go!";
           StopMe = true;
         }
         else {
-          butgo.text = "     Stop!";
+          butgo.text = "   Stop!";
           if (uiTab == 4 && FOHDownload) FOH_RUN();
           else if (uiTab == 4) {
             listresult.listItems.clear();

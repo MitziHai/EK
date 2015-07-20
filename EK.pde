@@ -414,7 +414,7 @@ class RunSim implements Runnable
                   for (int i=0;i<testDeck.numRunes;i++) println("     " + testDeck.runes[i].toString());
                   println("     ----------------- Stats -----------------");
                   println("Score (MPM/Win Percentage) for this deck: " + nfc((float)score,2));
-                  if (raddi.checked){
+                  if (raddi.checked || radewboss.checked){
                     println("     Avg Merit: " + nfc((float)totalmeritAvg,2) + "\tMax Merit: " + nfc((float)totalmeritMax,0) + "\tMin Merit: " + nfc((float)totalmeritMin,0));
                     println("     Avg Rounds: " + nfc((float)totalroundsAvg,2) + "\t\tMax Rounds: " + nfc((float)totalroundsMax,0) + "\t\tMin Rounds: " + nfc((float)totalroundsMin,0));
                     int counter = 0;
@@ -699,10 +699,10 @@ class RunSim implements Runnable
       delay(0);
       synchronized(m)
       {
-        done = numMatch <= (radkw.checked ? totalloss : (radhydra.checked ? totalwin : totalwin + totalloss));
+        done = numMatch <= (radkw.checked ? totalloss : (radhydra.checked || radew.checked ? totalwin : totalwin + totalloss));
         String c = "";
         if (FOHSim) c = (""+(100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*FOHMatch)));
-        else if (!radkw.checked && !radhydra.checked) c = (""+(100.0*(totalwin + totalloss)/(float)numMatch));
+        else if (!radkw.checked && !radew.checked && !radhydra.checked) c = (""+(100.0*(totalwin + totalloss)/(float)numMatch));
         else c = (""+(100.0*(radkw.checked ? totalloss : totalwin)/(float)numMatch));
         if ( !multideck )
         {
@@ -771,13 +771,37 @@ class RunSim implements Runnable
         }
       }
     }
-    else if ( radkw.checked )
+    else if ( radkw.checked)
     {
       score = totalwin/(float)max(1, totalloss);
       if ( score >= bestScore )
       {
         String c = String.format("%1$,.5f", totalwin/(float)max(1, totalloss));
         resultText = nfc(totalloss,0) + " lives completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " wins " + c.substring(0, min(10, c.length())) +" matches per life.";
+      }
+    }
+    else if ( radewboss.checked )
+    {
+      score = totalmerit / (totalwin + totalloss);
+      if ( score >= bestScore )
+      {
+        totalroundsAvg = totalrounds / (double)(totalwin + totalloss);
+
+        resultText = nfc(totalwin + totalloss,0) + " matches completed\n" + "Average damage per fight: " + nfc((float)score,2) + "\n" + 
+          "Maximum merit: " + nfc((int)totalmeritMax) +
+          " Minimum merit: " + nfc((int)totalmeritMin) + "\n" +
+          "Maximum rounds: " + totalroundsMax +
+          " Minimum rounds: " + totalroundsMin + "\n" +
+          "Average rounds: " + nfc((int)totalroundsAvg,2) + "\n";
+      }
+    }
+    else if ( radew.checked)
+    {
+      score = max(1, totalwin)/(float)(totalloss + totalwin);
+      if ( score >= bestScore )
+      {
+        String c = String.format("%1$,.5f", (totalloss + totalwin)/(float)max(1, totalwin));
+        resultText = nfc(totalwin,0) + " lives completed\n" + (textdeck[0].textIn == "Unamed" ? "Player 1" : textdeck[0].textIn) + " takes " + c.substring(0, min(10, c.length())) +" matches to eliminate minions.";
       }
     }
     else if ( radhydra.checked )

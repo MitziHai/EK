@@ -51,13 +51,13 @@ class Player
       if (ListHydraCard1 != null && c2.type.name.equals(ListHydraCard1.listItems.get(ListHydraCard1.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)(c2.hpMax*1.5); c2.atkMax = (int)(c2.atkMax*1.5);}
       if (ListHydraCard2 != null && c2.type.name.equals(ListHydraCard2.listItems.get(ListHydraCard2.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*2; c2.atkMax = (int)c2.atkMax*2; }
       if (ListHydraCard3 != null && c2.type.name.equals(ListHydraCard3.listItems.get(ListHydraCard3.currentIndex)) && radhydra.checked && isPlayer) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
-      if (listMeritCard1 != null && c2.type.name.equals(listMeritCard1.listItems.get(listMeritCard1.currentIndex)) && radhydra.checked && isPlayer ) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
-      if (listMeritCard2 != null && c2.type.name.equals(listMeritCard2.listItems.get(listMeritCard2.currentIndex)) && radhydra.checked && isPlayer ) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
+      if (listMeritCard1 != null && c2.type.name.equals(listMeritCard1.listItems.get(listMeritCard1.currentIndex)) && (radew.checked || radewboss.checked) && isPlayer ) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
+      if (listMeritCard2 != null && c2.type.name.equals(listMeritCard2.listItems.get(listMeritCard2.currentIndex)) && (radew.checked || radewboss.checked) && isPlayer ) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)c2.atkMax*3;  }
       if (radhydra.checked && !isPlayer && name.substring(0,9).equals("Hydra III")) {c2.hpMax = (int)c2.hpMax*3; c2.atkMax = (int)(c2.atkMax*1.2);  }
       else if (radhydra.checked && !isPlayer && name.substring(0,8).equals("Hydra II")) {c2.hpMax = (int)c2.hpMax*2;  }
       else if (radhydra.checked && !isPlayer && name.substring(0,8).equals("Hydra IV")) {c2.hpMax = (int)c2.hpMax*4; c2.atkMax = (int)(c2.atkMax*1.5);  }
       else if (radhydra.checked && !isPlayer && name.substring(0,7).equals("Hydra V")) {c2.hpMax = (int)c2.hpMax*5; c2.atkMax = (int)c2.atkMax*2;  }
-      else if (radhydra.checked && !isPlayer && name.substring(0,2).equals("EW")) {c2.hpMax = (int)c2.hpMax*20; c2.atkMax = (int)c2.atkMax*3;  }
+      else if ((radew.checked || radewboss.checked) && !isPlayer && name.substring(0,3).equals("EW ")) {c2.hpMax = (int)c2.hpMax*20; c2.atkMax = (int)c2.atkMax*3;  }
       if (listMeritCard1 != null && c2.type.name.equals(listMeritCard1.listItems.get(listMeritCard1.currentIndex)) && raddi.checked ) merit += 8000;
       if (listMeritCard2 != null && c2.type.name.equals(listMeritCard2.listItems.get(listMeritCard2.currentIndex)) && raddi.checked ) merit += 8000;
       c2.lvl = c.lvl;
@@ -98,6 +98,7 @@ class Player
         summoned.add(cs);
       }     
       initative += c2.type.hp[c2.lvl] + c2.type.atk[c2.lvl];
+      if (radewboss.checked && !isPlayer) break;
     }
     for( int i = 0; i < p.numRunes; ++ i )
     {

@@ -24,7 +24,7 @@ void GetCardListDifferences()
   {
     
     radall.checked = true;
-    raddi.checked = radkw.checked = radhydra.checked = false;
+    raddi.checked = radew.checked = radewboss.checked = radkw.checked = radhydra.checked = false;
     listresult.listItems.clear();
     listresult.listItems.add( "Downloading decks and match info for server " + servers.listItems.get(servers.currentIndex));
     EkClient client = new EkClient();
@@ -192,7 +192,7 @@ void FOH()
   {
     
     radall.checked = true;
-    raddi.checked = radkw.checked = radhydra.checked = false;
+    raddi.checked = radkw.checked = radhydra.checked = radew.checked = radewboss.checked = false;
     listresult.listItems.clear();
     listresult.listItems.add( "Downloading decks and match info for server " + servers.listItems.get(servers.currentIndex));
     EkClient client = new EkClient();
