@@ -1,3 +1,65 @@
+2015.07.20
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Fixed Sea King and The Don (bugs introduced in 2015.07.19 introduction of 5 abilities)
+    - Removed requirement for EW decks to have a particular name (now mode is sufficient)
+    - Added ability to edit/view 5th ability on card editor screen
+    - EW Info:
+	Merit cards use demon merit cards (each gets *3 atk and *3 hps)
+	Legendary decks are assumed to have *20 hps and *3 atk
+	Use EW mode to find out how long to kill minions (rounds to death)
+       	Use EWB mode to kill the main legendary card solo (Damage calculations)
+    - Added EW decks for the following Legendaries:
+        Aranyani
+        Arctic Cephalid
+        Armored Sumatran
+        Behemoth
+        Everglade Mermaid
+        Fire Demon
+        Ice Dragon
+        Marsh Devourer
+        Moor Ripper
+        Night Elf Ranger
+        Nuriel
+        Omniscient Dragon
+        Rose Knight
+        Sea Piercer
+        Taiga General
+        Winged Exile
+        Winter Samurai
+
+  Known bugs
+     - Compare cards is no longer working
+    - THere are a number of things that are wierd with summoning that are not totally implemented like the game but for the most part it works
+    - Possible that some effects with corruption (guard/force) are not properly done in sim, more in game testing needed.
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
 2015.07.19b
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing

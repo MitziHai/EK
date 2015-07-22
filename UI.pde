@@ -57,6 +57,7 @@ static final int SERVER_SELECT = 42;
 static final int NUMBER_RUNS = 43;
 static final int BUTTON_SAVERESULTS = 44;
 static final int BUTTON_CARDDIFF = 45;
+static final int BUTTON_ADD_ABILITY_5 = 46;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -292,8 +293,8 @@ TextField cardTime;
 TextField cardCost;
 DropList cardFaction;
 DropList cardStars;
-Control cardAbility[] = new Control[4];
-Button cardAbilitySet[] = new Button[4];
+Control cardAbility[] = new Control[5];
+Button cardAbilitySet[] = new Button[5];
 Checkbox cardLocked;
 Button cardLoad;
 Button cardSave;
@@ -720,10 +721,10 @@ void setupUI()
     750, 805, 860, 915, 970, 1025, 1080, 1135, 1190, 1245, 1300, 1355, 1410, 1465, 1520, 1575
   };
   AType ab[] = { 
-    AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE
+    AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE, AType.A_NONE
   };
   int al[] = { 
-    0, 0, 0, 0
+    0, 0, 0, 0, 0
   };
   editedCard = new CardType( "Name", h, a, FOREST, 14, 1, 4, ab, al);
 
@@ -794,11 +795,11 @@ void setupUI()
   }
   ));
 
-  for ( int i = 0; i < 4; ++ i )
+  for ( int i = 0; i < 5; ++ i )
   {
-    cardAbility[ i ] = new Control( "Ability " + (i+1) + ": None", offsetLeft + column2 + 0, 36 * i + 24 + cardFaction.y + cardFaction.h, 80, 24, 0 );
+    cardAbility[ i ] = new Control( "Ability " + (i+1) + ": None", offsetLeft + column2 + 0, 36 * i + 4 + cardFaction.y + cardFaction.h, 80, 24, 0 );
     uiCard.add( cardAbility[ i ] );
-    cardAbilitySet[ i ] = new Button( " Set to Selected", offsetLeft + column2 + 192 + 84, 36 * i + 24 + cardFaction.y + cardFaction.h, 140, 32, BUTTON_ADD_ABILITY_1 + i );
+    cardAbilitySet[ i ] = new Button( " Set to Selected", offsetLeft + column2 + 192 + 84, 36 * i + 4 + cardFaction.y + cardFaction.h, 140, 32, BUTTON_ADD_ABILITY_1 + i );
     uiCard.add( cardAbilitySet[ i ] );
   }
   pic = new Picture( "", offsetLeft + column1 + 8, 16+24+24+24 + uiTop, (int)(385*0.8), (int)(580*0.8), 0, loadImage( "frame_forest.png" ) );
@@ -1259,6 +1260,19 @@ class Button extends Control
         showAbilities();
         break;
         
+      case BUTTON_ADD_ABILITY_5:
+        AType abil4 = AType.A_NONE;
+        if ( evoList.current.size() > 0 && evoList.current.get(0) > 0 )
+        {
+          String el = evoList.listItems.get( (int)evoList.current.get( 0 ) );
+          el = el.substring( 0, el.lastIndexOf(' ') );
+          abil4 = abilities.get( el );
+        }
+        editedCard.abilities[ 4 ] = abil4;
+        editedCard.abilityL[ 4 ] = (int)textEvo.lastNum;
+        showAbilities();
+        break;
+        
       case BUTTON_SAVE_CARD:
         int atk[] = new int[16];
         int hp[] = new int[16];
@@ -1348,7 +1362,7 @@ class Button extends Control
           String images[] = { 
             "frame_forest.png", "frame_swamp.png", "frame_tundra.png", "frame_mountain.png", "frame_demon.png", "frame_special.png"
           };
-          for( int i = 0; i < 4; ++ i )
+          for( int i = 0; i < 5; ++ i )
           {
             editedCard.abilities[ i ] = c.abilities[ i ];
             editedCard.abilityL[ i ] = c.abilityL[ i ];
@@ -1393,7 +1407,7 @@ class Button extends Control
         break;
         
       case BUTTON_ABILITY_CLEAR:
-        for( int i = 0; i < 4; ++ i )
+        for( int i = 0; i < 5; ++ i )
         {
           editedCard.abilities[ i ] = AType.A_NONE;
         }
@@ -1411,6 +1425,7 @@ void showAbilities()
   cardAbility[ 1 ].text = "Ability 2 (5): " + abilityName.get( editedCard.abilities[ 1 ] ) + (editedCard.abilities[ 1 ] == AType.A_NONE ? "" : " " + editedCard.abilityL[ 1 ]);
   cardAbility[ 2 ].text = "Ability 3 (10): " + abilityName.get( editedCard.abilities[ 2 ] ) + (editedCard.abilities[ 2 ] == AType.A_NONE ? "" : " " + editedCard.abilityL[ 2 ]);
   cardAbility[ 3 ].text = "Ability 4 (10+): " + abilityName.get( editedCard.abilities[ 3 ] ) + (editedCard.abilities[ 3 ] == AType.A_NONE ? "" : " " + editedCard.abilityL[ 3 ]);
+  cardAbility[ 4 ].text = "Ability 5 (10+): " + abilityName.get( editedCard.abilities[ 4 ] ) + (editedCard.abilities[ 4 ] == AType.A_NONE ? "" : " " + editedCard.abilityL[ 4 ]);
 }
 
 void showDeckCost( int p, boolean clear )
