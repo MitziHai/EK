@@ -125,55 +125,66 @@ void GetCardListDifferences()
           skill4.equals("Spirit of Evilness") || skill4.equals("Ancient Meteorite") || skill4.equals("Remains of Dragon") || skill4.equals("Unexpected gains") || skill4.equals("Source of Life") || skill4.equals("Legendary Wood") || 
           skill4.equals("X'mas Bell") || skill4.equals("X'mas Hat") || skill4.equals("Call of the Wanderer") || skill4.equals("Lucky Clover") || skill4.equals(" ")
           ) skill4 = "None";
+      skill5 = skill5.replace("Desperation: ", "D:");
+      skill5 = skill5.replace("Quick Strike:", "QS:");
+      skill5 = skill5.replace("[Quick Strike]", "QS: ");
+      if (skill5.equals("Core of Magic") || skill5.equals("X'mas Elf") || skill5.equals("Lavish Dinner") || skill5.equals("X'mas Atmosphere") || skill5.equals("X'mas Magic") || skill5.equals("Force of Flame") || 
+          skill5.equals("Spirit of Evilness") || skill5.equals("Ancient Meteorite") || skill5.equals("Remains of Dragon") || skill5.equals("Unexpected gains") || skill5.equals("Source of Life") || skill5.equals("Legendary Wood") || 
+          skill5.equals("X'mas Bell") || skill5.equals("X'mas Hat") || skill5.equals("Call of the Wanderer") || skill5.equals("Lucky Clover") || skill5.equals(" ")
+          ) skill5 = "None";
       hp = card.getHpArray().toString();
       hp = hp.substring(1,hp.length()-1);
       atk = card.getAttackArray().toString();
       atk = atk.substring(1,atk.length()-1);     
       String CardName = card.getCardName().trim().replaceAll("[\\p{C}\\p{Z}]", " ").replace("(","[").replace(")","]");
-        println("\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-          hp + ","  + atk + "\",");
+//        println("\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+//          hp + ","  + atk + "\",");
 //println(CardName);
-//      if(!cardsMap.containsKey(CardName))
-//        println("NAME:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (Integer.parseInt(card.getCost()) != cardsMap.get(CardName).cost)
-//        println("COST:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (Integer.parseInt(card.getColor()) !=cardsMap.get(CardName).stars)
-//        println("STARS:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!faction.equals(cardsMap.get(CardName).faction == FOREST ? "Forest": 
-//                cardsMap.get(CardName).faction == SWAMP ? "Swamp" : 
-//                cardsMap.get(CardName).faction == TUNDRA ? "Tundra" : 
-//                cardsMap.get(CardName).faction == MOUNTAIN ? "Mountain" : 
-//                cardsMap.get(CardName).faction == DEMON ? "Demon" : "Special"))
-//        println("FACTION:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (Integer.parseInt(card.getWait()) != cardsMap.get(CardName).timer)
-//        println("TIMER:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!skill1.equals(abilityName.get(cardsMap.get(CardName).abilities[0]) + 
-//              ( !Character.isDigit(skill1.charAt(skill1.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[0])))
-//        println("SKILL1:" + skill1 + " " + abilityName.get(cardsMap.get(CardName).abilities[0]) + " " + cardsMap.get(CardName).abilityL[0] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!skill2.equals(abilityName.get(cardsMap.get(CardName).abilities[1]) + 
-//              (!Character.isDigit(skill2.charAt(skill2.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[1])))
-//        println("skill2:" + skill2 + " " +abilityName.get(cardsMap.get(CardName).abilities[1]) + " " + cardsMap.get(CardName).abilityL[1] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  +  skill5.replace("None"," ") + ","  +
-//          hp + ","  + atk + "\",");
-//      else if (!skill3.equals(abilityName.get(cardsMap.get(CardName).abilities[2]) + 
-//              (!Character.isDigit(skill3.charAt(skill3.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[2])))
-//        println("skill3:" + skill3 + " " +abilityName.get(cardsMap.get(CardName).abilities[2]) + " " + cardsMap.get(CardName).abilityL[2] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!skill4.equals(abilityName.get(cardsMap.get(CardName).abilities[3]) + 
-//              (!Character.isDigit(skill4.charAt(skill4.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[3])))
-//        println("skill4:" + skill4 + " " +abilityName.get(cardsMap.get(CardName).abilities[3]) + " " + cardsMap.get(CardName).abilityL[3] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!hp.equals(Arrays.toString(cardsMap.get(CardName).hp).replace("[","").replace("]","")))
-//        println("hp:" + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
-//      else if (!atk.equals(Arrays.toString(cardsMap.get(CardName).atk).replace("[","").replace("]","")))
-//        println("atk:" + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
-//          hp + ","  + atk + "\",");
+      if(!cardsMap.containsKey(CardName) || CardName.equals("Arctic Cephalid [Legendary]"))
+        println("NAME:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (Integer.parseInt(card.getCost()) != cardsMap.get(CardName).cost)
+        println("COST:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (Integer.parseInt(card.getColor()) !=cardsMap.get(CardName).stars)
+        println("STARS:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!faction.equals(cardsMap.get(CardName).faction == FOREST ? "Forest": 
+                cardsMap.get(CardName).faction == SWAMP ? "Swamp" : 
+                cardsMap.get(CardName).faction == TUNDRA ? "Tundra" : 
+                cardsMap.get(CardName).faction == MOUNTAIN ? "Mountain" : 
+                cardsMap.get(CardName).faction == DEMON ? "Demon" : "Special"))
+        println("FACTION:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (Integer.parseInt(card.getWait()) != cardsMap.get(CardName).timer)
+        println("TIMER:\n\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!skill1.equals(abilityName.get(cardsMap.get(CardName).abilities[0]) + 
+              ( !Character.isDigit(skill1.charAt(skill1.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[0])))
+        println("SKILL1:" + skill1 + " " + abilityName.get(cardsMap.get(CardName).abilities[0]) + " " + cardsMap.get(CardName).abilityL[0] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!skill2.equals(abilityName.get(cardsMap.get(CardName).abilities[1]) + 
+              (!Character.isDigit(skill2.charAt(skill2.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[1])))
+        println("skill2:" + skill2 + " " +abilityName.get(cardsMap.get(CardName).abilities[1]) + " " + cardsMap.get(CardName).abilityL[1] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","  +  skill5.replace("None"," ") + ","  +
+          hp + ","  + atk + "\",");
+      else if (!skill3.equals(abilityName.get(cardsMap.get(CardName).abilities[2]) + 
+              (!Character.isDigit(skill3.charAt(skill3.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[2])))
+        println("skill3:" + skill3 + " " +abilityName.get(cardsMap.get(CardName).abilities[2]) + " " + cardsMap.get(CardName).abilityL[2] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!skill4.equals(abilityName.get(cardsMap.get(CardName).abilities[3]) + 
+              (!Character.isDigit(skill4.charAt(skill4.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[3])))
+        println("skill4:" + skill4 + " " +abilityName.get(cardsMap.get(CardName).abilities[3]) + " " + cardsMap.get(CardName).abilityL[3] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!skill5.equals(abilityName.get(cardsMap.get(CardName).abilities[4]) + 
+              (!Character.isDigit(skill5.charAt(skill5.length() - 1)) ? "" : " " + cardsMap.get(CardName).abilityL[4])))
+        println("skill5:" + skill5 + " " +abilityName.get(cardsMap.get(CardName).abilities[4]) + " " + cardsMap.get(CardName).abilityL[4] + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!hp.equals(Arrays.toString(cardsMap.get(CardName).hp).replace("[","").replace("]","")))
+        println("hp:" + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
+      else if (!atk.equals(Arrays.toString(cardsMap.get(CardName).atk).replace("[","").replace("]","")))
+        println("atk:" + "\"" + CardName + "," + card.getCost() + "," + card.getColor() + "," + faction + "," + card.getWait()  + "," + skill1.replace("None"," ") + "," + skill2.replace("None"," ") + "," + skill3.replace("None"," ") + "," + skill4.replace("None"," ") + ","   + skill5.replace("None"," ") + ","  + 
+          hp + ","  + atk + "\",");
     }
   }
   catch(Exception e)

@@ -1295,6 +1295,44 @@ class Button extends Control
         cardsMap.remove( cardName.textIn );
         cardsMap.put( cardName.textIn, cardToAdd );
         filterCards(false);
+        try
+        {
+          String factions[] = { "Forest", "Swamp", "Tundra", "Mountain", "Demon", "Special" };
+          PrintWriter writer = new PrintWriter("CardsList2.txt", "UTF-8");
+          writer.println(
+            "Card Name,Party Cost,Stars,Kingdom,Initial Wait,Level 0 Skill,Level 5 Skill,Level 10 Skill,Level 99 Skill,HP Stat Progression (level 0-15),Attack Stat Progression (level 0-15)"
+          );
+          for( CardType c : cardsMap.values() )
+          {
+            String stringHp = "";
+            String stringAtk = "";
+            for( int i = 0; i <= 15; ++ i )
+            {
+              stringHp = stringHp + c.hp[i] + (i<15?", ":"");
+              stringAtk = stringAtk + c.atk[i] + (i<15?", ":"");
+            }
+            writer.println(
+              c.name + "," +
+              c.cost + "," +
+              c.stars + "," +
+              factions[ c.faction ] + "," +
+              c.timer + "," +
+              (c.abilities[0] == AType.A_NONE || c.abilities[0] == null ? " " : (abilityName.get( c.abilities[0] ) + " " + c.abilityL[0])) + "," +
+              (c.abilities[1] == AType.A_NONE || c.abilities[1] == null ? " " : (abilityName.get( c.abilities[1] ) + " " + c.abilityL[1])) + "," +
+              (c.abilities[2] == AType.A_NONE || c.abilities[2] == null ? " " : (abilityName.get( c.abilities[2] ) + " " + c.abilityL[2])) + "," +
+              (c.abilities[3] == AType.A_NONE || c.abilities[3] == null ? " " : (abilityName.get( c.abilities[3] ) + " " + c.abilityL[3])) + "," +
+              (c.abilities[4] == AType.A_NONE || c.abilities[4] == null ? " " : (abilityName.get( c.abilities[4] ) + " " + c.abilityL[4])) + "," +
+              stringHp + "," +
+              stringAtk
+            );
+          }
+          error = "written";
+          writer.close();
+        }
+        catch( Exception e )
+        {
+          println( e );
+        }
         break;
         
       case BUTTON_SAVE_CARDS:
