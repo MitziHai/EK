@@ -1063,25 +1063,22 @@ class Button extends Control
         break;
 
       case BUTTON_REMOVE_CARD_1:
-        Collections.sort(deckList[0].current, Collections.reverseOrder());
-        for ( Integer i : deckList[0].current )
+        for ( int j = deckList[0].current.size() - 1; j >= 0 ; -- j )
         {
-          //println(i);
-          if( i >= 0 && i < deckList[0].listItems.size())
-            deckList[0].listItems.remove( (int)i );
+          deckList[0].listItems.remove( (int)deckList[0].current.get(j) );
         }
         deckList[0].current.clear();
+        if (deckList[0].listItems.size() <= deckList[0].h/deckList[0].lineSize) {deckList[0].scroll = 0;}
         showDeckCost( 0, true );
         break;
 
       case BUTTON_REMOVE_CARD_2:
-        Collections.sort(deckList[1].current, Collections.reverseOrder());
-        for ( Integer i : deckList[1].current )
+        for ( int j = deckList[1].current.size() - 1; j >= 0 ; -- j )
         {
-          if( i >= 0  && i < deckList[1].listItems.size())
-            deckList[1].listItems.remove( (int)i );
+          deckList[1].listItems.remove( (int)deckList[1].current.get(j) );
         }
         deckList[1].current.clear();
+        if (deckList[1].listItems.size() <= deckList[1].h/deckList[1].lineSize) {deckList[1].scroll = 0;}
         showDeckCost( 1, true );
         break;
 
@@ -1202,7 +1199,7 @@ class Button extends Control
           else if (uiTab == 4) {
             listresult.listItems.clear();
             listresult.listItems.add( "Please select a server and Get FOH Info before attempting to sim!");
-            butgo.text = "      Go!";
+            butgo.text = "    Go!";
           }
           else new Thread(new RunSim()).start();
         }
@@ -2040,7 +2037,7 @@ class ListBox extends Control
       if( i + scrollOffset == listItems.size() && !( this == deckList[ 0 ] || this == deckList[ 1 ] ) ) continue;
       if( i + scrollOffset < listItems.size() )
         text = listItems.get( i + scrollOffset ) + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
-      else
+      else 
         text = "" + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
       if ( current.contains( i+scrollOffset ) )
       {

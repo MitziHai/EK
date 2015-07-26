@@ -120,8 +120,12 @@ class Player
   
   void resetForKW()
   {
-    for ( Card c: inPlay) {
-      if (c.summoned) inPlay.remove(c); // remove any summoned cards before moving forward
+    for ( int i = 0; i< inPlay.size(); i++) {
+      Card c = inPlay.get(i);
+      if (c.summoned) {
+        inPlay.remove(i); // remove any summoned cards before moving forward
+        i--;
+      }
     }
     deck.addAll(hand);
     deck.addAll(inPlay);
