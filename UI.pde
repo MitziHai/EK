@@ -863,6 +863,8 @@ void setupUI()
   uiCard.add( cardStars );
   showAbilities();
   
+  Control labelVersion = new Control("Version 2015.07.29", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
+  uiSettings.add( labelVersion );
   
   
   // Results graph
@@ -2034,11 +2036,12 @@ class ListBox extends Control
     }
     for ( int i = TopRow; i + scrollOffset >=0 && i + scrollOffset <= listItems.size() && i < h/lineSize; ++ i )
     {
-      if( i + scrollOffset == listItems.size() && !( this == deckList[ 0 ] || this == deckList[ 1 ] ) ) continue;
-      if( i + scrollOffset < listItems.size() )
-        text = listItems.get( i + scrollOffset ) + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
-      else 
-        text = "" + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
+        if( i + scrollOffset == listItems.size() && !( this == deckList[ 0 ] || this == deckList[ 1 ] ) ) continue;
+        if( i + scrollOffset < listItems.size() ) {
+          text = listItems.get( i + scrollOffset ) + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
+        }
+        else 
+          text = "" + ((selected && current.contains(i+ scrollOffset) && millis() % 1000 < 500) ? "|" : "");
       if ( current.contains( i+scrollOffset ) )
       {
         /*pg.strokeWeight(1);
