@@ -135,6 +135,7 @@ void loadAbils()
   abilities.put( "Prayer", AType.A_PRAYER );
   abilities.put( "Plague", AType.A_PLAGUE );
   abilities.put( "Puncture", AType.A_PUNCTURE );
+  abilities.put( "Purification", AType.A_PURIFICATION );
   abilities.put( "Power Source", AType.A_POWER_SOURCE );
   abilities.put( "QS: Blizzard", AType.A_QS_BLIZZARD );
   abilities.put( "QS: Curse", AType.A_QS_CURSE );
@@ -282,6 +283,7 @@ void loadAbils()
   evoNames.put( "Plague", "plg" );
   evoNames.put( "Prayer", "pyr" );
   evoNames.put( "Puncture", "punc" );
+  evoNames.put( "Purification", "pur" );
   evoNames.put( "Power Source", "ps" );
   evoNames.put( "QS: Blizzard", "q:bzd" );
   evoNames.put( "QS: Curse", "q:crs" );
@@ -423,6 +425,7 @@ void loadAbils()
   evoNamesEvo.put( "Plague", true );
   evoNamesEvo.put( "Prayer",  true );
   evoNamesEvo.put( "Puncture",  true );
+  evoNamesEvo.put( "Purification", false );
   evoNamesEvo.put( "Power Source", false );
   evoNamesEvo.put( "QS: Blizzard", true );
   evoNamesEvo.put( "QS: Curse",  true );

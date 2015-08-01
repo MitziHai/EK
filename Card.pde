@@ -469,6 +469,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = AFTER_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_PURIFICATION: 
+    when = BEFORE_ATTACK; 
+    when2 = NEVER; 
+    break;
   case A_QS_BLIZZARD:
   case A_QS_CURSE:
   case A_QS_DESTROY:
@@ -1631,6 +1635,26 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_PRAYER:
           if( debug > 3 ) println( "     Prayer for " + (40*l));
           own.hp = min( own.hpmax, own.hp + 40*l );
+          break;
+
+        case A_PURIFICATION:
+          if( debug > 3 ) println( "     Purification");
+          for ( Card c : own.inPlay ) {
+            c.burn = 0;
+            for (int j = 0; j <= 9; ++ j) {
+              c.fireGod[j] = false;
+              c.combust[j] = false;
+            }
+            c.poison = 0;
+            if (c.status[CORRUPT]) {
+              own.cardCount[ PLAY ][ c.faction ] -= 1;
+              c.faction = c.type.faction;
+              own.cardCount[ PLAY ][ c.faction ] += 1;
+            }
+            for ( int j = 0; j <= 8; ++ j ) {
+              c.status[ j ] = false;
+            }
+          }
           break;
 
         case A_REANIMATION:

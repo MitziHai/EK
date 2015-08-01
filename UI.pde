@@ -863,7 +863,7 @@ void setupUI()
   uiCard.add( cardStars );
   showAbilities();
   
-  Control labelVersion = new Control("Version 2015.07.29", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
+  Control labelVersion = new Control("Version 2015.08.01", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
   uiSettings.add( labelVersion );
   
   
@@ -1299,7 +1299,7 @@ class Button extends Control
           String factions[] = { "Forest", "Swamp", "Tundra", "Mountain", "Demon", "Special" };
           PrintWriter writer = new PrintWriter("CardsList2.txt", "UTF-8");
           writer.println(
-            "Card Name,Party Cost,Stars,Kingdom,Initial Wait,Level 0 Skill,Level 5 Skill,Level 10 Skill,Level 99 Skill,HP Stat Progression (level 0-15),Attack Stat Progression (level 0-15)"
+            "Card Name,Party Cost,Stars,Kingdom,Initial Wait,Level 0 Skill,Level 5 Skill,Level 10 Skill,Level 99 Skill,Level 99_2 Skill,HP Stat Progression (level 0-15),Attack Stat Progression (level 0-15)"
           );
           for( CardType c : cardsMap.values() )
           {
@@ -1340,7 +1340,7 @@ class Button extends Control
           String factions[] = { "Forest", "Swamp", "Tundra", "Mountain", "Demon", "Special" };
           PrintWriter writer = new PrintWriter("CardsList2.txt", "UTF-8");
           writer.println(
-            "Card Name,Party Cost,Stars,Kingdom,Initial Wait,Level 0 Skill,Level 5 Skill,Level 10 Skill,Level 99 Skill,HP Stat Progression (level 0-15),Attack Stat Progression (level 0-15)"
+            "Card Name,Party Cost,Stars,Kingdom,Initial Wait,Level 0 Skill,Level 5 Skill,Level 10 Skill,Level 99 Skill,Level 99_2 Skill,HP Stat Progression (level 0-15),Attack Stat Progression (level 0-15)"
           );
           for( CardType c : cardsMap.values() )
           {
@@ -1361,6 +1361,7 @@ class Button extends Control
               (c.abilities[1] == AType.A_NONE || c.abilities[1] == null ? " " : (abilityName.get( c.abilities[1] ) + " " + c.abilityL[1])) + "," +
               (c.abilities[2] == AType.A_NONE || c.abilities[2] == null ? " " : (abilityName.get( c.abilities[2] ) + " " + c.abilityL[2])) + "," +
               (c.abilities[3] == AType.A_NONE || c.abilities[3] == null ? " " : (abilityName.get( c.abilities[3] ) + " " + c.abilityL[3])) + "," +
+              (c.abilities[4] == AType.A_NONE || c.abilities[4] == null ? " " : (abilityName.get( c.abilities[4] ) + " " + c.abilityL[4])) + "," +
               stringHp + "," +
               stringAtk
             );
