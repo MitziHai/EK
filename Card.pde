@@ -1086,7 +1086,7 @@ class Card
       println("     " + attacker.toStringNoHp() + " attacks " + toStringNoHp() + " for " + dmgTaken);
     checkAbilities( own, op, ON_ATTACKED,-1);
     //dmgCalculated caculates damage done with abilities
-    dmgTaken = min(( int)(dmgTaken * dmgMult), dmgMax ) - dmgMinus;
+    dmgTaken = min(( int)(dmgTaken * dmgMult)- dmgMinus, dmgMax ) ;
     if (status[LAST_CHANCE]) {
       dmgTaken = 0;
       if (debug > 1)       println("       Damage prevented by " + toStringNoHp() + " last chance");
@@ -1661,10 +1661,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if( own.graveReanim.size() > 0 )
           {
             Card toReanim = own.graveReanim.get( ( int )random( 0, own.graveReanim.size() ) );
-            if( debug > 3 ) println( "     Reanimation targetting " + toReanim.toStringNoHp());
             own.removeFromGrave( toReanim );
             own.addToPlay( toReanim );
             toReanim.status[ SICK ] = true;
+            if( debug > 3 ) println( "     Reanimation targetting " + toReanim.toStringNoHp());
             toReanim.checkAbilities( own, op, ON_ENTER, -1 );
           }
           else if( debug > 3 ) println( "     Reanimation targetting nothing");
@@ -1678,10 +1678,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_REINCARNATION:
           for ( int j = 0; j < l && !own.grave.isEmpty(); ++ j )
           {
-            int k = (int)random( own.graveSize() );
+            int k = (int)random( 0, own.graveSize() );
             Card c = own.removeFromGrave( k );
-            if( debug > 3 ) println( "     Reincarnation targetting " + c.toStringNoHp());            
             c.resetAll(own);
+            if( debug > 3 ) println( "     Reincarnation targetting " + c.toStringNoHp());            
             //println("reincarn " + c + " " + c.hpCurr + " " + c.dead);
             own.deck.add( c ); //
           }
