@@ -470,7 +470,7 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when2 = NEVER; 
     break;
   case A_PURIFICATION: 
-    when = BEFORE_ATTACK; 
+    when = BEGIN_TURN; 
     when2 = NEVER; 
     break;
   case A_QS_BLIZZARD:
@@ -744,7 +744,8 @@ static final int ON_ATTACKED = 4;
 static final int ON_ENTER = 5;
 static final int ON_DEATH = 6;
 static final int ON_ATTACKED_SPELL = 7;
-static final int NUM_WHEN = 8;
+static final int BEGIN_TURN = 8;
+static final int NUM_WHEN = 9;
 
 static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "dread roar", "last chance", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
 static final int FROZEN = 0;
@@ -1637,26 +1638,6 @@ Seperate Variables: BURNED, POISON, immune, resist,
           own.hp = min( own.hpmax, own.hp + 40*l );
           break;
 
-        case A_PURIFICATION:
-          if( debug > 3 ) println( "     Purification");
-          for ( Card c : own.inPlay ) {
-            c.burn = 0;
-            for (int j = 0; j <= 9; ++ j) {
-              c.fireGod[j] = false;
-              c.combust[j] = false;
-            }
-            c.poison = 0;
-            if (c.status[CORRUPT]) {
-              own.cardCount[ PLAY ][ c.faction ] -= 1;
-              c.faction = c.type.faction;
-              own.cardCount[ PLAY ][ c.faction ] += 1;
-            }
-            for ( int j = 0; j <= 8; ++ j ) {
-              c.status[ j ] = false;
-            }
-          }
-          break;
-
         case A_REANIMATION:
           if( own.graveReanim.size() > 0 )
           {
@@ -1770,6 +1751,32 @@ Seperate Variables: BURNED, POISON, immune, resist,
             c.time -= l;
           }
           break;
+        }
+      }
+      else if ( when == BEGIN_TURN )
+      {
+        if (!abilitySilenced[when][i] ) 
+        switch( a )
+        {
+          case A_PURIFICATION:
+            if( debug > 3 ) println( "     Purification");
+            for ( Card c : own.inPlay ) {
+              c.burn = 0;
+              for (int j = 0; j <= 9; ++ j) {
+                c.fireGod[j] = false;
+                c.combust[j] = false;
+              }
+              c.poison = 0;
+              if (c.status[CORRUPT]) {
+                own.cardCount[ PLAY ][ c.faction ] -= 1;
+                c.faction = c.type.faction;
+                own.cardCount[ PLAY ][ c.faction ] += 1;
+              }
+              for ( int j = 0; j <= 8; ++ j ) {
+                if (j != SILENCED) c.status[ j ] = false;
+              }
+            }
+            break;
         }
       }
       else if ( when == AFTER_ATTACK )
@@ -2285,7 +2292,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
               own.cardCount[ PLAY ][ c.faction ] += 1;
             }
             for ( int j = 0; j <= 8; ++ j ) {
-              c.status[ j ] = false;
+              if (j != SILENCED) c.status[ j ] = false;
             }
           }
           break;

@@ -215,6 +215,11 @@ class Player
     }
     removeDeadCards( op );
 
+    for( Card c : inPlay )
+    {
+      c.checkAbilities(this, op, BEGIN_TURN, -1);
+    }
+    
     // Fourth, each card attacks.
     for ( int i = 0; i < board.length; ++ i )
     {
