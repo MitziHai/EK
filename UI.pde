@@ -863,7 +863,7 @@ void setupUI()
   uiCard.add( cardStars );
   showAbilities();
   
-  Control labelVersion = new Control("Version 2015.08.11", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
+  Control labelVersion = new Control("Version 2015.08.25", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
   uiSettings.add( labelVersion );
   
   

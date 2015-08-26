@@ -288,7 +288,7 @@ class RunSim implements Runnable
     int rune = 0;
     resultsBest = null;
     resultsTracked = new ArrayList< Result >();
-                   // println("HERE 5 size: " + resultsTracked.size());
+                   // println("HERE 5 size: " + .size());
 
     // Find the duplicate cards in the deck to lower the number of combinations.
     int duplicatesUsed[] = new int[50]; // Number of each card used in the current deck.
@@ -440,7 +440,7 @@ class RunSim implements Runnable
                   bestScore = score;
                   System.arraycopy( duplicatesUsed, 0, duplicatesUsedBest, 0, duplicatesUsed.length );
                   bestR = cR;
-                  resultsBest = resultsTracked;
+                  resultsBest = new ArrayList< Result >(resultsTracked);
                   //println("HERE size: " + resultsTracked.size());
                 }
                 resultsTracked = new ArrayList< Result >();
@@ -537,8 +537,8 @@ class RunSim implements Runnable
         for ( int j = 0; j < bestDeck.numCards; ++ j )
         {
           String evo = bestDeck.cards[ j ].evo == AType.A_NONE ? "" : ( "-" + evoNames.get( abilityName.get( bestDeck.cards[ j ].evo ) ) + bestDeck.cards[ j ].evoLevel + " (" + bestDeck.cards[ j ].lvl + ")" );
-          t += bestDeck.cards[ j ].type.name + evo + (j<bestDeck.numCards-1?", ":"");
-          if ( j == 3 || j == 7 )
+          t += bestDeck.cards[ j ].type.name + evo + (j<bestDeck.numCards-1?",    ":"");
+          if ( j == 2 || j == 5 || j == 8 )
           {
             listresult.listItems.add( t );
             t = "";
@@ -550,7 +550,7 @@ class RunSim implements Runnable
           t = "";
         }
         for ( int j = 0; j < bestDeck.numRunes; ++ j )
-          t += bestDeck.runes[ j ].type.name + (j<bestDeck.numRunes-1?", ":"");
+          t += bestDeck.runes[ j ].type.name + (j<bestDeck.numRunes-1?",    ":"");
         if ( t.length() > 0 )
         {
           listresult.listItems.add( t );
@@ -565,7 +565,7 @@ class RunSim implements Runnable
     }
     isRun = false;
     FOHSim = false;
-    butgo.text = "      Go!";
+    butgo.text = "    Go!";
   }
 
   // duplicatesUsed, duplicatesCards, cR

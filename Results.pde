@@ -26,7 +26,17 @@ class Result
 
 void drawGraph(PGraphics pg)
 {
-  long rangeMerit = totalmeritMax - totalmeritMin;
+  totalmeritMax = 0;
+  totalmeritMin = 999999999;
+  totalroundsMax = 0;
+  totalroundsMin = 999999999;
+  for( Result res : resultsBest ) {
+    if (res.score > totalmeritMax) totalmeritMax = (long)res.score;
+    if (res.score < totalmeritMin) totalmeritMin = (long)res.score;
+    if (res.rounds > totalroundsMax) totalroundsMax = (long)res.rounds;
+    if (res.rounds < totalroundsMin) totalroundsMin = (long)res.rounds;
+  }
+  long rangeMerit =  totalmeritMax - totalmeritMin;
   long rangeRounds = totalroundsMax - totalroundsMin;
   int bars = (int)numBars.lastNum;
   int barWidth = (int)((1280-128-4)/bars);
@@ -50,7 +60,6 @@ void drawGraph(PGraphics pg)
   }
   else if( raddi.checked || radewboss.checked)
   {
-   // println("bar\tmerit");
     for( Result res : resultsBest )
     {
       counter++;
@@ -112,6 +121,7 @@ void drawGraph(PGraphics pg)
   int  lastValue2 = -1;
   int lastX2 = -1;
   boolean isBar = barGraph.checked;
+  String fromText, toText; 
   for( int i = 0; i < bars; ++ i )
   {
     int val1 = 0;
@@ -148,10 +158,13 @@ void drawGraph(PGraphics pg)
     pg.strokeWeight(1);
     pg.stroke(col);
     drawBar( 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128, (int)(max(barWidth-4,4)/2*0.85), val1, lastValue1, lastX1, isBar );
-    if (i == bars -1)
-      pg.text( ((i*meritPerBar+totalmeritMin)+"-\n"+(totalmeritMax)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
-    else
-      pg.text( ((i*meritPerBar+totalmeritMin)+"-\n"+((i+1)*meritPerBar+totalmeritMin)), 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
+    if ((i*meritPerBar+totalmeritMin) > 100000) fromText = java.text.NumberFormat.getNumberInstance(Locale.US).format((int)(i*meritPerBar+totalmeritMin)/1000) + "k";
+    else fromText = java.text.NumberFormat.getNumberInstance(Locale.US).format(i*meritPerBar+totalmeritMin);
+    if (i == bars - 1 && (totalmeritMax) > 100000) toText = java.text.NumberFormat.getNumberInstance(Locale.US).format((int)(totalmeritMax)/1000) + "k";
+    else if (((i+1)*meritPerBar+totalmeritMin) > 100000) toText = java.text.NumberFormat.getNumberInstance(Locale.US).format((int)(((i+1)*meritPerBar+totalmeritMin))/1000) + "k";
+    else if (i == bars-1) toText = java.text.NumberFormat.getNumberInstance(Locale.US).format(totalmeritMax);
+    else toText = java.text.NumberFormat.getNumberInstance(Locale.US).format((int)(((i+1)*meritPerBar+totalmeritMin)));
+    pg.text( fromText +"-\n"+ toText, 64 + 4 + max((barWidth-4),4)*i, listresult.y - 128 + 32 );
     pg.text(String.format("%.1f",float(100*barValues1[i]) / float(resultsBest.size()))+"%",64 + 4 + max((barWidth-4),4)*i,listresult.y - 128 + val1 - 5);
 
     pg.fill(col2);
