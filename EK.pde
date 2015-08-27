@@ -536,7 +536,7 @@ class RunSim implements Runnable
         String t = "";
         for ( int j = 0; j < bestDeck.numCards; ++ j )
         {
-          String evo = bestDeck.cards[ j ].evo == AType.A_NONE ? "" : ( "-" + evoNames.get( abilityName.get( bestDeck.cards[ j ].evo ) ) + bestDeck.cards[ j ].evoLevel + " (" + bestDeck.cards[ j ].lvl + ")" );
+          String evo = bestDeck.cards[ j ].evo == AType.A_NONE ? " (" + bestDeck.cards[ j ].lvl + ")" : ( "-" + evoNames.get( abilityName.get( bestDeck.cards[ j ].evo ) ) + bestDeck.cards[ j ].evoLevel + " (" + bestDeck.cards[ j ].lvl + ")" );
           t += bestDeck.cards[ j ].type.name + evo + (j<bestDeck.numCards-1?",    ":"");
           if ( j == 2 || j == 5 || j == 8 )
           {

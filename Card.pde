@@ -1069,6 +1069,10 @@ class Card
     if (isStunned) status[ STUNNED ] = false;
     status[ CONFUSED ] = false;
     status[ DREAD_ROAR] = false;
+    status[SILENCED] = false;
+    for (int i=0;i< NUM_WHEN; i++)
+      for (int j=0;j<abilityNum[i];j++)
+        abilitySilenced[i][j] = false;
   }
 
   // own is player owning this card, opponent is attacker
@@ -1695,7 +1699,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             }
             else 
             {
-              if (op.guards.contains(c)) op.guards.remove(c);
+//              if (op.guards.contains(c)) op.guards.remove(c);
               c.status[SILENCED] = true;
               for (int j=0; j<NUM_WHEN;j++)
                 for (int k=0; k<c.abilityNum[j];k++)
