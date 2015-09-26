@@ -5,6 +5,7 @@ ArrayList< Control > uiCard = new ArrayList< Control >();
 ArrayList< Control > uiResults = new ArrayList< Control >();
 ArrayList< Control > uiSettings = new ArrayList< Control >();
 ArrayList< Control > uiFOH = new ArrayList< Control >();
+ArrayList< Control > uiArena = new ArrayList< Control >();
 ArrayList< Control > uiTabs = new ArrayList< Control >();
 ArrayList< Control > ui = uiDeck;
 TextField selectedText = null;
@@ -58,6 +59,10 @@ static final int NUMBER_RUNS = 43;
 static final int BUTTON_SAVERESULTS = 44;
 static final int BUTTON_CARDDIFF = 45;
 static final int BUTTON_ADD_ABILITY_5 = 46;
+static final int TAB7 = 47;
+static final int TEXT_START_RANK = 48;
+static final int TEXT_END_RANK = 49;
+static final int BUTTON_GET_ARENA_DECKS = 50;
 
 PImage imgHpAtkNum[] = new PImage[10];
 PImage imgCostNum[] = new PImage[10];
@@ -239,8 +244,9 @@ Control fohDeckCost;
 Control fohInitativeCost;
 Control fohHealth;
 
+TextField textStartRank;
+TextField textEndRank;
 ListBox cards;
-ListBox deckList[] = new ListBox[2];
 Control search;
 TextField searchf;
 Checkbox runesCheck;
@@ -249,6 +255,7 @@ DropList faction;
 DropList stars;
 DropList levels;
 DropList listThreads;
+ListBox deckList[] = new ListBox[2];
 TextField textLevel[] = new TextField[2];
 TextField textdeck[] = new TextField[2];
 ListBox decks;
@@ -276,6 +283,9 @@ DropList ListHydraCard3;
 DropList servers;
 Control labelSetOrder;
 TextField textEvo;
+ListBox listArenaOpponents;
+ListBox listArenaDecks;
+Control ArenaOpponentLeval;
 
 DropList listMeritCard1;
 DropList listMeritCard2;
@@ -360,7 +370,6 @@ void setupUI()
   
   
   
-  
   PImage img = loadImage( "numbers.png" );
   imgCostNum = new PImage[10];
   for ( int i = 0; i < 10; ++ i )
@@ -415,30 +424,55 @@ void setupUI()
   Button tab1 = new Button( "  Deck Editor", 8, 8, 128, 24, TAB1);
   tab1.isTab = true;
   uiTabs.add(tab1);
-  Button tab2 = new Button( "  Card Editor", 144, 8, 128, 24, TAB2);
+  Button tab2 = new Button( "  Card Editor", 688, 8, 128, 24, TAB2);
   tab2.isTab = true;
   uiTabs.add(tab2);
-  Button tab3 = new Button( "     Results", 280, 8, 128, 24, TAB3);
+  Button tab3 = new Button( "     Results", 416, 8, 128, 24, TAB3);
   tab3.isTab = true;
   uiTabs.add(tab3);
-  Button tab4 = new Button( "     Settings", 416, 8, 128, 24, TAB4);
+  Button tab4 = new Button( "     Settings", 552, 8, 128, 24, TAB4);
   tab4.isTab = true;
   uiTabs.add(tab4);
-  Button tab5 = new Button( "       FOH", 552, 8, 128, 24, TAB5);
+  Button tab5 = new Button( "       FOH", 144, 8, 128, 24, TAB5);
   tab5.isTab = true;
   uiTabs.add(tab5);
-  Button tab6 = new Button( "       Help", 688, 8, 128, 24, TAB6);
+  Button tab6 = new Button( "       Help", 824, 8, 128, 24, TAB6);
   tab6.isTab = true;
   uiTabs.add(tab6);
+  Button tab7 = new Button( "      Arena", 280, 8, 128, 24, TAB7);
+  tab7.isTab = true;
+  uiTabs.add(tab7);
 
-  // Deck editor
 
   int uiTop = 32;
   int offsetLeft = 0;
+  offsetLeft = 256;
 
-  if ( evoTab )
-  {
-    offsetLeft = 256;
+
+/////////////////////////////////////  // Deck editor
+
+// Cards info 
+  cards = new ListBox( "Cards", 16, 16+uiTop, 224, 408, 0 );
+  cards.lineSize = 24;
+  cards.font = 13.25;
+  uiDeck.add( cards );
+
+
+  search = new Control( "Search:", 16, cards.y+cards.h+8, 224, 32, 0 );
+  uiDeck.add( search );
+  searchf = new TextField( "", 16, cards.y+cards.h+8+32, 224, 24, SEARCH_TEXT );
+  uiDeck.add( searchf );
+
+
+  runesCheck = new Checkbox( "Show Runes", 16, cards.y+cards.h+8+32*5, 224, 24, SEARCH_RUNE );
+  runesCheck.checked = true;
+  uiDeck.add( runesCheck );
+
+  cardsCheck = new Checkbox( "Show Cards", 16, cards.y+cards.h+8+32*6, 224, 24, SEARCH_CARD );
+  cardsCheck.checked = true;
+  uiDeck.add( cardsCheck );
+
+// Evo info
 
     evoList = new ListBox( "", 256, 16+uiTop, 240, 624 - 32*3 + 8, 0 );
     evoList.listItems.add( "None" );
@@ -446,36 +480,85 @@ void setupUI()
       if (evoNamesEvo.get(s)) evoList.listItems.add( s + " (" + evoNames.get(s) + ")" );
     evoList.multiselect = false;
     uiDeck.add( evoList );
-    uiCard.add( evoList );
 
     Control labelEvo = new Control( "Evolution level:", 256, evoList.y + evoList.h + 4, 240, 24, 0 );
     uiDeck.add( labelEvo );
-    uiCard.add( labelEvo );
-
-    checkEvo = new Checkbox( "Show Only Valid Evos", 256, evoList.y + evoList.h + 8 + 16 + 4+32, 240, 24, 0 );
-    checkEvo.checked = true;
-    uiDeck.add( checkEvo );
-    uiCard.add( checkEvo );
 
     textEvo = new TextField( "1", 256, evoList.y + evoList.h + 8 + 16 + 4, 240, 24, 0 );
     textEvo.isNumeric = true;
     textEvo.max = 10;
     uiDeck.add( textEvo );
-    uiCard.add( textEvo );
+
+    checkEvo = new Checkbox( "Show Only Valid Evos", 256, evoList.y + evoList.h + 8 + 16 + 4+32, 240, 24, 0 );
+    checkEvo.checked = true;
+    uiDeck.add( checkEvo );
+
+
+// Deck building
+
+  for ( int i = 1; i <= 2; ++ i )
+  {
+    int left = ( i == 1 ? 256 : 512 ) + offsetLeft;
+    Control labell1 = new Control( "Level: ", left, 48+uiTop, 224, 24, 0 );
+    if (i==1) uiArena.add(labell1);
+    uiDeck.add( labell1 );
+    textLevel[i-1] = new TextField( "60", left+80, 48+uiTop, 128, 24, TEXT_LEVEL_1+i-1 );
+    textLevel[i-1].isNumeric = true;
+    textLevel[i-1].lastNum = 60;
+    textLevel[i-1].num = 60;
+    textLevel[i-1].min = 0;
+    uiDeck.add( textLevel[i-1] );
+    labelh[i-1] = new Control( "Health: 8080", left, 76+uiTop, 224, 24, 0 );
+    uiDeck.add( labelh[i-1] );
+    Control labeld1 = new Control( "Player " + i + ": ", left, 12+uiTop, 224, 24, 0 );
+    uiDeck.add( labeld1 );
+    if (i==1) uiArena.add(labeld1);
+    textdeck[i-1] = new TextField( "Unamed", left+80, 12+uiTop, 128, 24, 0 );
+    uiDeck.add( textdeck[i-1] );
+    labelc[ i - 1 ] = new Control( "Deck (Demon) Cost: 0 (0)\nInitative Cost: 0", left, 104+uiTop, 224, 24, 0 );
+    uiDeck.add( labelc[ i - 1 ] );
+    deckList[i-1] = new ListBox( "", left, 160+uiTop, 240, 336, 0 );
+    deckList[i-1].lineSize = 24;
+    uiDeck.add( deckList[i-1] );
+    Control butadd1 = new Button( "         Add Card to Deck", left, 540-28+uiTop, 240, 32, BUTTON_ADD_CARD_1+i-1 );
+    uiDeck.add( butadd1 );
+    if (i==1) uiArena.add(butadd1);
+    Control butrem1 = new Button( "Remove Card", left, 588-28+uiTop, 115, 32, BUTTON_REMOVE_CARD_1+i-1 );
+    uiDeck.add( butrem1 );
+    if (i==1) uiArena.add(butrem1);
+    Control butrem2 = new Button( " Remove All", left+125, 588-28+uiTop, 115, 32, BUTTON_REMOVE_ALL_1+i-1 );
+    uiDeck.add( butrem2 );
+    if (i==1) uiArena.add(butrem2);
+    Control butsave1 = new Button( "              Save Deck", left, 636-28+uiTop, 240, 32, BUTTON_SAVE_1+i-1 );
+    uiDeck.add( butsave1 );
+    if (i==1) uiArena.add(butsave1);
   }
 
+  
+// Saved Decks
 
-  listresult = new ListBox("", 512, 640+16+uiTop, 600+offsetLeft-96, 104, 0);
-  uiDeck.add( listresult );
-  uiFOH.add( listresult);
-  butSaveResults = new Button( "   Save\n Results", 512-96, 640+16+uiTop, 85, 60, BUTTON_SAVERESULTS );
-  uiDeck.add( butSaveResults );
-  uiFOH.add( butSaveResults);
+  Control labsav = new Control( "Saved Decks", 768+offsetLeft, 16+uiTop, 256, 24, 0 );
+  uiDeck.add( labsav );
+  decks = new ListBox( "Decks", 768+offsetLeft, 40+uiTop, 240, 456, 0 );
+  decks.lineSize = 24;
+  decks.multiselect = false;
+  uiDeck.add( decks );
+  Control butload1 = new Button( "      Load Deck as Player 1", 768+offsetLeft, 456+40+16+uiTop, 240, 32, BUTTON_LOAD_1 );
+  uiDeck.add( butload1 );
+  Control butload2 = new Button( "      Load Deck as Player 2", 768+offsetLeft, 456+40+16+32+16+uiTop, 240, 32, BUTTON_LOAD_2 );
+  uiDeck.add( butload2 );
+  Control butdel = new Button( " Delete Deck", 768+offsetLeft, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_DELETE );
+  uiDeck.add( butdel );
+  Control butdeckfile = new Button( " Load Decks", 768+offsetLeft+125, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_LOAD_DECKS );
+  uiDeck.add( butdeckfile );
+
+
+
 
   Control line = new Control( "--------------------------------------------------------------------------------------------------------------------------------------------", 0, 640+uiTop, width, 24, 0 );
   uiDeck.add( line );
-  uiFOH.add( line );
 
+// Radio Buttons  
   radall = new RadioButton( "Show Arena Results", 16, line.y+24-6, 200, 24, 0 );
   radall.checked = true;
   uiDeck.add( radall );
@@ -501,29 +584,218 @@ void setupUI()
   radew.setStart = radall;
   radewboss.setNext = null;
   radewboss.setStart = radall;
+ 
+ // Find best deck check box
   checkMultisim = new Checkbox( "Find best deck", 230, line.y+24-6, 180, 24, 0 );
   uiDeck.add( checkMultisim );
-  labelSetOrder = new Control( "Card Order", 16, uiTop+360, 240, 24, 0 );
-  uiSettings.add(labelSetOrder);
-  checkSetOrder = new Checkbox( "Play cards in set order", 16, uiTop+390, 240, 24, 0 );
-  uiSettings.add( checkSetOrder );
+  
+ 
+// Number Runs
+  numberRuns = new TextField(Integer.toString((int)numMatch), 275, line.y+42, 128, 24, NUMBER_RUNS); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
+  numberRuns.isNumeric = true;
+  numberRuns.lastNum = numberRuns.num = numMatch;
+  numberRuns.max = 1000000;
+  uiDeck.add( numberRuns );
+  Control runsLabel = new Control( "Runs:", 226, line.y+42, 128, 32, 0);
+  uiDeck.add( runsLabel );
 
+// Save Results Button
+  butSaveResults = new Button( "   Save\n Results", 512-96, 640+16+uiTop, 85, 60, BUTTON_SAVERESULTS );
+  uiDeck.add( butSaveResults );
+
+  butgo = new Button( "    Go!", 256+148, line.y+32+56, 100, 32, BUTTON_GO );
+  butgo.font = 18;
+  butgo.type = 2;
+  uiDeck.add( butgo );
+
+
+// Results Box
+  listresult = new ListBox("", 512, 640+16+uiTop, 600+offsetLeft-96, 104, 0);
+  uiDeck.add( listresult );
+  
+
+  faction = new DropList( "", 16, cards.y+cards.h+8+32*4, 224, 24, SEARCH_FACTION );
+  faction.listItems.addAll(Arrays.asList(new String[] {
+    "All Factions", "Forest", "Swamp", "Tundra", "Mountain", "Demon", "Special"
+  }
+  ));
+  uiDeck.add( faction );
+  
+  stars = new DropList( "", 16, cards.y+cards.h+8+32*3, 224, 24, SEARCH_STAR );
+  stars.listItems.addAll(Arrays.asList(new String[] {
+    "All Stars", "5 Star", "4 Star", "3 Star", "2 Star", "1 Star"
+  }
+  ));
+  uiDeck.add( stars );
+  
+  
+  levels = new DropList( "", 16, cards.y+cards.h+8+32*2, 224, 24, SEARCH_STAR );
+  levels.listItems.addAll(Arrays.asList(new String[] {
+    "Level 10", "Level 0", "Level 4", "Level 5", "Level 10", "Level 15", "Level 10 to 15", "All Levels"
+  }
+  ));
+  uiDeck.add( levels );
+
+
+  /////////////////////////////////////  // FOH Tab
+
+
+// PLayer Slots
+  for ( int i = 0; i < 8; ++ i )
+  {
+    PlayerNames [i] = new Control("",60+(640*(i>3?1:0)), uiTop+80+(i%4)*136, 64, 64, 0);
+    picPlayerAvatar[ i ] = new Picture("test", 64+(640*(i>3?1:0)), uiTop+104+(i%4)*136, 64, 64, 1,loadImage( "PhotoCards\\img_photoCard_0.PNG" ) );
+    uiFOH.add( picPlayerAvatar[ i ] );
+    uiFOH.add( PlayerNames[ i ] );
+    for (int j = 0; j < 3; j++) {
+      BetData[j][i] = new Control("",(int)(60+(640*((i>3?1:0)+(i>3?-0.25*j:0.25*j)))), (int)(uiTop+80+((j==2?1.5:j*0.5) +i%4)*136+88), 64, 64, 0);
+      BetData[j][i].font = 14;
+      uiFOH.add(BetData[j][i]);
+    } 
+  }
+
+// Player Decks
+  fohPlayer = new Control("Player: ",900, uiTop+80, 64, 64, 0);
+  uiFOH.add(fohPlayer);
+  fohLevel = new Control("Level: ",900, uiTop+110, 64, 64, 0);
+  uiFOH.add(fohLevel);
+  fohHealth = new Control("Health: ",900, uiTop+140, 64, 64, 0);
+  uiFOH.add(fohHealth);
+  fohInitativeCost = new Control("Initative: ",900, uiTop+170, 64, 64, 0);
+  uiFOH.add(fohInitativeCost);
+  fohDeckCost = new Control("Deck Cost: ",900, uiTop+200, 64, 64, 0);
+  uiFOH.add(fohDeckCost);
+  fohDeck = new Control("Deck: ",900, uiTop+240, 64, 64, 0);
+  uiFOH.add(fohDeck);
+
+// Server Drop down
+  servers = new DropList( "",  512  + offsetLeft, uiTop+12, 224, 24, SERVER_SELECT );
+  servers.listItems.addAll(Arrays.asList(new String[] {
+    "Chaos", "Harmony", "Legacy", "Destiny", "Fury", "Serenity", "Skorn", "Apollo"
+  }
+  ));
+  uiFOH.add(servers);
+  
+// Get FOH Info Button
+  Button butFOHDecks = new Button( "Get FOH Info", 36, line.y+24, 160, 32, BUTTON_GET_FOH_DECKS );
+  butFOHDecks.font = 18;
+  butFOHDecks.type = 2;
+  uiFOH.add( butFOHDecks );
+
+// REPEATS FROM DECK EDITOR TAB
+  uiFOH.add( line );
+  uiFOH.add( numberRuns );
+  uiFOH.add (runsLabel);
+  uiFOH.add( butSaveResults);
+  uiFOH.add (butgo);
+  uiFOH.add( listresult);
+
+///////////////////////////////////////////// Arena Tab
+
+// Cards info 
+  uiArena.add( cards );
+  uiArena.add( search );
+  uiArena.add( searchf );
+  uiArena.add( levels );
+  uiArena.add( stars );
+  uiArena.add( faction );
+  uiArena.add( runesCheck );
+  uiArena.add( cardsCheck );
+
+// Evo info
+
+    uiArena.add( evoList );
+    uiArena.add( labelEvo );
+    uiArena.add( textEvo );
+    uiArena.add( checkEvo );
+
+// Deck building
+    uiArena.add( textLevel[0] );
+    uiArena.add( labelh[0] );
+    uiArena.add( textdeck[0] );
+    uiArena.add( labelc[0] );
+    uiArena.add( deckList[0] );
+   
+    Control labell3 = new Control( "Start Rank: ", 512  + offsetLeft, 48+uiTop, 224, 24, 0 );
+    uiArena.add(labell3);
+    textStartRank = new TextField( "1", 512  + offsetLeft+90, 48+uiTop, 128, 24, TEXT_START_RANK );
+    textStartRank.isNumeric = true;
+    textStartRank.lastNum = 1000;
+    textStartRank.num = 1;
+    textStartRank.min = 1;
+    uiArena.add( textStartRank );
+    Control labell4 = new Control( "End Rank: ", 512  + offsetLeft, 80+uiTop, 224, 24, 0 );
+    uiArena.add(labell4);
+    textEndRank = new TextField( "10", 512  + offsetLeft+90, 80+uiTop, 128, 24, TEXT_END_RANK );
+    textEndRank.isNumeric = true;
+    textEndRank.lastNum = 1000;
+    textEndRank.num = 10;
+    textEndRank.min = 1;
+    uiArena.add( textEndRank );
+
+    Button butGetArenaDecks;
+    butGetArenaDecks = new Button( "    Get Decks", 512  + offsetLeft, 112+uiTop, 128, 24, BUTTON_GET_ARENA_DECKS );
+    butGetArenaDecks.font = 14;
+    butGetArenaDecks.type = 2;
+    uiArena.add( butGetArenaDecks );
+  
+// Saved Decks
+
+  uiArena.add( labsav );
+  uiArena.add( decks );
+  uiArena.add( butload1 );
+  uiArena.add( butload2 );
+  uiArena.add( butdel );
+  uiArena.add( butdeckfile );
+
+  uiArena.add( line );
+
+ // Find best deck check box
+  uiArena.add( checkMultisim );
+ 
+// Number Runs
+  uiArena.add( numberRuns );
+  uiArena.add( runsLabel );
+
+// Save Results Button
+  uiArena.add( butSaveResults );
+
+  uiArena.add( butgo );
+
+
+// Results Box
+  uiArena.add( listresult );
+  
+  uiArena.add( levels );
+
+  
+  listArenaOpponents = new ListBox( "ArenaOpponents", 512+offsetLeft, 160+uiTop, 240, 96, 0 );
+  listArenaOpponents.lineSize = 24;
+  listArenaOpponents.listItems.add( "<<No Decks>>" );
+  listArenaOpponents.multiselect = false;
+  uiArena.add( listArenaOpponents );
+
+  listArenaDecks = new ListBox( "", 512+offsetLeft, 290+uiTop, 240, 336, 0 );
+  listArenaDecks.lineSize = 24;
+  uiArena.add( listArenaDecks );
+
+  ArenaOpponentLeval = new Control( "Level:", 512+offsetLeft, uiTop+260, 240, 24, 0 );
+  uiArena.add(ArenaOpponentLeval);
+
+  uiArena.add(servers);
+  
+
+  /////////////////////////////////////  // Settings Tab
 
   labelMultiSim = new Control( "Multi Sim Additional Options", 16, uiTop+10, 240, 24, 0 );
   uiSettings.add(labelMultiSim);
   checkMultisimResults = new Checkbox( "Print All Results of Find Best Deck to Logfile", 16, uiTop+40, 240, 24, 0 );
   uiSettings.add( checkMultisimResults );
+
   labelKWSim = new Control( "Hydra Simulation Options\n   Choose the three event cards you want:\n                    3 *                                    4 *                                5*", 16, uiTop+100, 240, 24, 0 );
   uiSettings.add(labelKWSim);
 
-  labelMeritCards = new Control( "Choose Merit cards for Demon Invasion", 740, uiTop+100, 240, 24, 0 );
-  uiSettings.add(labelMeritCards);
-  listMeritCard1 = new DropList( "Choose Merit Card 1", 740, uiTop+130, 240, 24, 0 );
-  listMeritCard2 = new DropList( "Choose Merit Card 2", 956, uiTop+130, 240, 24, 0 );
-  uiSettings.add(listMeritCard1);
-  uiSettings.add(listMeritCard2);
 
- 
   Control labelConvertLegacy = new Control( "Convert Old Version Decks", 16, uiTop+220, 240, 24, 0 );
   uiSettings.add(labelConvertLegacy);
   butConvert = new Button( "Convert", 36, uiTop+250, 160, 32, BUTTON_CONVERT );
@@ -541,150 +813,6 @@ void setupUI()
   Control labelRunOptions = new Control( "Run Options", 16, uiTop+290, 280, 24, 0 );
   uiSettings.add(labelRunOptions);
 
-  checkDebug = new Checkbox( "Run Debug Mode (also single threaded)", 360, uiTop+320, 240, 24, 0 );
-  uiSettings.add( checkDebug );
-
-
-  
-  for ( int i = 0; i < 8; ++ i )
-  {
-    PlayerNames [i] = new Control("",60+(640*(i>3?1:0)), uiTop+80+(i%4)*136, 64, 64, 0);
-    picPlayerAvatar[ i ] = new Picture("test", 64+(640*(i>3?1:0)), uiTop+104+(i%4)*136, 64, 64, 1,loadImage( "PhotoCards\\img_photoCard_0.PNG" ) );
-    uiFOH.add( picPlayerAvatar[ i ] );
-    uiFOH.add( PlayerNames[ i ] );
-    for (int j = 0; j < 3; j++) {
-      BetData[j][i] = new Control("",(int)(60+(640*((i>3?1:0)+(i>3?-0.25*j:0.25*j)))), (int)(uiTop+80+((j==2?1.5:j*0.5) +i%4)*136+88), 64, 64, 0);
-      BetData[j][i].font = 14;
-      uiFOH.add(BetData[j][i]);
-    } 
-  }
-
-  fohPlayer = new Control("Player: ",900, uiTop+80, 64, 64, 0);
-  uiFOH.add(fohPlayer);
-  fohLevel = new Control("Level: ",900, uiTop+110, 64, 64, 0);
-  uiFOH.add(fohLevel);
-  fohHealth = new Control("Health: ",900, uiTop+140, 64, 64, 0);
-  uiFOH.add(fohHealth);
-  fohInitativeCost = new Control("Initative: ",900, uiTop+170, 64, 64, 0);
-  uiFOH.add(fohInitativeCost);
-  fohDeckCost = new Control("Deck Cost: ",900, uiTop+200, 64, 64, 0);
-  uiFOH.add(fohDeckCost);
-  fohDeck = new Control("Deck: ",900, uiTop+240, 64, 64, 0);
-  uiFOH.add(fohDeck);
-
-  servers = new DropList( "", 512, uiTop+24, 224, 24, SERVER_SELECT );
-  servers.listItems.addAll(Arrays.asList(new String[] {
-    "Chaos", "Harmony", "Legacy", "Destiny", "Fury", "Serenity", "Skorn", "Apollo"
-  }
-  ));
-  uiFOH.add(servers);
-  
-  
-  Button butFOHDecks = new Button( "Get FOH Info", 36, line.y+24, 160, 32, BUTTON_GET_FOH_DECKS );
-  butFOHDecks.font = 18;
-  butFOHDecks.type = 2;
-  uiFOH.add( butFOHDecks );
-
-  numberRuns = new TextField(Integer.toString((int)numMatch), 275, line.y+42, 128, 24, NUMBER_RUNS); //( "Go!", 256+64, line.y+32+24, 80, 64, BUTTON_GO );
-  numberRuns.isNumeric = true;
-  numberRuns.lastNum = numberRuns.num = numMatch;
-  numberRuns.max = 1000000;
-  uiDeck.add( numberRuns );
-  uiFOH.add( numberRuns );
-  Control runsLabel = new Control( "Runs:", 226, line.y+42, 128, 32, 0);
-  uiDeck.add( runsLabel );
-  uiFOH.add (runsLabel);
-
-
-  cards = new ListBox( "Cards", 16, 16+uiTop, 224, 408, 0 );
-  cards.lineSize = 24;
-  cards.font = 13.25;
-  uiDeck.add( cards );
-  uiCard.add( cards );
-
-  search = new Control( "Search:", 16, cards.y+cards.h+8, 224, 32, 0 );
-  uiDeck.add( search );
-  uiCard.add( search );
-  searchf = new TextField( "", 16, cards.y+cards.h+8+32, 224, 24, SEARCH_TEXT );
-  uiDeck.add( searchf );
-  uiCard.add( searchf );
-  runesCheck = new Checkbox( "Show Runes", 16, cards.y+cards.h+8+32*5, 224, 24, SEARCH_RUNE );
-  runesCheck.checked = true;
-  uiDeck.add( runesCheck );
-  uiCard.add( runesCheck );
-  cardsCheck = new Checkbox( "Show Cards", 16, cards.y+cards.h+8+32*6, 224, 24, SEARCH_CARD );
-  cardsCheck.checked = true;
-  uiDeck.add( cardsCheck );
-  uiCard.add( cardsCheck );
-  faction = new DropList( "", 16, cards.y+cards.h+8+32*4, 224, 24, SEARCH_FACTION );
-  faction.listItems.addAll(Arrays.asList(new String[] {
-    "All Factions", "Forest", "Swamp", "Tundra", "Mountain", "Demon", "Special"
-  }
-  ));
-  uiDeck.add( faction );
-  uiCard.add( faction );
-  stars = new DropList( "", 16, cards.y+cards.h+8+32*3, 224, 24, SEARCH_STAR );
-  stars.listItems.addAll(Arrays.asList(new String[] {
-    "All Stars", "5 Star", "4 Star", "3 Star", "2 Star", "1 Star"
-  }
-  ));
-  uiDeck.add( stars );
-  uiCard.add( stars );
-  levels = new DropList( "", 16, cards.y+cards.h+8+32*2, 224, 24, SEARCH_STAR );
-  levels.listItems.addAll(Arrays.asList(new String[] {
-    "Level 10", "Level 0", "Level 4", "Level 5", "Level 10", "Level 15", "Level 10 to 15", "All Levels"
-  }
-  ));
-  uiDeck.add( levels );
-  uiCard.add( levels );
-
-  for ( int i = 1; i <= 2; ++ i )
-  {
-    int left = ( i == 1 ? 256 : 512 ) + offsetLeft;
-    Control labell1 = new Control( "Level: ", left, 48+uiTop, 224, 24, 0 );
-    uiDeck.add( labell1 );
-    textLevel[i-1] = new TextField( "60", left+80, 48+uiTop, 128, 24, TEXT_LEVEL_1+i-1 );
-    textLevel[i-1].isNumeric = true;
-    textLevel[i-1].lastNum = 60;
-    textLevel[i-1].num = 60;
-    textLevel[i-1].min = 0;
-    uiDeck.add( textLevel[i-1] );
-    labelh[i-1] = new Control( "Health: 8080", left, 76+uiTop, 224, 24, 0 );
-    uiDeck.add( labelh[i-1] );
-    Control labeld1 = new Control( "Player " + i + ": ", left, 12+uiTop, 224, 24, 0 );
-    uiDeck.add( labeld1 );
-    textdeck[i-1] = new TextField( "Unamed", left+80, 12+uiTop, 128, 24, 0 );
-    uiDeck.add( textdeck[i-1] );
-    labelc[ i - 1 ] = new Control( "Deck (Demon) Cost: 0 (0)\nInitative Cost: 0", left, 104+uiTop, 224, 24, 0 );
-    uiDeck.add( labelc[ i - 1 ] );
-    deckList[i-1] = new ListBox( "", left, 160+uiTop, 240, 336, 0 );
-    deckList[i-1].lineSize = 24;
-    uiDeck.add( deckList[i-1] );
-    Control butadd1 = new Button( "         Add Card to Deck", left, 540-28+uiTop, 240, 32, BUTTON_ADD_CARD_1+i-1 );
-    uiDeck.add( butadd1 );
-    Control butrem1 = new Button( "Remove Card", left, 588-28+uiTop, 115, 32, BUTTON_REMOVE_CARD_1+i-1 );
-    uiDeck.add( butrem1 );
-    Control butrem2 = new Button( " Remove All", left+125, 588-28+uiTop, 115, 32, BUTTON_REMOVE_ALL_1+i-1 );
-    uiDeck.add( butrem2 );
-    Control butsave1 = new Button( "              Save Deck", left, 636-28+uiTop, 240, 32, BUTTON_SAVE_1+i-1 );
-    uiDeck.add( butsave1 );
-  }
-  
-
-  Control labsav = new Control( "Saved Decks", 768+offsetLeft, 16+uiTop, 256, 24, 0 );
-  uiDeck.add( labsav );
-  decks = new ListBox( "Decks", 768+offsetLeft, 40+uiTop, 240, 456, 0 );
-  decks.lineSize = 24;
-  decks.multiselect = false;
-  uiDeck.add( decks );
-  Control butload1 = new Button( "      Load Deck as Player 1", 768+offsetLeft, 456+40+16+uiTop, 240, 32, BUTTON_LOAD_1 );
-  uiDeck.add( butload1 );
-  Control butload2 = new Button( "      Load Deck as Player 2", 768+offsetLeft, 456+40+16+32+16+uiTop, 240, 32, BUTTON_LOAD_2 );
-  uiDeck.add( butload2 );
-  Control butdel = new Button( " Delete Deck", 768+offsetLeft, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_DELETE );
-  uiDeck.add( butdel );
-  Control butdeckfile = new Button( " Load Decks", 768+offsetLeft+125, 456+40+16+32+16+16+32+uiTop, 115, 32, BUTTON_LOAD_DECKS );
-  uiDeck.add( butdeckfile );
 
   Control labThreads = new Control( "Threads:", 32, uiTop+320, 240, 24, 0 );
   uiSettings.add( labThreads );
@@ -695,6 +823,11 @@ void setupUI()
   }
   ));  
 
+  checkDebug = new Checkbox( "Run Debug Mode (also single threaded)", 360, uiTop+320, 240, 24, 0 );
+  uiSettings.add( checkDebug );
+  checkSetOrder = new Checkbox( "Play cards in set order", 720, uiTop+320, 240, 24, 0 );
+  uiSettings.add( checkSetOrder );
+
   ListHydraCard1 = new DropList( "Choose Hydra Event Card 1", 16, uiTop+180, 240, 24, 0 );
   ListHydraCard2 = new DropList( "Choose Hydra Event Card 2", 216, uiTop+180, 240, 24, 0 );
   ListHydraCard3 = new DropList( "Choose Hydra Event Card 3", 416, uiTop+180, 240, 24, 0 );
@@ -702,13 +835,35 @@ void setupUI()
   uiSettings.add(ListHydraCard2);
   uiSettings.add(ListHydraCard3);
 
-  uiSettings.add(servers);
+  labelMeritCards = new Control( "Choose Merit cards for Demon Invasion", 740, uiTop+100, 240, 24, 0 );
+  uiSettings.add(labelMeritCards);
+  listMeritCard1 = new DropList( "Choose Merit Card 1", 740, uiTop+130, 240, 24, 0 );
+  listMeritCard2 = new DropList( "Choose Merit Card 2", 956, uiTop+130, 240, 24, 0 );
+  uiSettings.add(listMeritCard1);
+  uiSettings.add(listMeritCard2);
 
-  butgo = new Button( "    Go!", 256+148, line.y+32+56, 100, 32, BUTTON_GO );
-  butgo.font = 18;
-  butgo.type = 2;
-  uiDeck.add( butgo );
-  uiFOH.add (butgo);
+  uiSettings.add(servers);
+  
+  Control labelVersion = new Control("Version 2015.08.29", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
+  uiSettings.add( labelVersion );
+
+
+  /////////////////////////////////////  // Card Editor Tab
+  
+  // Common with Deck Editor Tab
+  uiCard.add( cards );
+  uiCard.add( search );
+  uiCard.add( searchf );
+  uiCard.add( levels );
+  uiCard.add( stars );
+  uiCard.add( faction );
+  uiCard.add( runesCheck );
+  uiCard.add( cardsCheck );
+
+  uiCard.add( evoList );
+  uiCard.add( labelEvo );
+  uiCard.add( textEvo );
+  uiCard.add( checkEvo );
 
   // Card editor
   int column1 = 256; // Image
@@ -862,9 +1017,8 @@ void setupUI()
   uiCard.add( cardFaction );
   uiCard.add( cardStars );
   showAbilities();
-  
-  Control labelVersion = new Control("Version 2015.08.25", 1110, 770, (int)(40*0.8), (int)(41*0.8), 0 );
-  uiSettings.add( labelVersion );
+
+
   
   
   // Results graph
@@ -986,7 +1140,7 @@ class Button extends Control
     }
     if ( isTab )
     {
-      if ( ( uiTab == 0 && id == TAB1 ) || ( uiTab == 1 && id == TAB2 ) || ( uiTab == 2 && id == TAB3 ) || ( uiTab == 3 && id == TAB4 ) || ( uiTab == 4 && id == TAB5 ) || ( uiTab == 5 && id == TAB6 ))
+      if ( ( uiTab == 0 && id == TAB1 ) || ( uiTab == 1 && id == TAB2 ) || ( uiTab == 2 && id == TAB3 ) || ( uiTab == 3 && id == TAB4 ) || ( uiTab == 4 && id == TAB5 ) || ( uiTab == 5 && id == TAB6 ) || ( uiTab == 6 && id == TAB7 ))
         pg.image( imgTab[ 0 ], x, y, w, h );
       else
         pg.image( imgTab[ 1 ], x, y, w, h );
@@ -1054,6 +1208,11 @@ class Button extends Control
       case TAB6:
         ui = uiHelp;
         uiTab = 5;
+        break;
+
+      case TAB7:
+        ui = uiArena;
+        uiTab = 6;
         break;
 
       case BUTTON_ADD_CARD_1:
@@ -1166,7 +1325,9 @@ class Button extends Control
         break;
 
       case BUTTON_GET_FOH_DECKS:
-          FOH();
+        listresult.listItems.clear();
+        listresult.listItems.add( "Downloading decks and match info for server " + servers.listItems.get(servers.currentIndex));
+        thread("FOH");
         break;
 
       case BUTTON_CARDDIFF:
@@ -1177,16 +1338,12 @@ class Button extends Control
         selectInput("Select a decks file to load:", "loadSelectedDecks");
         break;
 
-//      case BUTTON_PAUSE:
-//        if (isRun && !Pause) {
-//          butPause.text = "Resume!";
-//          Pause = true;
-//        }
-//        else if (isRun) {
-//          butPause.text = " Pause!";
-//          Pause = false;
-//        }
-//        break;
+      case BUTTON_GET_ARENA_DECKS:
+        listresult.listItems.clear();
+        listresult.listItems.add( "Downloading Arena decks ranked " + textStartRank.num + " to " + textEndRank.num + " for server " + servers.listItems.get(servers.currentIndex));
+        ArenaDownload = false;
+        thread("GetArenaDecks");
+        break;
         
         
 
@@ -1196,11 +1353,26 @@ class Button extends Control
           StopMe = true;
         }
         else {
-          butgo.text = "   Stop!";
-          if (uiTab == 4 && FOHDownload) FOH_RUN();
+          butgo.text = "   Stop!"; //<>//
+          if (uiTab == 4 && FOHDownload) {
+            FOHSim = true;
+            if (FOHRound == 1) FOHMatch = 4;
+            else if (FOHRound == 2) FOHMatch = 2;
+            else FOHMatch = 1;
+            new Thread(new RunSim()).start();          
+          }
           else if (uiTab == 4) {
             listresult.listItems.clear();
             listresult.listItems.add( "Please select a server and Get FOH Info before attempting to sim!");
+            butgo.text = "    Go!";
+          }
+          if (uiTab == 6 && ArenaDownload) {
+            ArenaSim = true;
+            new Thread(new RunSim()).start();          
+          }
+          else if (uiTab == 6) {
+            listresult.listItems.clear();
+            listresult.listItems.add( "Please select a server and download Arena Decks Info before attempting to sim!");
             butgo.text = "    Go!";
           }
           else new Thread(new RunSim()).start();
@@ -1997,7 +2169,7 @@ class ListBox extends Control
      pg.noFill();
      pg.stroke(0);
      pg.rect(x,y,w,h);*/
-    pg.image( imgFrame[ w > h ? 1 : 0 ], x, y, w, h );
+    pg.image( imgFrame[ w > 600 ? 1 : 0 ], x, y, w, h );
 
     hasScroll = listItems.size() > h/lineSize;
     int b = 4;
@@ -2168,15 +2340,6 @@ class ListBox extends Control
             else savedDecks.remove( (int) i + 1);
           }
         }
- //        int lastSelected = current.size() > 0 ? current.get( current.size() - 1 ) : -1;
-//        if ( !(multiselect && keyPressed && key == CODED && ( keyCode == CONTROL ) ) )
-//          current.clear();
-//        if ( keyPressed && keyCode == SHIFT && key == CODED )
-//          for ( int i = min( lastSelected, newCurrentIndex ); i <= max( lastSelected, newCurrentIndex ); ++ i ) current.add( i );
-//        else if ( current.contains( newCurrentIndex ) )
-//          current.remove( (Integer)newCurrentIndex );
-//        else
-//          current.add( newCurrentIndex );
       }
       // Clicked after list items
       else if( newCurrentIndex >= 0 && ( this == deckList[ 0 ] || this == deckList[ 1 ] ) )
@@ -2187,7 +2350,11 @@ class ListBox extends Control
         current.add( listItems.size() );
         listItems.add( "" );
       }
-      // Double clicked an evolution
+      else if( newCurrentIndex >= 0 && ( this == listArenaOpponents ) )
+      {
+        populateArenaDeck( newCurrentIndex );
+      }
+       // Double clicked an evolution
       if( millis() - lastClickTime < 500 && this == evoList && evoList.current.size() == 1 )
       {
         for( int d = 0; d < 2; ++ d )
@@ -2510,7 +2677,7 @@ class Picture extends Control
   {
     super.handleMousePressed();
     if ( mouseIsOn() && clicked && FOHDownload) {
-      for (int i=0;i<8;i++) {
+      for (int i=0;i<8;i++) { //<>//
         if (this == picPlayerAvatar[i]) {
           fohPlayer.text = "Player: " + PlayerNames[i].text;
           Deck deckPlayer = deckFromFOH(1, i/2, i%2, true);
@@ -2609,5 +2776,3 @@ void saveResults(File selection) {
     println(e);
   }      
 }
-
-

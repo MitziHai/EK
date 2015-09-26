@@ -74,6 +74,7 @@ long numMatch = 10000;
 String server = "";
 Boolean FOHDownload = false;
 Boolean FOHSim = false;
+Boolean ArenaSim = false;
 int FOHRound = -1;
 int FOHMatch = -1;
 
@@ -120,7 +121,7 @@ void setup()
   try {new File("log.txt").delete();} catch (Exception e) {}
   try{System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("log.txt"))));} catch(Exception e){}
   
-  size( 1280, 768+32 );
+  surface.setSize( 1280, 768+32 );
   pg = new PGraphics();
   pg = createGraphics(1280, 768+32);
   loadAbils();
@@ -241,7 +242,7 @@ static boolean Pause = false;
 String resultText = "";
 String fullResultText = "";
 boolean multideck = false;
-ExecutorService executor = Executors.newFixedThreadPool(16);
+ExecutorService executor = Executors.newFixedThreadPool(256);
 ExecutorCompletionService ecs = new ExecutorCompletionService(executor);
 int CurrentMatch = 0;
 
@@ -257,12 +258,13 @@ class RunSim implements Runnable
     listresult.listItems.clear();
     listresult.scroll = 0;
 
-    if (!FOHSim) deckp1 = deckFromUI( 0, true );
+    if (!FOHSim ) deckp1 = deckFromUI( 0, true );
     else deckp1 = deckFromFOH(FOHRound, 0, 0, true);
     if ( deckp1 == null ) return;
 
-    if (!FOHSim) deckp2 = deckFromUI( 1, true );
-    else deckp2 = deckFromFOH(FOHRound, 0, 1, true);
+    if (!FOHSim && !ArenaSim) deckp2 = deckFromUI( 1, true );
+    else if (FOHSim) deckp2 = deckFromFOH(FOHRound, 0, 1, true);
+    else  deckp2 = deckFromArena(0);
     if ( deckp2 == null ) return; 
 
     if ( deckp1.numCards == 0 || deckp2.numCards == 0 ) return;
@@ -288,7 +290,6 @@ class RunSim implements Runnable
     int rune = 0;
     resultsBest = null;
     resultsTracked = new ArrayList< Result >();
-                   // println("HERE 5 size: " + .size());
 
     // Find the duplicate cards in the deck to lower the number of combinations.
     int duplicatesUsed[] = new int[50]; // Number of each card used in the current deck.
@@ -335,9 +336,6 @@ class RunSim implements Runnable
     {
       for ( int i = 0; i < deckp1.numCards; ++ i )
       {
-            //println("Max Iterations: " + iterMax + "\n");
-            //println("Duplicates Count: " + duplicatesCount[ i ] + "\n");
-            //println("Max Iterations: " + iterMax + "\n");
         if(duplicatesCount[ i ]>0)
         {
           iterMax *= (1+(duplicatesCount[ i ] - duplicatesSelected[i]));
@@ -349,16 +347,15 @@ class RunSim implements Runnable
         iterMax *= 2 - (deckp1.runes[i].selected ? 1 : 0);
         iterRunes *= 2;
       }
-      //-- iterMax;
     }
-    else if (FOHSim) {
+    else if (FOHSim ) {
       iterMax = FOHMatch;
     }
           //  println("Max Iterations: " + iterMax + "\n");
 
     int cR = 0; 
     
-    boolean cardsDone = false;
+    boolean cardsDone = false; //<>//
 
     if( multideck )
     {
@@ -369,15 +366,12 @@ class RunSim implements Runnable
     }
     else
     {
-      //WorstLog = "";
       for( int j = 0; j < min( 10, deckp1.numCards ); ++ j )
         duplicatesUsed[ j ] = duplicatesCount[ j ];
     }
       // For each card combination:
-    while ( !cardsDone && !StopMe && !(FOHSim))
+    while ( !cardsDone && !StopMe && !FOHSim )
     {
-      //println(Arrays.toString(duplicatesUsed));
-      // Check if card count for this deck is valid.
       int cardCount = 0;
       for( int j = 0; j < deckp1.numCards && !StopMe; ++ j )
         cardCount += duplicatesUsed[ j ];
@@ -402,10 +396,48 @@ class RunSim implements Runnable
             {
               iterCount++;
               Deck testDeck = constructDeck( duplicatesUsed, duplicatesCards, cR );
-              if( testDeck.cost <= playerDeckCost || FOHSim) // PLAYER 1 DECK COST HERE
+              if( testDeck.cost <= playerDeckCost) // PLAYER 1 DECK COST HERE
               {
+                float score = 0;
                 String decklist = "";
-                float score = iterate( testDeck, deckp2, bestScore, multideck);
+                if (ArenaSim) {
+                  CurrentMatch = 0;
+                  String t = "Deck: ";
+                  for ( int j = 0; j < testDeck.numCards; ++ j )
+                  {
+                    String evo = testDeck.cards[ j ].evo == AType.A_NONE ? " (" + testDeck.cards[ j ].lvl + ")" : ( "-" + evoNames.get( abilityName.get( testDeck.cards[ j ].evo ) ) + testDeck.cards[ j ].evoLevel + " (" + testDeck.cards[ j ].lvl + ")" );
+                    t += testDeck.cards[ j ].type.name + evo + (j<testDeck.numCards-1?",    ":"");
+                    if ( j == 2 || j == 5 || j == 8 )
+                    {
+                      t += "\n";
+                    }
+                  }
+                  t += "\n";
+                  for ( int j = 0; j < testDeck.numRunes; ++ j )
+                    t += testDeck.runes[ j ].type.name + (j<testDeck.numRunes-1?",    ":"");
+                  if ( t.length() > 0 && multideck)
+                  {
+                    fullResultText += t + "\n";
+                    t = "";
+                  }
+                  while (CurrentMatch < ArenaDecksDownloaded) {
+                    deckp2 = deckFromArena(CurrentMatch);
+                    if ( testDeck == null ) {
+                      fullResultText += "Error in constucting player 1s deck for match: " + (CurrentMatch + 1);
+                      break;
+                    }
+                    if ( deckp2 == null ) {
+                      fullResultText += "Error in constucting player 2s deck for match: " + (CurrentMatch + 1);
+                      break;
+                    }
+                    if (CurrentMatch == 0) score = iterate( testDeck, deckp2, bestScore, multideck, iterCount, iterMax);
+                    else score = (score +iterate( testDeck, deckp2, bestScore, multideck, iterCount, iterMax))/2.0;
+                    fullResultText += resultText;
+                    fullResultText += "\n";
+                    CurrentMatch++;
+                  }
+                }
+                else score = iterate( testDeck, deckp2, bestScore, multideck, iterCount, iterMax);
                 if (checkMultisimResults.checked) {
                   println("");
                   String str = "----- Deck #" + iterCount + " -----";
@@ -441,7 +473,6 @@ class RunSim implements Runnable
                   System.arraycopy( duplicatesUsed, 0, duplicatesUsedBest, 0, duplicatesUsed.length );
                   bestR = cR;
                   resultsBest = new ArrayList< Result >(resultsTracked);
-                  //println("HERE size: " + resultsTracked.size());
                 }
                 resultsTracked = new ArrayList< Result >();
               }
@@ -509,12 +540,12 @@ class RunSim implements Runnable
         fullResultText += "Error in constucting player 2s deck for match: " + (CurrentMatch + 1);
         break;
       }
-      float score = iterate( deckp1, deckp2, bestScore, multideck);
+      float score = iterate( deckp1, deckp2, bestScore, multideck,0,0);
       fullResultText += resultText;
       fullResultText += "\n";
       CurrentMatch++;
     }
-    if (FOHSim) resultText = fullResultText;
+    if (FOHSim || ArenaSim) resultText = fullResultText;
     
     
     
@@ -607,7 +638,7 @@ class RunSim implements Runnable
   // For multisim, it cannot run one thread for one deck combination and another thread for another combination
   // without a massive rewrite to how the scores are stored. It only supports one score right now. I can see no
   // advantage to changing this.
-  float iterate(Deck d1, Deck d2, float bestScore, boolean multisim)
+  float iterate(Deck d1, Deck d2, float bestScore, boolean multisim, long iterCount, double iterMax)
   {
     // Setup counters
     player1 = new Player( hpPerLevel[ (FOHSim?d1.level:(int)textLevel[ 0 ].lastNum )] );
@@ -654,9 +685,7 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = Integer.parseInt(listThreads.listItems.get(listThreads.currentIndex));
-    //if (checkSingleThread.checked ) cores = 1;
     if (checkDebug.checked ) {cores = 1; debug = 4;}
-    // debug = 4;  // To single thread and print all info to log uncomment this line
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -701,17 +730,25 @@ class RunSim implements Runnable
       {
         done = numMatch <= (radkw.checked ? totalloss : (radhydra.checked || radew.checked ? totalwin : totalwin + totalloss));
         String c = "";
-        if (FOHSim) c = (""+(100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*FOHMatch)));
-        else if (!radkw.checked && !radew.checked && !radhydra.checked) c = (""+(100.0*(totalwin + totalloss)/(float)numMatch));
-        else c = (""+(100.0*(radkw.checked ? totalloss : totalwin)/(float)numMatch));
         if ( !multideck )
         {
-          synchronized( listresult )
-          {
-            listresult.listItems.clear();
-            listresult.listItems.add( "Working... Completion: " + c.substring(0, min(5, c.length())) + " %" );
-            if (FOHSim) listresult.listItems.add("Simming Match: " + player1.name + " vs " + player2.name);
-          }
+          if (FOHSim) c = (""+(100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*FOHMatch)));
+          else if (ArenaSim) c = (""+(100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*ArenaDecksDownloaded)));
+          else if (!radkw.checked && !radew.checked && !radhydra.checked) c = (""+(100.0*(totalwin + totalloss)/(float)numMatch));
+          else c = (""+(100.0*(radkw.checked ? totalloss : totalwin)/(float)numMatch));
+        }
+        else {
+          if (FOHSim) c = (""+( ((iterCount-1)/(double)iterMax*100.0)+100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*FOHMatch*iterMax)));
+          else if (ArenaSim) c = (""+(((iterCount-1)/(double)iterMax*100.0)+100.0*(CurrentMatch*numMatch + totalwin + totalloss)/(numMatch*ArenaDecksDownloaded*iterMax)));
+          else if (!radkw.checked && !radew.checked && !radhydra.checked) c = (""+(((iterCount-1)/(double)iterMax*100.0)+100.0*(totalwin + totalloss)/((float)numMatch*iterMax)));
+          else c = (""+(((iterCount-1)/(double)iterMax*100.0)+100.0*(radkw.checked ? totalloss : totalwin)/((float)numMatch*iterMax)));
+        }
+        synchronized( listresult )
+        {
+          listresult.listItems.clear();
+          if (FOHSim) listresult.listItems.add("Simming Match: " + player1.name + " vs " + player2.name);
+          else if (ArenaSim) listresult.listItems.add("Simming Match Against: " + player2.name);
+          listresult.listItems.add( "Working... Completion: " + c.substring(0, min(5, c.length())) + " %" );
         }
       }
     }
@@ -730,7 +767,7 @@ class RunSim implements Runnable
     // Display result.
     float score = 0;
     //if (debug > 0) println(WorstLog);
-    if ( FOHSim)
+    if ( FOHSim || ArenaSim)
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));
       if (CurrentMatch == 0)
@@ -842,7 +879,7 @@ void draw()
    pg.text(uiTabs.get(uiTab).text, uiTabs.get(uiTab).x+uiTabs.get(uiTab).font/2+1, uiTabs.get(uiTab).y+uiTabs.get(uiTab).font*1.1);
    pg.strokeWeight(1);*/
 
-  if ( uiTab == 0 )
+  if ( uiTab == 0 ||  uiTab == 4 ||  uiTab == 6 )
   {
     for ( Control c : ui )
     {
@@ -975,4 +1012,3 @@ void mouseWheel(MouseEvent event) {
       selectedList.scroll += e * float(selectedList.h-selectedList.lineSize) / (selectedList.listItems.size()-selectedList.h/selectedList.lineSize);
   }
 }
-

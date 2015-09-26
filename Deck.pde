@@ -15,7 +15,7 @@ Deck deckFromUI( int p, boolean clear )
   Deck d = new Deck();
 
 
-  if (clear) listresult.listItems.clear();
+  if (clear && listresult.listItems.size() > 0 && listresult.listItems.get(0).contains("Invalid")) listresult.listItems.clear();
   d.name = textdeck[ p ].textIn;
   for( int i = 0; i < deckList[p].listItems.size(); ++ i )
   {
@@ -25,6 +25,7 @@ Deck deckFromUI( int p, boolean clear )
       Rune r = runeFromString( line );
       if( r == null && line.length() > 0 )
       {
+        listresult.listItems.clear();
         listresult.listItems.add( "Invalid rune: " + line );
         return null;
       }
@@ -40,6 +41,7 @@ Deck deckFromUI( int p, boolean clear )
       Card c = cardFromString( line );
       if( c == null && line.length() > 0 )
       {
+        listresult.listItems.clear();
         listresult.listItems.add( "Invalid card: " + line );
         return null;
       }

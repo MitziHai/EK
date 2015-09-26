@@ -544,4 +544,3 @@ class Game implements Runnable
     }
   }
 }
-
