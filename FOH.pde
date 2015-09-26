@@ -128,7 +128,7 @@ Deck deckFromFOH( int round, int match, int player, boolean clear )
     for (servconn.dto.league.Card cardRef : cardList) {
       servconn.dto.card.Card card = cardMap.get(cardRef.getCardId());
       //Card c = cardFromString(card.getCardName()+";"+cardRef.Level)
-      line = card.getCardName() + ";" + cardRef.getLevel();
+      line = card.getCardName().trim().replaceAll("[\\p{C}\\p{Z}]", " ").replace("(","[").replace(")","]") + ";" + cardRef.getLevel();
       if (Integer.parseInt(cardRef.getEvolution()) > 0) {
         if (Integer.parseInt(cardRef.getLevel()) < Integer.parseInt(cardRef.getEvolution())+10) {
           line += ";" + ((int)((Integer.parseInt(cardRef.getEvolution())+1)/2));

@@ -19,6 +19,12 @@ void GetArenaDecks()
       case "Fury" :
         adu = new ArenaDeckUtils("mitzitest@danj.com", "deh206", servers.listItems.get(servers.currentIndex).toLowerCase());
         break;
+      case"Serenity" :
+        adu = new ArenaDeckUtils("MitziSerenity@Arena.Account", "1$Mitzi$1", servers.listItems.get(servers.currentIndex).toLowerCase());
+        break;
+      case"Legacy" :
+        adu = new ArenaDeckUtils("jlg@gmail.com", "doomed", servers.listItems.get(servers.currentIndex).toLowerCase());
+        break;
       case"Destiny" :
         adu = new ArenaDeckUtils("k.c.dol@hotmail.com", "emin3m", servers.listItems.get(servers.currentIndex).toLowerCase());
         break;

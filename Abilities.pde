@@ -226,6 +226,7 @@ void loadAbils()
   evoNames.put( "D: Healing", "d:h" );
   evoNames.put( "D: Plague", "d:plg" );
   evoNames.put( "D: Regeneration", "d:reg" );
+  evoNames.put( "D: Reincarnation", "d:rec" );
   evoNames.put( "D: Toxic Clouds", "d:tc" );
   evoNames.put( "D: Prayer", "d:pyr" );
   evoNames.put( "D: Trap", "d:trp" );
@@ -368,6 +369,7 @@ void loadAbils()
   evoNamesEvo.put( "D: Healing", true );
   evoNamesEvo.put( "D: Plague", true );
   evoNamesEvo.put( "D: Regeneration", true );
+  evoNamesEvo.put( "D: Reincarnation", false );
   evoNamesEvo.put( "D: Toxic Clouds", true );
   evoNamesEvo.put( "D: Prayer", true );
   evoNamesEvo.put( "D: Trap", false );
