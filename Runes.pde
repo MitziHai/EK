@@ -99,7 +99,7 @@ class Rune
   {
     if( remainingUses <= 0 )
     {
-      if( debug > 2 ) println( "  -" + this + " no uses remaining." );
+      if( debug ) println( "  -" + this + " no uses remaining." );
       return;
     }
     
@@ -172,57 +172,57 @@ class Rune
         {
           case A_BARRICADE:
             if( current.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             for( Card c : current.inPlay )
             {
               c.ward += 30*l;
-              if (debug > 3) println("     Ward applied for "+30*l+" to " + c.toStringNoHp());
+              if (debug ) println("     Ward applied for "+30*l+" to " + c.toStringNoHp());
             }
             break;
           
           case A_BLIZZARD:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Blizzard for " + (20*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Blizzard for " + (20*l));
             dummyCard.damageAll( current, op, 20*l, FROZEN, 30 );
             break;
             
           case A_CHAIN_LIGHTNING:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Chain Lightning for " + (25*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Chain Lightning for " + (25*l));
             dummyCard.damageRandom3( current, op, 25*l, SHOCKED, 40 );
             break;
           
           case A_DAMNATION:
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             op.attacked(20*l*op.playSize(), op, true);
             break;
           
           case A_ELECTRIC_SHOCK:
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Electric Shock for " + (25*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Electric Shock for " + (25*l));
             dummyCard.damageAll( current, op, 25*l, SHOCKED, 35 );
             break;
 
           case A_FIREBALL:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Fireball for " + (25*l) + "-" + (50*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Fireball for " + (25*l) + "-" + (50*l));
             dummyCard.damageRandom1( current, op, 25*l, 50*l, FIRE, 0 );
             break;
           
           case A_FIRESTORM:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Firestorm for " + (25*l) + "-" + (50*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Firestorm for " + (25*l) + "-" + (50*l));
             dummyCard.damageAll( current, op, 25*l, 50*l, FIRE, 0 );
             break;
           
           case A_FIRE_GOD:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Fireball for " + (20*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Fireball for " + (20*l));
             for ( Card c : op.inPlay )
             {
               if (!c.immune && !c.fireGod[l]) {
@@ -234,18 +234,18 @@ class Rune
           
           case A_FIRE_WALL:
             //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3 && activate) println( "     Fire Wall for " + (25*l) + "-" + (50*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println( "     Fire Wall for " + (25*l) + "-" + (50*l));
             dummyCard.damageRandom3( current, op, 25*l, 50*l, FIRE, 0 );
             break;
           
           case A_GROUP_MORALE:
             if( current.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             int amount = 15*l;
             for( Card c : current.inPlay )
             {
-              if (debug > 3 ) println("    " + c + " attack increased by " + amount);
+              if (debug ) println("    " + c + " attack increased by " + amount);
               c.atkBuff += amount;
               c.atk += amount;
               c.morale += amount;
@@ -253,15 +253,14 @@ class Rune
             break;
           
           case A_GROUP_WEAKEN:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.weakenAll( current, op, 10*l );
             break;
           
           case A_HEALING:
             Card mostDamaged = null;
             if( current.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             for ( Card c : current.inPlay )
             {
               if ( mostDamaged == null || c.hpBuff - c.hpCurr > mostDamaged.hpBuff - mostDamaged.hpCurr ) mostDamaged = c;
@@ -271,20 +270,17 @@ class Rune
             break;
           
           case A_ICEBALL:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom1( current, op, 20*l, FROZEN, 45 );
             break;
           
           case A_NOVA_FROST:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom3( current, op, 20*l, FROZEN, 35 );
             break;
           
           case A_PLAGUE:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.weakenAll( current, op, 5*l );
             dummyCard.damageAll( current, op, 5*l, NO_REFLECT, 0 );
             break;
@@ -313,8 +309,8 @@ class Rune
                   c.status[ j ] = false;
                 }
               }
-              if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-              if( debug > 3 && activate) println( "     Purification");
+              if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+              if( debug && activate) println( "     Purification");
               if (!activate) ++ remainingUses;
             }
             else {
@@ -324,7 +320,7 @@ class Rune
             break;
   
           case A_PRAYER:
-            if( debug > 3) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             current.hp = min( current.hpmax, current.hp + 40*l );
             break;
           
@@ -334,7 +330,7 @@ class Rune
               woundedCards = woundedCards || c.hpCurr < c.hpMax;
             if( current.playSize() > 0)
             {
-              if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+              if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
               dummyCard.damageAll( current, current, 25*l, HEAL, 0 );
             }
             else
@@ -350,44 +346,39 @@ class Rune
               Card c = null;
               c = current.inPlay.get((int)random( current.playSize() ));
               c.ward += 50*l;
-              if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-              if (debug > 3 && activate) println("     Ward applied for "+(50*l)+" to " + c.toStringNoHp());
+              if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+              if (debug && activate) println("     Ward applied for "+(50*l)+" to " + c.toStringNoHp());
             }
             break;
           
           case A_SMOG:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom3( current, op, 20*l, POISONED, 20*l );
             break;
           
           case A_SNIPE:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+             if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageLowest1( current, op, 30*l, NO_IMMUNE, 30*l );
             break;
           
           case A_THUNDERBOLT:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom1( current, op, 25*l, SHOCKED, 50 );
             break;
           
           case A_TOXIC_CLOUDS:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageAll( current, op, 20*l, POISONED, 20*l );
             break;
           
           case A_VENOM:
-            //if( op.inPlay.isEmpty() ) {activate = false; ++ remainingUses;}
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
             dummyCard.damageRandom1( current, op, 20*l, POISONED, 20*l );
             break;
 
           case A_WARCRY:
-            if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
-            if( debug > 3  && activate) println( "     Warcry for " + (1*l));
+            if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+            if( debug  && activate) println( "     Warcry for " + (1*l));
             for ( Card c : current.hand )
             {
               c.time -= l;
@@ -404,10 +395,9 @@ class Rune
           ++remainingUses;
         }
         // Add a second ability num counter for number added by runes (to be removed at start of next turn).
-        if( debug > 3 && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
+        if( debug && activate) println("  -" + this + " activated.  " + remainingUses + " uses left.");
         for( Card c : current.inPlay )
         {
-//          if (type.ability == AType.A_EVASION && type.abilityWhen == ON_ATTACKED_SPELL) println("GOT HERE 2");
           c.abilityL[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ] = type.abilityL[ level ];
           c.abilitySilenced[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ] = false;
           c.abilities[ type.abilityWhen ][ c.abilityNum[ type.abilityWhen ] ++ ] = type.ability;

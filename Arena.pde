@@ -143,7 +143,7 @@ Deck deckFromArena( int opponent )
         }
       }
       else {
-        Card c = cardFromString( line.substring(0,line.length() - 1) );
+        Card c = cardFromString( line.substring(0,line.length() - 1).replaceAll("[\\p{C}\\p{Z}]", " ") );
         if( c == null && line.length() > 0 )
         {
           listresult.listItems.add( "Invalid card: " + line.substring(0,line.length() - 1) );

@@ -122,7 +122,7 @@ class Game implements Runnable
 
   void playMatch( int f )
   {
-    if( debug > 0 )
+    if( debug )
     {
       println("-----------------------------------");
       println("--------- Starting match ----------");
@@ -139,7 +139,7 @@ class Game implements Runnable
     while ( !done )
     {
       round ++;
-      if ( debug > 0 )
+      if ( debug )
       {
         String deck1 = "";
         for( int i = 0; i < p1.deck.size(); ++ i )
@@ -302,7 +302,7 @@ class Game implements Runnable
       {
         if ( round > 50 ) { 
           p1.hp -= 50 + 30 * (round-51);
-          if( debug > 1 ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
+          if( debug ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
           p1.checkDead();
         }
         if (!p1.dead) {
@@ -316,7 +316,7 @@ class Game implements Runnable
       {
         if ( round > 50 ) { 
           p2.hp -= 50 + 30 * (round-51);
-          if( debug > 1 ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
+          if( debug ) println( "Player takes " + (50 + 30 * (round-51)) + " unavoidable damage from round number." );
           p2.checkDead();
         }
         if (!p2.dead || (radewboss.checked || raddi.checked)) {
@@ -334,7 +334,7 @@ class Game implements Runnable
 
     }
 
-    if (debug > 0 )
+    if (debug )
     {
       String deck1 = "";
       for( int i = 0; i < p1.deck.size(); ++ i )

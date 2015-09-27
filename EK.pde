@@ -66,7 +66,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorCompletionService;
 import java.nio.*;
 
-int debug = 0; 
+boolean debug = false;
 boolean evoTab = true;
 String Threads = "";
 
@@ -251,8 +251,8 @@ class RunSim implements Runnable
   void run()
   {
     numMatch = numberRuns.lastNum;
-    if ( numMatch == 1 ) debug = 4; 
-    else debug = 0;
+    if ( numMatch == 1 ) debug = true; 
+    else debug = false;
     resultText = "";
     fullResultText = "";
     listresult.listItems.clear();
@@ -686,7 +686,7 @@ class RunSim implements Runnable
 
     // Begin threads.
     int cores = Integer.parseInt(listThreads.listItems.get(listThreads.currentIndex));
-    if (checkDebug.checked ) {cores = 1; debug = 4;}
+    if (checkDebug.checked ) {cores = 1; debug = true;}
     int perCore = (int)ceil(numMatch / cores);
 
     // Method 2 part 1 of 3. BETTER Recreate new fixed thread pool for every deck combination.
@@ -767,7 +767,6 @@ class RunSim implements Runnable
 
     // Display result.
     float score = 0;
-    //if (debug > 0) println(WorstLog);
     if ( FOHSim || ArenaSim)
     {
       score = ((100*totalwin/(float)(totalwin + totalloss)));

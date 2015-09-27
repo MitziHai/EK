@@ -952,7 +952,7 @@ class Card
   {
     int dmg = 0;
     boolean wasDead = dead;
-    if (ward > 0 && h > 0 && debug > 2) println("       " + min(h, ward) + " damage mitigated by " + toStringNoHp() + "'s ward");
+    if (ward > 0 && h > 0 && debug) println("       " + min(h, ward) + " damage mitigated by " + toStringNoHp() + "'s ward");
     dmg = max( 0, h - ward );
     ward -= ( h - dmg );
     dmg = min( dmg, hpCurr );
@@ -971,14 +971,11 @@ class Card
       //c.atk = 0;
       return;
     }
-    if ( debug > 1 )
+    if ( debug )
       println("  -" + toStringNoHp() + "'s turn." );
     reanimated = false;
     if ( !status[ SICK ] )
     {
-      // Before attack
-      //if ( debug > 1 )
-      //  println("   " + this + "'s turn..." );
       this.pos = pos;
       bloodsuck = 0;
       dex = false;
@@ -991,10 +988,9 @@ class Card
       {
         if (status[DREAD_ROAR]) {
           atkNow = atk/2;
-          if (debug > 2) println("     " + toStringNoHp() + " attack is halfed due to dread roar. New attack is: " + atkNow );
+          if (debug) println("     " + toStringNoHp() + " attack is halfed due to dread roar. New attack is: " + atkNow );
         }
-        if ( debug > 1 )
-          println("     " + toStringNoHp() + " attacks its controller for " + atkNow );
+        if ( debug) println("     " + toStringNoHp() + " attacks its controller for " + atkNow );
         own.attacked( atkNow, op, false );
       }
       else
@@ -1015,10 +1011,9 @@ class Card
             checkAbilities(own, op, ON_ATTACK_PLAYER,-1);
             if (status[DREAD_ROAR]) {
               atkNow = atkNow - atk/2;
-              if (debug > 2) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
+              if (debug) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
             }
-            if ( debug > 1 )
-              println("     " + toStringNoHp() + " attacks player for " + atkNow );
+            if ( debug ) println("     " + toStringNoHp() + " attacks player for " + atkNow );
             op.attacked( atkNow, own, false ); //should be own not op
             targetNum = 0;
           }
@@ -1030,7 +1025,7 @@ class Card
             checkAbilities(own, op, ON_ATTACK_CARD,-1);
             if (status[DREAD_ROAR]) {
               atkNow = atkNow - atk/2;
-              if (debug > 2) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
+              if (debug) println("     " + toStringNoHp() + " losses half it's base attack due to dread roar. New attack is: " + atkNow );
             }
             for ( int i = 0; i < targetNum; ++ i )
             {
@@ -1051,7 +1046,7 @@ class Card
       }
     }
     subtractHealth( own, op, poison + burn );
-    if( debug > 0 )
+    if( debug )
     {
       if( poison > 0 ) println( "     " + toStringNoHp() + " takes " + poison + " poison damage." );
       if( burn > 0 ) println( "     " + toStringNoHp() + " takes " + burn + " burn damage." );
@@ -1087,21 +1082,21 @@ class Card
     craze = 0;
     wickedLeech = 0;
     combustion = 0;
-    if ( debug > 1 )
+    if ( debug )
       println("     " + attacker.toStringNoHp() + " attacks " + toStringNoHp() + " for " + dmgTaken);
     checkAbilities( own, op, ON_ATTACKED,-1);
     //dmgCalculated caculates damage done with abilities
     dmgTaken = min(( int)(dmgTaken * dmgMult)- dmgMinus, dmgMax ) ;
     if (status[LAST_CHANCE]) {
       dmgTaken = 0;
-      if (debug > 1)       println("       Damage prevented by " + toStringNoHp() + " last chance");
+      if (debug)       println("       Damage prevented by " + toStringNoHp() + " last chance");
     }
     attacker.dmgCalculated[AttackID] = dmgTaken;
     //dmgTaken reduces damage to damage done to kill card if applicable
     dmgTaken = subtractHealth( own, op, dmgTaken );
 
     // Bloodsucker heals attacker based on actual damage done, immediately following attack.
-    if (debug > 1 && suck * dmgTaken > 0) 
+    if (debug && suck * dmgTaken > 0) 
       println("     " + attacker.toStringNoHp() + " bloodsucker ability heals for " + ((int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff ) - attacker.hpCurr) + ". Remaining hp: " + (int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff ) + " / " + attacker.hpBuff);
     attacker.hpCurr = (int)min( attacker.hpCurr + suck * dmgTaken, attacker.hpBuff );
     // Counterattack and retaliate damage stored and applied to attacker after bloodsucker healing.
@@ -1123,11 +1118,11 @@ class Card
             }
           }
           if (!dex) {
-            if (debug > 2) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
+            if (debug) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
             if ((radewboss.checked || raddi.checked) && own.isP1) own.merit += retaliate[j]; 
             op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
           }
-          else if (debug > 2) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
+          else if (debug) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
         }
       }
       atk += craze;
@@ -1141,8 +1136,7 @@ class Card
       atk += reduced;
       attacker.totalGlitchCount += reduced;
 
-      if ( debug > 1 && wickedLeech > 0 )
-        println("     " + attacker.toStringNoHp() + " loses " + reduced + " attack to " + toStringNoHp() + "'s Wicked Leach");
+      if ( debug && wickedLeech > 0 ) println("     " + attacker.toStringNoHp() + " loses " + reduced + " attack to " + toStringNoHp() + "'s Wicked Leach");
     }
     if ( (radewboss.checked || raddi.checked) && !own.isP1 )
     {
@@ -1181,7 +1175,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   {
     dmgTaken = 0;
     if (status[LAST_CHANCE] && effect != HEAL && effect != STUNNED) {
-      if (debug > 2) {
+      if (debug ) {
         if (effect == TRAPPED)
           println("       Last chance prevented trap to " +  toStringNoHp() );
         else if( effect == CONFUSED )
@@ -1198,14 +1192,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
       if ( effect == NO_IMMUNE )
       {
         dmgTaken = subtractHealth( own, op, dmg );
-        if (debug > 2) println("       " + dmg + " unavoidable damage  to " + toStringNoHp());
+        if (debug) println("       " + dmg + " unavoidable damage  to " + toStringNoHp());
       }
       else if (effect == MANA_CORRUPTION)  // Mana Corruption deals chance * dmg damage to card
       {
         dmgTaken = subtractHealth( own, op, dmg * (immune ? chance : 1) );
-        if( debug > 2 ) println("       Mana corruption dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
+        if( debug ) println("       Mana corruption dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
       }
-      else if (debug > 2) // all other damages should be prevented by immunity
+      else if (debug ) // all other damages should be prevented by immunity
       {
         if (effect == TRAPPED)
           println("       Immunity prevented trap to " +  toStringNoHp() );
@@ -1228,15 +1222,15 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
     else if (effect == DESTROY) {  // Abilities affected by resistance
       if( resist ) {
-        if (debug > 2) println("         Resist prevented Destroy on " + toStringNoHp() );
+        if (debug) println("         Resist prevented Destroy on " + toStringNoHp() );
       } 
       else if (status[LAST_CHANCE]) {
-        if (debug > 2) println("         Last Chance prevented Destroy on " + toStringNoHp() );
+        if (debug ) println("         Last Chance prevented Destroy on " + toStringNoHp() );
       }
       else {
         dead = true;
         died(own,op,true);
-        if (debug > 2) println("       Destroyed " + toStringNoHp() );
+        if (debug) println("       Destroyed " + toStringNoHp() );
       }
       dmg = 0;
       return dmg;
@@ -1244,17 +1238,17 @@ Seperate Variables: BURNED, POISON, immune, resist,
     else if (effect == HEAL) {  // abilities affected by Laceration
       if( status[ LACERATED ] )
       {
-        if( debug > 2 ) println("       Healed of " + dmg + " failed on lacerated card " + toStringNoHp() );
+        if( debug) println("       Healed of " + dmg + " failed on lacerated card " + toStringNoHp() );
       }
       else
       {
-        if( debug > 2 ) println("       Healed " + (min( hpBuff, hpCurr + dmg ) - hpCurr) + " to " + toStringNoHp() );
+        if( debug) println("       Healed " + (min( hpBuff, hpCurr + dmg ) - hpCurr) + " to " + toStringNoHp() );
         hpCurr = min( hpBuff, hpCurr + dmg );
       }
       return 0;
     }
     else if (effect == NO_REFLECT) {  // abilities that are not affected by reflection and/or magic shield
-      if (debug > 2) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
+      if (debug) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
 
       dmgTaken = subtractHealth( own, op, dmg );
 
@@ -1264,7 +1258,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
       return dmgTaken;
     }
     else if (effect == POISONED) {  // abilities that are not affected by reflection and/or magic shield
-      if( debug > 2 ) println("       Applied " + chance + " poison to " + toStringNoHp() );
+      if( debug) println("       Applied " + chance + " poison to " + toStringNoHp() );
       poison += chance;
 
       dmgTaken = subtractHealth( own, op, dmg );
@@ -1294,20 +1288,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
       }
     }  // SHOULD BELOW BE type.faction or just faction (queston is does corruption affect demons and remove some of their innate protections)
     if (effect == TRAPPED || effect == CONFUSED || effect == STUNNED) {  // abilities affected by evasion but not by magic shield and/or reflection
-      if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
-      else if( immune && type.faction == DEMON && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s demon immunity");
-      else if( status[LAST_CHANCE] && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s last chance");
+      if( evasion) { if ( debug) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion"); }
+      else if( immune && type.faction == DEMON) { if ( debug) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s demon immunity"); }
+      else if( status[LAST_CHANCE]) { if (debug ) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s last chance"); }
       else if (random( 0, 100 ) <= chance) {
-        if( debug > 2 ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
+        if( debug ) println("       " + statusNames[effect] + " applied to " + toStringNoHp() );
         status[ effect ] = true;
       }
-      else if (debug > 2) println("       " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
+      else if (debug ) println("       " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
       return 0;
     }
     else if (reflective > 0) {
       dmgTaken = 30*reflective;
       attacker.subtractHealth( op, own, dmgTaken );
-      if( debug > 3 ) {
+      if( debug ) {
         println( "     " + toStringNoHp() + "'s Reflection");
         println("         Reflected " + dmgTaken + " damage to " + attacker.toStringNoHp() );
       }
@@ -1323,23 +1317,23 @@ Seperate Variables: BURNED, POISON, immune, resist,
     else { // no reflection
       if (magic_shield > 0) { // reduce damage if there was magic shield
         dmg = min(dmg, 160 - 10 * magic_shield);
-        if (debug > 2) println( "       " + toStringNoHp() + "'s Magic Shield reduces damage to maximum of " + (160 - 10*magic_shield));
+        if (debug) println( "       " + toStringNoHp() + "'s Magic Shield reduces damage to maximum of " + (160 - 10*magic_shield));
       }
       dmgTaken = subtractHealth( own, op, dmg );
       
-      if (debug > 2) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
+      if (debug) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
 
       if (effect == FROZEN || effect == SHOCKED) {
-        if( evasion && debug > 2) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion");
+        if( evasion ) { if (debug) println("         " + statusNames[effect] + " prevented by " + toStringNoHp() + "'s evasion"); }
         else if (random( 0, 100 ) <= chance) {
-          if( debug > 2 ) println("         " + statusNames[effect] + " applied to " + toStringNoHp() );
+          if( debug ) println("         " + statusNames[effect] + " applied to " + toStringNoHp() );
           status[ effect ] = true;
         }
-        else if (debug > 2) println("         " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
+        else if (debug) println("         " + statusNames[effect] + " not applied to " + toStringNoHp() + " by chance");
       }
 
       if (effect == BLOOD) {
-        if (debug > 2) println( "       " + attacker.toStringNoHp() + " heals " + (min( attacker.hpCurr + dmgTaken, attacker.hpBuff ) - attacker.hpCurr) + " from Feast of Blood");
+        if (debug) println( "       " + attacker.toStringNoHp() + " heals " + (min( attacker.hpCurr + dmgTaken, attacker.hpBuff ) - attacker.hpCurr) + " from Feast of Blood");
         attacker.hpCurr = min( attacker.hpCurr + dmgTaken, attacker.hpBuff );
       }
 
@@ -1354,7 +1348,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   void died(Player own, Player op, boolean destroyed)
   {
-    if( debug > 3 ) println( "     Died: " + this);
+    if( debug ) println( "     Died: " + this);
     if (destroyed) checkAbilities(own, op, ON_DEATH,DESTROY);
     else checkAbilities(own,op,ON_DEATH,-1);
     if (!status[LAST_CHANCE]) {
@@ -1393,32 +1387,32 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if ( longest != null )
           {
             longest.time -= l;
-            if( debug > 3 ) println( "     Advanced Strike reduces time of " + longest.toStringNoHp() + " by " + l);
+            if( debug ) println( "     Advanced Strike reduces time of " + longest.toStringNoHp() + " by " + l);
           }
           break;
 
         case A_BITE:
-          if( debug > 3 ) println( "     Bite for " + (20*l));
+          if( debug ) println( "     Bite for " + (20*l));
           hpCurr = min( hpCurr + damageRandom1( own, op, 20*l, BLOOD, 0 ), hpBuff );
           break;
 
         case A_BLIZZARD:
-          if( debug > 3 ) println( "     Blizzard for " + (20*l));
+          if( debug ) println( "     Blizzard for " + (20*l));
           damageAll( own, op, 20*l, FROZEN, 30 );
           break;
 
         case A_CHAIN_LIGHTNING:
-          if( debug > 3 ) println( "     Chain Lightning for " + (25*l));
+          if( debug ) println( "     Chain Lightning for " + (25*l));
           damageRandom3( own, op, 25*l, SHOCKED, 40 );
           break;
 
         case A_CONFUSION:
-          if( debug > 3 ) println( "     Confusion, " + (30+5*l) + "% chance");
+          if( debug ) println( "     Confusion, " + (30+5*l) + "% chance");
           damageRandom1( own, op, 0, CONFUSED, 30+5*l );
           break;
 
         case A_CORRUPTION:
-          if( debug > 3 ) println( "     Corruption");
+          if( debug ) println( "     Corruption");
           for ( Card c : op.inPlay )
           {
             if (c.faction != DEMON) {
@@ -1431,37 +1425,37 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_CURSE:
-          if( debug > 3 ) println( "     Curse for " + (40*l));
+          if( debug ) println( "     Curse for " + (40*l));
           op.attacked(40*l, own, true);
           break;
 
         case A_DAMNATION:
-          if( debug > 3 ) println( "     Damnation for " + (20*l*op.playSize()));
+          if( debug ) println( "     Damnation for " + (20*l*op.playSize()));
           op.attacked(20*l*op.playSize(), own, true);
           break;
 
         case A_DESTROY:
-          if( debug > 3 ) println( "     Destroy");
+          if( debug ) println( "     Destroy");
           damageRandom1( own, op, 99999999, DESTROY, 100 );
           break;
 
         case A_DEVILS_BLADE:
-          if( debug > 3 ) println( "     Devil's Blade for " + (2000));
+          if( debug ) println( "     Devil's Blade for " + (2000));
           damageLowest1( own, op, 2000, NO_IMMUNE, 100 );
           break;
 
         case A_DEVILS_CURSE:
-          if( debug > 3 ) println( "     Devil's Curse for " + (1000));
+          if( debug ) println( "     Devil's Curse for " + (1000));
           op.attacked( 1000, own, true );
           break;
 
         case A_DEXTERITY:
-          if( debug > 3 ) println( "     Dexterity");
+          if( debug ) println( "     Dexterity");
           dex = true;
           break;
 
         case A_DREAD_ROAR:
-          if( debug > 3 ) println( "     Dread Roar");
+          if( debug ) println( "     Dread Roar");
           for ( Card c : op.inPlay )
           {
             if (c.faction != DEMON) {
@@ -1471,27 +1465,22 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_DUAL_SNIPE:
-          if( debug > 3 ) println( "     Dual Snipe for " + (25*l));
+          if( debug ) println( "     Dual Snipe for " + (25*l));
           damageLowest2( own, op, 25*l, NO_IMMUNE, 100 );
           break;
 
         case A_ELECTRIC_SHOCK:
-          if( debug > 3 ) println( "     Electric Shock for " + (25*l));
+          if( debug ) println( "     Electric Shock for " + (25*l));
           damageAll( own, op, 25*l, SHOCKED, 35 );
           break;
 
-//       case A_EVASION:
-//          if( debug > 3 ) println( "     Evasion");
-//         evasion = true;
-//          break;
-//
         case A_EXILE:
           if ( op.board[ pos ] != null && !op.board[ pos ].resist && !op.board[pos].immune)
           {
             Card c = op.board[ pos ];
             if( c != null )
             {
-              if( debug > 3 ) println( "     Exile " + c.toStringNoHp());
+              if( debug ) println( "     Exile " + c.toStringNoHp());
               op.removeFromPlay( c );
               op.guards.remove( c );
               op.deck.add( c );
@@ -1503,14 +1492,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_FEAST_OF_BLOOD:
-          if( debug > 3 ) println( "     Feast of Blood");
+          if( debug ) println( "     Feast of Blood");
           int hpAdd = damageAll( own, op, 20*l, BLOOD, 0 );
-//          if (debug > 3) println( "       " + toStringNoHp() + " heals " + (min( hpCurr + hpAdd, hpBuff ) - hpCurr) + " from Feast of Blood");
-//          hpCurr = min( hpCurr + hpAdd, hpBuff );
+
           break;
 
         case A_FIRE_GOD:
-          if( debug > 3 ) println( "     Fire God for " + (20*l));
+          if( debug ) println( "     Fire God for " + (20*l));
           for ( Card c : op.inPlay )
           {
             if (!c.immune && !c.fireGod[l]) {
@@ -1521,27 +1509,27 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_FIRE_WALL:
-          if( debug > 3 ) println( "     Fire Wall for " + (25*l) + "-"+ (50*l));
+          if( debug ) println( "     Fire Wall for " + (25*l) + "-"+ (50*l));
           damageRandom3( own, op, 25*l, 50*l, FIRE, 0 );
           break;
 
         case A_FIREBALL:
-          if( debug > 3 ) println( "     Fire Ball for " + (25*l) + "-" + (50*l));
+          if( debug ) println( "     Fire Ball for " + (25*l) + "-" + (50*l));
           damageRandom1( own, op, 25*l, 50*l, FIRE, 0 );
           break;
 
         case A_FIRESTORM:
-          if( debug > 3 ) println( "     Firestorm for " + (25*l) + "-" + (50*l));
+          if( debug ) println( "     Firestorm for " + (25*l) + "-" + (50*l));
           damageAll( own, op, 25*l, 50*l, FIRE, 0 );
           break;
 
         case A_FROST_SHOCK:
-          if( debug > 3 ) println( "     Frost Shock for " + (40+10*l+(5+5*l)*op.playSize()));
+          if( debug ) println( "     Frost Shock for " + (40+10*l+(5+5*l)*op.playSize()));
           damageAll( own, op, (40+10*l+(5+5*l)*op.playSize()), FROZEN, 50 );
           break;
 
         case A_GROUP_WEAKEN:
-          if( debug > 3 ) println( "     Group Weaken for " + (10*l));
+          if( debug ) println( "     Group Weaken for " + (10*l));
           weakenAll( own, op, 10*l );
           break;
 
@@ -1555,37 +1543,37 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if( mostDamaged.immune )
             {
-              if( debug > 3 ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
+              if( debug ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
             }
             else if( mostDamaged.status[ LACERATED ] )
             {
-              if( debug > 3 ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
+              if( debug ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
             }
             else
             {
-              if( debug > 3 ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (min( mostDamaged.hpCurr + 25*l, mostDamaged.hpBuff ) - mostDamaged.hpCurr));
+              if( debug ) println( "     Healing " + mostDamaged.toStringNoHp() + " for " + (min( mostDamaged.hpCurr + 25*l, mostDamaged.hpBuff ) - mostDamaged.hpCurr));
               mostDamaged.hpCurr = min( mostDamaged.hpCurr + 25*l, mostDamaged.hpBuff );
             }
           }
           break;
           
         case A_HEALING_MIST:
-          if( debug > 3 ) println( "     Healing Mist self for " + (80+20*l));
+          if( debug ) println( "     Healing Mist self for " + (80+20*l));
           hpCurr = min( hpCurr + 80 + 20*l, hpBuff );
           if( pos > 0 && own.board[ pos - 1 ] != null && !own.board[ pos - 1 ].status[ LACERATED ] )
           {
-            if( debug > 3 ) println( "     Healing Mist " + own.board[ pos - 1 ].toStringNoHp() + " for " + (80+20*l));
+            if( debug ) println( "     Healing Mist " + own.board[ pos - 1 ].toStringNoHp() + " for " + (80+20*l));
             own.board[ pos - 1 ].hpCurr = min( own.board[ pos - 1 ].hpCurr + 80 + 20*l, own.board[ pos - 1 ].hpBuff );
           }
           if( pos < own.board.length && own.board[ pos + 1 ] != null  && !own.board[ pos + 1 ].status[ LACERATED ] )
           {
-            if( debug > 3 ) println( "     Healing Mist " + own.board[ pos + 1 ].toStringNoHp() + " for " + (80+20*l));
+            if( debug ) println( "     Healing Mist " + own.board[ pos + 1 ].toStringNoHp() + " for " + (80+20*l));
             own.board[ pos + 1 ].hpCurr = min( own.board[ pos + 1 ].hpCurr + 80 + 20*l, own.board[ pos + 1 ].hpBuff );
           }
           break;
 
         case A_ICEBALL:
-          if( debug > 3 ) println( "     Iceball for " + (20*l));
+          if( debug ) println( "     Iceball for " + (20*l));
           damageRandom1( own, op, 20*l, FROZEN, 45 );
           break;
 
@@ -1597,19 +1585,19 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
           if ( lowestWait != null )
           {
-            if( debug > 3 ) println( "     Impede " + lowestWait.toStringNoHp() + " by " + l);
+            if( debug ) println( "     Impede " + lowestWait.toStringNoHp() + " by " + l);
             lowestWait.time += l;
           }
           
           break;
 
         case A_MANA_CORRUPTION:
-          if( debug > 3 ) println( "     Mana corruption for " + (20*l));
+          if( debug ) println( "     Mana corruption for " + (20*l));
           damageRandom1( own, op, 20*l, MANA_CORRUPTION, 3 );
           break;
 
         case A_MANIA:
-          if( debug > 3 ) println( "     Mania for " + (20*l));
+          if( debug ) println( "     Mania for " + (20*l));
           atkBuff += 20*l;
           atk += 20*l;
           atkNow += 20*l;
@@ -1617,28 +1605,25 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case  A_MASS_ATTRITION:
-          if( debug > 3 )
-          { 
-            for ( Card c : op.hand )
-              println( "     Mass Attrition increased time of " + c.toStringNoHp() + " by " + l);
-          }
-          for ( Card c : op.hand )
+          for ( Card c : op.hand ) {
             c.time += l;
+            if (debug) println( "     Mass Attrition increased time of " + c.toStringNoHp() + " by " + l);
+          }
           break;
 
         case A_NOVA_FROST:
-          if( debug > 3 ) println( "     Nova Frost for " + (20*l));
+          if( debug ) println( "     Nova Frost for " + (20*l));
           damageRandom3( own, op, 20*l, FROZEN, 35 );
           break;
 
         case A_PLAGUE:
-          if( debug > 3 ) println( "     Plague for " + (5*l));
+          if( debug ) println( "     Plague for " + (5*l));
           weakenAll( own, op, 5*l );
           damageAll( own, op, 5*l, NO_REFLECT, 0 );
           break;
 
         case A_PRAYER:
-          if( debug > 3 ) println( "     Prayer for " + (40*l));
+          if( debug ) println( "     Prayer for " + (40*l));
           own.hp = min( own.hpmax, own.hp + 40*l );
           break;
 
@@ -1649,14 +1634,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
             own.removeFromGrave( toReanim );
             own.addToPlay( toReanim );
             toReanim.status[ SICK ] = true;
-            if( debug > 3 ) println( "     Reanimation targetting " + toReanim.toStringNoHp());
+            if( debug ) println( "     Reanimation targetting " + toReanim.toStringNoHp());
             toReanim.checkAbilities( own, op, ON_ENTER, -1 );
           }
-          else if( debug > 3 ) println( "     Reanimation targetting nothing");
+          else if( debug ) println( "     Reanimation targetting nothing");
           break;
 
         case A_REGENERATION:
-          if( debug > 3 ) println( "     Regeneration for " + (25*l));
+          if( debug ) println( "     Regeneration for " + (25*l));
           damageAll( own, own, 25*l, HEAL, 0 );
           break;
 
@@ -1666,8 +1651,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             int k = (int)random( 0, own.graveSize() );
             Card c = own.removeFromGrave( k );
             c.resetAll(own);
-            if( debug > 3 ) println( "     Reincarnation targetting " + c.toStringNoHp());            
-            //println("reincarn " + c + " " + c.hpCurr + " " + c.dead);
+            if( debug ) println( "     Reincarnation targetting " + c.toStringNoHp());            
             own.deck.add( c ); //
           }
           break;
@@ -1676,7 +1660,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           for ( int j = 0; j < l && !op.grave.isEmpty(); ++ j )
           {
             Card removed = op.removeFromGrave( (int)random( op.graveSize() ) );
-            if( debug > 3 ) println( "     Sacred Flame removes " + removed.toStringNoHp());
+            if( debug ) println( "     Sacred Flame removes " + removed.toStringNoHp());
           }
           break;
 
@@ -1684,53 +1668,52 @@ Seperate Variables: BURNED, POISON, immune, resist,
           if( !alreadySealed )
           {
             alreadySealed = true;
-            if( debug > 3 ) println( "     Seal all");
+            if( debug ) println( "     Seal all");
             damageAll( own, op, 0, TRAPPED, 100 );
           }
           break;
 
         case A_SILENCE:
-          if (op.board[ pos ] == null && debug > 2) println("       No Target for silence");
+          if (op.board[ pos ] == null && debug) println("       No Target for silence");
           if ( op.board[ pos ] != null ) {
-            if( debug > 3 ) println( "     Silence");
+            if( debug ) println( "     Silence");
             Card c = op.board[ pos ];
             if (c.type.faction == DEMON) {
-               if (debug > 2) println("       Demons can not be silenced");
+               if (debug) println("       Demons can not be silenced");
             }
             else 
             {
-//              if (op.guards.contains(c)) op.guards.remove(c);
               c.status[SILENCED] = true;
               for (int j=0; j<NUM_WHEN;j++)
                 for (int k=0; k<c.abilityNum[j];k++)
                   c.abilitySilenced[j][k] = true;
-              if (debug > 2) println("       " + c.toStringNoHp() + " is silenced.");
+              if (debug) println("       " + c.toStringNoHp() + " is silenced.");
             }
           }
           break;
 
         case A_SMOG:
-          if( debug > 3 ) println( "     Smog for " + (20*l));
+          if( debug ) println( "     Smog for " + (20*l));
           damageRandom3( own, op, 20*l, POISONED, 20*l );
           break;
 
         case A_SNIPE:
-          if( debug > 3 ) println( "     Snipe for " + (30*l));
+          if( debug ) println( "     Snipe for " + (30*l));
           damageLowest1( own, op, 30*l, NO_IMMUNE, 0 );
           break;
 
         case A_THUNDERBOLT:
-          if( debug > 3 ) println( "     Thunderbolt for " + (25*l));
+          if( debug ) println( "     Thunderbolt for " + (25*l));
           damageRandom1( own, op, 25*l, SHOCKED, 50 );
           break;
 
         case A_TOXIC_CLOUDS:
-          if( debug > 3 ) println( "     Toxic Clouds for " + (20*l));
+          if( debug ) println( "     Toxic Clouds for " + (20*l));
           damageAll( own, op, 20*l, POISONED, 20*l );
           break;
 
         case A_TRAP:
-          if( debug > 3 ) println( "     Trap");
+          if( debug ) println( "     Trap");
           if ( l == 1 )
             damageRandom1( own, op, 0, TRAPPED, 65 );
           else if ( l == 2 )
@@ -1744,12 +1727,12 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_VENOM:
-          if( debug > 3 ) println( "     Venom for " + (20*l));
+          if( debug ) println( "     Venom for " + (20*l));
           damageRandom1( own, op, 20*l, POISONED, 20*l );
           break;
 
         case A_WARCRY:
-          if( debug > 3 ) println( "     Warcry for " + (1*l));
+          if( debug ) println( "     Warcry for " + (1*l));
           for ( Card c : own.hand )
           {
             c.time -= l;
@@ -1763,7 +1746,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
           case A_PURIFICATION:
-            if( debug > 3 ) println( "     Purification");
+            if( debug ) println( "     Purification");
             for ( Card c : own.inPlay ) {
               c.burn = 0;
               for (int j = 0; j <= 9; ++ j) {
@@ -1791,10 +1774,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_REJUVENATION:
           if ( !status[ LACERATED ] )
           {
-            if( debug > 3 ) println( "     Rejuvenation for " + (min( hpBuff, hpCurr+l*30 ) - hpCurr));
+            if( debug ) println( "     Rejuvenation for " + (min( hpBuff, hpCurr+l*30 ) - hpCurr));
             hpCurr = min( hpBuff, hpCurr+l*30 );
           }
-          else if( debug > 3 ) println( "     Rejuvenation for 0 due to laceration");
+          else if( debug ) println( "     Rejuvenation for 0 due to laceration");
           break;
 
         case A_BLIGHT:
@@ -1802,7 +1785,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if ( dmgDone[ j ] > 0 && !targets[ j ].immune )
             {
-              if( debug > 3 ) println( "     Blight for " + (10*l));
+              if( debug ) println( "     Blight for " + (10*l));
               targets[ j ].atk -= 10*l;
               targets[ j ].subtractHealth( op, own, 10*l );
             }
@@ -1814,7 +1797,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if ( dmgDone[ j ] > 0 )
             {
-              if( debug > 3 ) println( "     Bloodthirsty for " + (10*l));
+              if( debug ) println( "     Bloodthirsty for " + (10*l));
               atk += 10*l;
               atkBuff += 10*l;
             }
@@ -1824,7 +1807,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_LACERATION:
           for ( int j = 0; j < targetNum; ++ j )
           {
-            if( debug > 3 && (cleanSweeped || j == 0)) println( "     Laceration applied to "+targets[ j ].toStringNoHp());
+            if( debug && (cleanSweeped || j == 0)) println( "     Laceration applied to "+targets[ j ].toStringNoHp());
             if ( dmgDone[ j ] > 0 && ( cleanSweeped || j == 0 ) ) targets[ j ].status[ LACERATED ] = true;
           }
           break;
@@ -1832,7 +1815,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_PUNCTURE:
           for ( int j = 0; j < targetNum; ++ j )
           {
-            if( debug > 3 ) println( "     Puncture for " + (int)(dmgDone[ j ] * 0.15 * l));
+            if( debug ) println( "     Puncture for " + (int)(dmgDone[ j ] * 0.15 * l));
             op.attacked( (int)( dmgDone[ j ] * 0.15 * l ), own, false );
           }
           break;
@@ -1844,31 +1827,25 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
         case A_SLAYER:
-          if( debug > 3 ) println( "     Slayer increases attack by " + (0.15f*l*atk));
+          if( debug ) println( "     Slayer increases attack by " + (0.15f*l*atk));
           atkNow += 0.15f * l * atk;
           break;
 
         case A_BLOODY_BATTLE:
           if ( op.board[ pos ] == null)
           {
-            if( debug > 3 ) println( "     Bloody Battle increases attack by " + (( 0 + l*0.15 ) * atk));
+            if( debug ) println( "     Bloody Battle increases attack by " + (( 0 + l*0.15 ) * atk));
             atkNow += max(0,hpMax - hpCurr);
           }
           break;
 
         case A_HOT_CHASE:
-          // if ( op.board[ pos ] != null ) Should not have been here
-          {
-            if( debug > 3 ) println( "     Hot Chase increases attack by " + (( 40 + l*10 ) * op.graveSize()));
-            atkNow += ( 40 + 10*l ) * op.graveSize();
-          }
+          if( debug ) println( "     Hot Chase increases attack by " + (( 40 + l*10 ) * op.graveSize()));
+          atkNow += ( 40 + 10*l ) * op.graveSize();
           break;
         case A_VENDETTA:
-          //if ( op.board[ pos ] != null ) Should not be here
-          {
-            if( debug > 3 ) println( "     Vendetta increases attack by " + (( 40 + l*10 ) * own.graveSize()));
-            atkNow += ( 40 + 10*l ) * own.graveSize();
-          }
+          if( debug ) println( "     Vendetta increases attack by " + (( 40 + l*10 ) * own.graveSize()));
+          atkNow += ( 40 + 10*l ) * own.graveSize();
           break;
 
 
@@ -1882,7 +1859,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_ARCTIC_POLLUTION:
           if ( op.board[ pos ] != null && op.board[ pos ].faction == TUNDRA )
           {
-            if( debug > 3 ) println( "     Arctic pollution increases attack by " + (( 0.15 + l*0.15 ) * atk));
+            if( debug ) println( "     Arctic pollution increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
           }
           break;
@@ -1890,7 +1867,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_FOREST_FIRE:
           if ( op.board[ pos ] != null && op.board[ pos ].faction == FOREST )
           {
-            if( debug > 3 ) println( "     Forest Fire increases attack by " + (( 0.15 + l*0.15 ) * atk));
+            if( debug ) println( "     Forest Fire increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
           }
           break;
@@ -1902,7 +1879,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             || op.board[ pos ].status[ SHOCKED ]
             || op.board[ pos ].status[ FROZEN ] ) )
           {
-            if( debug > 3 ) println( "     Blitz increases attack by " + (( 0 + l*0.15 ) * atk));
+            if( debug ) println( "     Blitz increases attack by " + (( 0 + l*0.15 ) * atk));
             atkNow += ( l*0.15 ) * atk;
           }
           break;
@@ -1910,7 +1887,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_BLOODY_BATTLE:
           if ( op.board[ pos ] != null)
           {
-            if( debug > 3 ) println( "     Bloody Battle increases attack by " + (hpMax - hpCurr));
+            if( debug ) println( "     Bloody Battle increases attack by " + (hpMax - hpCurr));
             atkNow += max(0,hpMax - hpCurr);
           }
           break;
@@ -1922,7 +1899,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_CHAIN_ATTACK:
           if ( op.board[ pos ] != null )
           {
-            if( debug > 3 ) println( "     Chain Attack on primary target " + op.board[ pos ].toStringNoHp() );
+            if( debug ) println( "     Chain Attack on primary target " + op.board[ pos ].toStringNoHp() );
             String name = op.board[ pos ].type.name;
             chain = 1 + 0.25*l;
             for ( Card c : op.inPlay )
@@ -1931,7 +1908,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
               //if ( c.type.name.equals( op.board[ pos ].type.name ) && c != op.board[ pos ] )
               if( name.equals( name2 ) && c != op.board[ pos ] )
               {
-                if( debug > 3 ) println( "     Chain Attack on additional target " + c.toStringNoHp());
+                if( debug ) println( "     Chain Attack on additional target " + c.toStringNoHp());
                 targets[ targetNum ++ ] = c;
               }
             }
@@ -1943,13 +1920,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if ( pos > 0 && op.board[ pos - 1 ] != null )
             {
-              if( debug > 3 ) println( "     Clean sweep adds target " + op.board[ pos - 1 ].toStringNoHp());
+              if( debug ) println( "     Clean sweep adds target " + op.board[ pos - 1 ].toStringNoHp());
               targets[ targetNum ++ ] = op.board[ pos - 1 ];
               cleanSweeped = true;
             }
             if ( pos < 9 && op.board[ pos + 1 ] != null )
             {
-              if( debug > 3 ) println( "     Clean sweep adds target " + op.board[ pos + 1 ].toStringNoHp());
+              if( debug ) println( "     Clean sweep adds target " + op.board[ pos + 1 ].toStringNoHp());
               targets[ targetNum ++ ] = op.board[ pos + 1 ];
               cleanSweeped = true;
             }
@@ -1959,28 +1936,25 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_CONCENTRATION:
           if ( op.board[ pos ] != null && random(0, 100)<50)
           {
-            if( debug > 3 ) println( "     Concentration increases attack by " + (( l*0.2 ) * atk));
+            if( debug ) println( "     Concentration increases attack by " + (( l*0.2 ) * atk));
             atkNow += 0.2 * l * atk;
           }
           break;
 
         case A_HOT_CHASE:
-          // if ( op.board[ pos ] != null ) Should not have been here
-          {
-            if( debug > 3 ) println( "     Hot Chase increases attack by " + (( 40 + l*10 ) * op.graveSize()));
-            atkNow += ( 40 + 10*l ) * op.graveSize();
-          }
+          if( debug ) println( "     Hot Chase increases attack by " + (( 40 + l*10 ) * op.graveSize()));
+          atkNow += ( 40 + 10*l ) * op.graveSize();
           break;
 
         case A_INFILTRATOR:
-          if( debug > 3 ) println( "     Infiltrator");
+          if( debug ) println( "     Infiltrator");
           infiltrator = true;
           break;
 
         case A_MOUNTAIN_GLACIER:
           if ( op.board[ pos ] != null && op.board[ pos ].faction == MOUNTAIN )
           {
-            if( debug > 3 ) println( "     Mountain Glacier increases attack by " + (( 0.15 + l*0.15 ) * atk));
+            if( debug ) println( "     Mountain Glacier increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
           }
           break;
@@ -1988,23 +1962,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_SWAMP_PURITY:
           if ( op.board[ pos ] != null && op.board[ pos ].faction == SWAMP )
           {
-            if( debug > 3 ) println( "     Swamp Purity increases attack by " + (( 0.15 + l*0.15 ) * atk));
+            if( debug ) println( "     Swamp Purity increases attack by " + (( 0.15 + l*0.15 ) * atk));
             atkNow += ( 0.15 + l*0.15 ) * atk;
           }
           break;
 
         case A_VENDETTA:
-          //if ( op.board[ pos ] != null ) Should not be here
-          {
-            if( debug > 3 ) println( "     Vendetta increases attack by " + (( 40 + l*10 ) * own.graveSize()));
-            atkNow += ( 40 + 10*l ) * own.graveSize();
-          }
+          if( debug ) println( "     Vendetta increases attack by " + (( 40 + l*10 ) * own.graveSize()));
+          atkNow += ( 40 + 10*l ) * own.graveSize();
           break;
 
         case A_WARPATH:
           if ( op.board[ pos ] != null && op.board[ pos ].hpCurr > hpCurr )
           {
-            if( debug > 3 ) println( "     Warpath increases attack by " + (( l*0.15 ) * atk));
+            if( debug ) println( "     Warpath increases attack by " + (( l*0.15 ) * atk));
             atkNow += ( 0.15*l ) * atk;
           }
           break;
@@ -2016,22 +1987,22 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
         case A_COUNTERATTACK:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Counterattack for " + (30*l));
+          if( debug ) println( "     " + toStringNoHp() + " Counterattack for " + (30*l));
           retaliate[ 1 ] += 30 * l;
           break;
 
         case A_COMBUSTION:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Combustion for " + (25*l));
+          if( debug ) println( "     " + toStringNoHp() + " Combustion for " + (25*l));
           combustion = l;
           break;
 
         case A_CRAZE:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Craze for " + (10*l));
+          if( debug ) println( "     " + toStringNoHp() + " Craze for " + (10*l));
           craze += 10 * l;
           break;
 
         case A_DEVILS_ARMOR:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Devil's Armor for " + (1500));
+          if( debug ) println( "     " + toStringNoHp() + " Devil's Armor for " + (1500));
           for ( int j = 0; j < 3; ++ j )
             retaliate[ j ] += 1500;
           break;
@@ -2039,20 +2010,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_DODGE:
           if( attacker.infiltrator )
           {
-            if( debug > 3 ) println( "       Infiltrator prevents " + toStringNoHp() + "'s dodge");
+            if( debug ) println( "       Infiltrator prevents " + toStringNoHp() + "'s dodge");
           }
           else if ( random(0, 100) < 20+5*l )
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + " uses Dodge and avoids damage.");
+            if( debug ) println( "       " + toStringNoHp() + " uses Dodge and avoids damage.");
             dmgTaken = 0;
           }
-          else if( debug > 3 ) println( "       " + toStringNoHp() + "'s Dodge fails");
+          else if( debug ) println( "       " + toStringNoHp() + "'s Dodge fails");
           break;
 
         case A_GLACIAL_BARRIER:
           if ( attacker.faction == MOUNTAIN )
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + "'s Glacial Berrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
+            if( debug ) println( "       " + toStringNoHp() + "'s Glacial Berrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
           }
           break;
@@ -2060,7 +2031,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_JUNGLE_BARRIER:
           if ( attacker.faction == SWAMP )
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + "'s Jungle Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
+            if( debug ) println( "       " + toStringNoHp() + "'s Jungle Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
           }
           break;
@@ -2068,20 +2039,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_MARSH_BARRIER:
           if ( attacker.faction == TUNDRA )
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + "'s Marsh Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
+            if( debug ) println( "       " + toStringNoHp() + "'s Marsh Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
           }
           break;
 
         case A_SHIELD_OF_EARTH:
-          if( debug > 3 ) println( "       " + toStringNoHp() + " Shield of Earth stuns attcking card " + attacker.toStringNoHp());
+          if( debug ) println( "       " + toStringNoHp() + " Shield of Earth stuns attcking card " + attacker.toStringNoHp());
           attacker.attackedSpell (op, own, 0, this, STUNNED, 100);
           break;
 
         case A_VOLCANO_BARRIER:
           if ( attacker.faction == FOREST )
           {
-            if( debug > 3 ) println( "       " + toStringNoHp() + "'s Volcano Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
+            if( debug ) println( "       " + toStringNoHp() + "'s Volcano Barrier decreases attack by " + (1 - ( 0.15 + 0.05 * l )) + "%");
             dmgMult *= 1 - ( 0.15 + 0.05 * l );
           }
           break;
@@ -2089,29 +2060,29 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_ICE_SHIELD:
           if( attacker.infiltrator )
           {
-            if( debug > 3 ) println( "       Infiltrator prevents " + toStringNoHp() + "'s ice shield");
+            if( debug ) println( "       Infiltrator prevents " + toStringNoHp() + "'s ice shield");
           }
           else
           {
-            if( debug > 3 && dmgMax > 190 - 10 * l) println( "       " + toStringNoHp() + "'s Ice Shield reduces damage to " + (190 - 10 * l));
-            else if (debug > 3)  println( "       " + toStringNoHp() + "'s Ice Shield no affect as damage is less than reduced to number");
+            if( debug && dmgMax > 190 - 10 * l) println( "       " + toStringNoHp() + "'s Ice Shield reduces damage to " + (190 - 10 * l));
+            else if (debug)  println( "       " + toStringNoHp() + "'s Ice Shield no affect as damage is less than reduced to number");
             dmgMax = min( dmgMax, 190 - 10 * l );
           }
           break;
 
         case A_PARRY:
-          if( debug > 3 ) println( "     " + toStringNoHp() + "'s Parry reduces damage by " + (20*l));
+          if( debug ) println( "     " + toStringNoHp() + "'s Parry reduces damage by " + (20*l));
           dmgMinus += 20 * l;
           break;
 
         case A_RETALIATION:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Retaliation for " + (20*l));
+          if( debug ) println( "     " + toStringNoHp() + " Retaliation for " + (20*l));
           for ( int j = 0; j < 3; ++ j )
             retaliate[ j ] += 20 * l;
           break;
 
         case A_WICKED_LEECH:
-          if( debug > 3 ) println( "     " + toStringNoHp() + " Wicked Leech for " + (3*l) + "%");
+          if( debug ) println( "     " + toStringNoHp() + " Wicked Leech for " + (3*l) + "%");
           wickedLeech = 0.03 * l;
           break;
         }
@@ -2121,7 +2092,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
         case A_GUARD:
-          if( debug > 3 ) println( "     Guard enter play");
+          if( debug ) println( "     Guard enter play");
           own.guards.add( this );
           break;
         case A_SUMMON_DRAGON:
@@ -2129,13 +2100,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
           for ( Card c : own.inPlay )
           {
             if (c.summoner == this && c.type.name.equals("Thunder Dragon")) {
-              if( debug > 3 ) println( "     Summon Dragon fails due to Omniscient Dragon already being on the field for this card");
+              if( debug ) println( "     Summon Dragon fails due to Omniscient Dragon already being on the field for this card");
               failed = true;
             }
           }
           if (!failed) 
           {
-            if( debug > 3 ) println( "     Summon Dragon summons Thunder Dragon");
+            if( debug) println( "     Summon Dragon summons Thunder Dragon");
             for ( int k = 0; k < own.summoned.size(); ++ k )
             {
               Card c = own.summoned.get( k );
@@ -2156,13 +2127,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
           for ( Card c : own.inPlay )
           {
             if (c.summoner == this && c.type.name.equals("Swamp Rider")) {
-              if( debug > 3 ) println( "     Gang Up! fails due to a Swamp Rider already being on the field for this card");
+              if( debug ) println( "     Gang Up! fails due to a Swamp Rider already being on the field for this card");
               failed = true;
             }
           }
           if (!failed) 
           {
-            if( debug > 3 ) println( "     Gang Up! summons two Swamp Riders");
+            if( debug ) println( "     Gang Up! summons two Swamp Riders");
             for ( int k = 0; k < own.summoned.size(); ++ k )
             {
               Card c = own.summoned.get( k );
@@ -2179,22 +2150,22 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
          break;
        case A_QS_BLIZZARD:
-          if( debug > 3 ) println( "     QS: BLizzard for " + (20*l));
+          if( debug ) println( "     QS: BLizzard for " + (20*l));
           damageAll( own, op, 20*l, FROZEN, 30 );
           break;
 
         case A_QS_CURSE:
-          if( debug > 3 ) println( "     QS: Curse for " + (40*l));
+          if( debug ) println( "     QS: Curse for " + (40*l));
           op.attacked(40*l, op, true);
           break;
 
         case A_QS_DESTROY:
-          if( debug > 3 ) println( "     QS: Destroy");
+          if( debug ) println( "     QS: Destroy");
           damageRandom1( own, op, 99999999, DESTROY, 100 );
           break;
 
         case A_QS_ELECTRIC_SHOCK:
-          if( debug > 3 ) println( "     QS: Electric Shock for " + (25*l));
+          if( debug ) println( "     QS: Electric Shock for " + (25*l));
           damageAll( own, op, 25*l, SHOCKED, 35 );
           break;
 
@@ -2204,7 +2175,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             Card c = op.board[ pos ];
             if( c != null )
             {
-              if( debug > 3 ) println( "     QS: Exile " + c.toStringNoHp() );
+              if( debug ) println( "     QS: Exile " + c.toStringNoHp() );
               op.removeFromPlay( c );
               op.guards.remove( c );
               op.deck.add( c );
@@ -2216,12 +2187,12 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_QS_FIRESTORM:
-          if( debug > 3 ) println( "     QS: Firestorm for " + (25*l)+"-"+(50*l));
+          if( debug ) println( "     QS: Firestorm for " + (25*l)+"-"+(50*l));
           damageAll( own, op, 25*l, 50*l, FIRE, 0 );
           break;
 
         case A_QS_FIRE_GOD:
-          if( debug > 3 ) println( "     QS: Fire God for " + (20*l));
+          if( debug ) println( "     QS: Fire God for " + (20*l));
           for ( Card c : op.inPlay )
           {
             if (!c.immune && !c.fireGod[l]) {
@@ -2232,7 +2203,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_QS_GROUP_WEAKEN:
-          if( debug > 3 ) println( "     QS: Group Weaken for " + (10*l));
+          if( debug ) println( "     QS: Group Weaken for " + (10*l));
           weakenAll( own, op, 10*l );
           break;
 
@@ -2246,22 +2217,22 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if( mostDamaged.immune )
             {
-              if( debug > 3 ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
+              if( debug ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
             }
             else if( mostDamaged.status[ LACERATED ] )
             {
-              if( debug > 3 ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
+              if( debug ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
             }
             else
             {
-              if( debug > 3 ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l));
+              if( debug ) println( "     QS: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l));
               mostDamaged.hpCurr = min( mostDamaged.hpCurr + 25*l, mostDamaged.hpBuff );
             }
           }
           break;
 
         case  A_QS_MASS_ATTRITION:
-          if( debug > 3 )
+          if( debug )
           { 
             for ( Card c : op.hand )
               println( "     QS: Mass Attrition increased time of " + c.toStringNoHp() + " by " + l);
@@ -2271,18 +2242,18 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_QS_PLAGUE:
-          if( debug > 3 ) println( "     QS: Plague for " + (5*l));
+          if( debug ) println( "     QS: Plague for " + (5*l));
           weakenAll( own, op, 5*l );
           damageAll( own, op, 5*l, NO_REFLECT, 0 );
           break;
 
         case A_QS_PRAYER:
-          if( debug > 3 ) println( "     QS: Prayer for " + (40*l));
+          if( debug ) println( "     QS: Prayer for " + (40*l));
           own.hp = min( own.hpmax, own.hp + 40*l );
           break;
 
         case A_QS_PURIFICATION:
-          if( debug > 3 ) println( "     QS: Purification");
+          if( debug ) println( "     QS: Purification");
           for ( Card c : own.inPlay ) {
             c.burn = 0;
             for (int j = 0; j <= 9; ++ j) {
@@ -2302,7 +2273,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_QS_REGENERATION:
-          if( debug > 3 ) println( "     QS: Regeneration for " + (25*l));
+          if( debug ) println( "     QS: Regeneration for " + (25*l));
           damageAll( own, own, 25*l, HEAL, 0 );
           break;
 
@@ -2311,17 +2282,17 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             Card c = own.removeFromGrave( (int)random( own.graveSize() ) );
             own.deck.add( c );
-            if( debug > 3 ) println( "     QS: Reincarnation targeting " + c.toStringNoHp());
+            if( debug ) println( "     QS: Reincarnation targeting " + c.toStringNoHp());
           }
           break;
 
         case A_QS_TOXIC_CLOUDS:
-          if( debug > 3 ) println( "     QS: Toxic Clouds for " + (20*l));
+          if( debug ) println( "     QS: Toxic Clouds for " + (20*l));
           damageAll( own, op, 20*l, POISONED, 20*l );
           break;
 
         case A_QS_TRAP:
-          if( debug > 3 ) println( "     QS: Trap " + l);
+          if( debug ) println( "     QS: Trap " + l);
           if ( l == 1 )
             damageRandom1( own, op, 0, TRAPPED, 65 );
           else if ( l == 2 )
@@ -2331,7 +2302,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
           break;
 
         case A_BACKSTAB:
-          if( debug > 3 ) println( "     Backstab for " + (40*l));
+          if( debug ) println( "     Backstab for " + (40*l));
           backstab = 40*l;
           break;
 
@@ -2345,16 +2316,16 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
           if ( longest != null && !(longest.resist || longest.immune))
           {
-            if( debug > 3 ) println( "     QS: Teleport targetting " + longest.toStringNoHp() );
+            if( debug ) println( "     QS: Teleport targetting " + longest.toStringNoHp() );
             op.removeFromHand( longest );
             op.addToGrave( longest );
           }
-          else if (longest == null && debug > 3) println( "     QS: Teleport no targets");     
-          else if (debug > 3) println( "     QS: Teleport targetting " + longest.toStringNoHp() + " fails due to target having resistance/immunity");     
+          else if (longest == null && debug ) println( "     QS: Teleport no targets");     
+          else if (debug ) println( "     QS: Teleport targetting " + longest.toStringNoHp() + " fails due to target having resistance/immunity");     
           break;
 
         case A_OBSTINACY:
-          if( debug > 3 ) println( "     Obstinacy for " + (50*l));
+          if( debug ) println( "     Obstinacy for " + (50*l));
           own.hp = min( own.hpmax, own.hp - 50*l );
           own.checkDead();
           break;
@@ -2373,7 +2344,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             
             if ( !c.immune && c != this && !c.dead )
             {
-              if( debug > 3 ) println( "     Sacrifice targetting " + c.toStringNoHp() );
+              if( debug ) println( "     Sacrifice targetting " + c.toStringNoHp() );
               this.atk = (int)(( 1 + 0.20+0.10*l )*this.atkMax + (this.atk-this.atkMax));
               this.atkBuff = (int)(( 1 + 0.20+0.10*l )*this.atkMax + (this.atkBuff-this.atkMax));
               this.hpCurr = (int)(( 1 + 0.20+0.10*l )*this.hpMax + (this.hpCurr-this.hpMax));
@@ -2384,64 +2355,64 @@ Seperate Variables: BURNED, POISON, immune, resist,
               c.dead = true;
               c.died(own, op,true);
             }
-            else if( debug > 3 && c.immune) println( "     Sacrifice failed targetting immune card " + c.toStringNoHp() );
+            else if( debug && c.immune) println( "     Sacrifice failed targetting immune card " + c.toStringNoHp() );
           }
           break;
 
         case A_TUNDRA_ATK:
-          if( debug > 3 ) println( "     Tundra attack gain by " + (25*l));
+          if( debug ) println( "     Tundra attack gain by " + (25*l));
           applyBuffAtk( own, TUNDRA, 25*l );
           break;
 
         case A_TUNDRA_HP:
-          if( debug > 3 ) println( "     Tundra health gain by " + (50*l));
+          if( debug ) println( "     Tundra health gain by " + (50*l));
           applyBuffHp( own, TUNDRA, 50*l );
           break;
 
         case A_MOUNTAIN_ATK:
-          if( debug > 3 ) println( "     Mountain attack again by " + (25*l));
+          if( debug ) println( "     Mountain attack again by " + (25*l));
           applyBuffAtk( own, MOUNTAIN, 25*l );
           break;
 
         case A_MOUNTAIN_HP:
-          if( debug > 3 ) println( "     Mountain health gain by " + (50*l));
+          if( debug ) println( "     Mountain health gain by " + (50*l));
           applyBuffHp( own, MOUNTAIN, 50*l );
           break;
 
         case A_SWAMP_ATK:
-          if( debug > 3 ) println( "     Swamp attack gain by " + (25*l));
+          if( debug ) println( "     Swamp attack gain by " + (25*l));
           applyBuffAtk( own, SWAMP, 25*l );
           break;
 
         case A_SWAMP_HP:
-          if( debug > 3 ) println( "     Swamp health gain by " + (50*l));
+          if( debug ) println( "     Swamp health gain by " + (50*l));
           applyBuffHp( own, SWAMP, 50*l );
           break;
 
         case A_FOREST_ATK:
-          if( debug > 3 ) println( "     Forest attack gain by " + (25*l));
+          if( debug ) println( "     Forest attack gain by " + (25*l));
           applyBuffAtk( own, FOREST, 25*l );
           break;
 
         case A_FOREST_HP:
-          if( debug > 3 ) println( "     Forest health gain by " + (50*l));
+          if( debug ) println( "     Forest health gain by " + (50*l));
           applyBuffHp( own, FOREST, 50*l );
           break;
 
         case A_ORIGINS_GUARD:
-          if( debug > 3 ) println( "     Origins guard gain by " + (40*l));
+          if( debug ) println( "     Origins guard gain by " + (40*l));
           for ( int j = 0; j < 4; ++ j )
             applyBuffHp( own, j, 40*l );
           break;
 
         case A_POWER_SOURCE:
-          if( debug > 3 ) println( "     Power source gain by " + (20*l));
+          if( debug ) println( "     Power source gain by " + (20*l));
           for ( int j = 0; j < 4; ++ j )
             applyBuffAtk( own, j, 20*l );
           break;
 
         case A_DIVINE_PROTECTION:
-          if( debug > 3 ) println( "     Divine Protection on self gain by " + (50*l));
+          if( debug ) println( "     Divine Protection on self gain by " + (50*l));
           divineProVal = 50*l;
           if ( pos > 0 && !own.board[ pos - 1 ].dead )
           {
@@ -2449,7 +2420,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             divineProtect[ 0 ].hpBuff += divineProVal;
             if( divineProtect[ 0 ].hpCurr < divineProtect[ 0 ].hpBuff)
               divineProtect[ 0 ].hpCurr = min(divineProtect[0].hpBuff, divineProtect[0].hpCurr + divineProVal);
-          if( debug > 3 ) println( "     Divine Protection on " + divineProtect[ 0 ].toStringNoHp() + " gain by " + (50*l));
+          if( debug) println( "     Divine Protection on " + divineProtect[ 0 ].toStringNoHp() + " gain by " + (50*l));
           }
           else
             divineProtect[ 0 ] = null;
@@ -2471,13 +2442,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
             for ( Card c : own.inPlay )
             {
               if (c.summoner == this && c.type.name.equals("Behemoth")) {
-                if( debug > 3 ) println( "     The Don's Bodyguard fails due to a Behemoth already being on the field for this card");
+                if( debug ) println( "     The Don's Bodyguard fails due to a Behemoth already being on the field for this card");
                 failed = true;
               }
             }
             if (!failed) 
             {
-              if( debug > 3 ) println( "     The Don's Bodyguard summons a Behemoth");
+              if( debug ) println( "     The Don's Bodyguard summons a Behemoth");
               for ( int k = 0; k < own.summoned.size(); ++ k )
               {
                 Card c = own.summoned.get( k );
@@ -2495,14 +2466,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
           break;
         case A_GUARD:
-          if( debug > 3 ) println( "     Guard leave play");
+          if( debug ) println( "     Guard leave play");
           own.guards.remove( this );
           break;
 
         case A_LAST_CHANCE:
           if ( dead  && !abilitySilenced[when][i] && effect != DESTROY && last_chance == 0)
           {
-            if( debug > 3 ) println( "     " + toStringNoHp() + " gets a Last Chance. HP set to 1");
+            if( debug ) println( "     " + toStringNoHp() + " gets a Last Chance. HP set to 1");
             hpCurr = 1;
             last_chance++;
             dead = false;
@@ -2516,19 +2487,18 @@ Seperate Variables: BURNED, POISON, immune, resist,
           {
             if( random( 0, 100 ) <= 30+l*5 )
             {
-              if( debug > 3 ) println( "       " + toStringNoHp() + " Resurrection successful");
-              //own.removeFromGrave(this);
+              if( debug ) println( "       " + toStringNoHp() + " Resurrection successful");
               own.addToHand(this);
               reanimated = true;
             }
-            else if( debug > 3 ) println( "       " + toStringNoHp() + " Resurrection chance failed.");
+            else if( debug ) println( "       " + toStringNoHp() + " Resurrection chance failed.");
           }
           break;
 
         case A_D_BLIZZARD:
           if ( dead  && !abilitySilenced[when][i])
           {
-          if( debug > 3 ) println( "     D: Blizzard for " + (20*l));
+          if( debug ) println( "     D: Blizzard for " + (20*l));
             damageAll( own, op, 20*l, FROZEN, 30 );
           }
           break;
@@ -2536,7 +2506,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_CURSE:
           if ( dead  && !abilitySilenced[when][i])
           {
-          if( debug > 3 ) println( "     D: Curse for " + (40*l));;
+          if( debug ) println( "     D: Curse for " + (40*l));;
             op.attacked(40*l, op, true);
           }
           break;
@@ -2545,7 +2515,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_DESTROY:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Destroy");
+            if( debug ) println( "     D: Destroy");
             damageRandom1( own, op, 99999999, DESTROY, 100 );
           }
           break;
@@ -2553,7 +2523,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_ELECTRIC_SHOCK:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Electric Shock for " + (25*l));
+            if( debug ) println( "     D: Electric Shock for " + (25*l));
             damageAll( own, op, 25*l, SHOCKED, 35 );
           }
           break;
@@ -2561,7 +2531,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_FIRESTORM:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Firestorm for " + (25*l)+"-"+(50*l));
+            if( debug ) println( "     D: Firestorm for " + (25*l)+"-"+(50*l));
             damageAll( own, op, 25*l, 50*l, FIRE, 0 );
           }
           break;
@@ -2569,7 +2539,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_FIRE_GOD:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Fire God for " + (20*l));
+            if( debug ) println( "     D: Fire God for " + (20*l));
             for ( Card c : op.inPlay )
             {
               if (!c.immune && !c.fireGod[l]) {
@@ -2583,7 +2553,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_GROUP_WEAKEN:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Group Weaken for " + (10*l));
+            if( debug ) println( "     D: Group Weaken for " + (10*l));
             weakenAll( own, op, 10*l );
           }
           break;
@@ -2591,7 +2561,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_HEALING:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Healing for " + (25*l));
+            if( debug ) println( "     D: Healing for " + (25*l));
             Card mostDamaged = null;
             for ( Card c : own.inPlay )
             {
@@ -2601,15 +2571,15 @@ Seperate Variables: BURNED, POISON, immune, resist,
             {
               if( mostDamaged.immune )
               {
-                if( debug > 3 ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
+                if( debug ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to immunity");
               }
               else if( mostDamaged.status[ LACERATED ] )
               {
-                if( debug > 3 ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
+                if( debug ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l) + " failed due to laceration");
               }
               else
               {
-                if( debug > 3 ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l));
+                if( debug ) println( "     D: Healing " + mostDamaged.toStringNoHp() + " for " + (25*l));
                 mostDamaged.hpCurr = min( mostDamaged.hpCurr + 25*l, mostDamaged.hpBuff );
               }
             }
@@ -2619,7 +2589,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_PLAGUE:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Plague for " + (5*l));
+            if( debug ) println( "     D: Plague for " + (5*l));
             weakenAll( own, op, 5*l );
             damageAll( own, op, 5*l, NO_REFLECT, 0 );
           }
@@ -2628,7 +2598,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_PRAYER:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Prayer for " + (40*l));
+            if( debug ) println( "     D: Prayer for " + (40*l));
             own.hp = min( own.hpmax, own.hp + 40*l );
           }
           break;
@@ -2639,20 +2609,20 @@ Seperate Variables: BURNED, POISON, immune, resist,
             if( own.graveReanim.size() > 0 )
             {
               Card toReanim = own.graveReanim.get( ( int )random( 0, own.graveReanim.size() ) );
-              if( debug > 3 ) println( "     D: Reanimation targetting " + toReanim.toStringNoHp());
+              if( debug ) println( "     D: Reanimation targetting " + toReanim.toStringNoHp());
               own.removeFromGrave( toReanim );
               own.addToPlay( toReanim );
               toReanim.status[ SICK ] = true;
               toReanim.checkAbilities( own, op, ON_ENTER, -1 );
             }
-            else if( debug > 3 ) println( "     D: Reanimation targetting nothing");
+            else if( debug ) println( "     D: Reanimation targetting nothing");
           }
           break;
 
         case A_D_REGENERATION:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Regeneration for " + (25*l));
+            if( debug ) println( "     D: Regeneration for " + (25*l));
             damageAll( own, own, 25*l, HEAL, 0 );
           }
           break;
@@ -2664,7 +2634,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             {
               Card c = own.removeFromGrave( (int)random( own.graveSize() ) );
               own.deck.add( c );
-              if( debug > 3 ) println( "     D: Reincarnation targetting " + c.toStringNoHp());
+              if( debug ) println( "     D: Reincarnation targetting " + c.toStringNoHp());
             }
           }
           break;
@@ -2672,7 +2642,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_TOXIC_CLOUDS:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Toxic Clouds for " + (20*l));
+            if( debug ) println( "     D: Toxic Clouds for " + (20*l));
             damageAll( own, op, 20*l, POISONED, 20*l );
           }
           break;
@@ -2680,7 +2650,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_D_TRAP:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     D: Trap");
+            if( debug ) println( "     D: Trap");
             if ( l == 1 )
               damageRandom1( own, op, 0, TRAPPED, 65 );
             else if ( l == 2 )
@@ -2692,7 +2662,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_TUNDRA_ATK:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Tundra attack loss of " + (25*l));
+            if( debug ) println( "     Tundra attack loss of " + (25*l));
             
             applyBuffAtk( own, TUNDRA, -25*l - buffAttackOffset );
           }
@@ -2701,7 +2671,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_TUNDRA_HP:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Tundra health loss of " + (50*l));
+            if( debug ) println( "     Tundra health loss of " + (50*l));
             applyBuffHp( own, TUNDRA, -50*l - buffGuardOffset);
           }    
           else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
@@ -2709,7 +2679,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_MOUNTAIN_ATK:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Mountain attack loss of " + (25*l));
+            if( debug ) println( "     Mountain attack loss of " + (25*l));
             applyBuffAtk( own, MOUNTAIN, -25*l - buffAttackOffset );
           }
           else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
@@ -2717,7 +2687,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_MOUNTAIN_HP:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Mountain health loss of " + (50*l));
+            if( debug ) println( "     Mountain health loss of " + (50*l));
             applyBuffHp( own, MOUNTAIN, -50*l - buffGuardOffset);
           }
           else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
@@ -2725,7 +2695,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_SWAMP_ATK:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Swamp attack loss of " + (25*l));
+            if( debug ) println( "     Swamp attack loss of " + (25*l));
             applyBuffAtk( own, SWAMP, -25*l - buffAttackOffset);
           }
           else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
@@ -2733,7 +2703,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_SWAMP_HP:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Swamp health loss of " + (50*l));
+            if( debug ) println( "     Swamp health loss of " + (50*l));
             applyBuffHp( own, SWAMP, -50*l - buffGuardOffset);
           }
           else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
@@ -2741,7 +2711,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_FOREST_ATK:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Forest attack loss of " + (25*l));
+            if( debug ) println( "     Forest attack loss of " + (25*l));
             applyBuffAtk( own, FOREST, -25*l - buffAttackOffset);
           }
           else if (abilitySilenced[when][i]) buffAttackOffset += 25*l;
@@ -2749,7 +2719,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_FOREST_HP:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Forest health loss of " + (50*l));
+            if( debug ) println( "     Forest health loss of " + (50*l));
             applyBuffHp( own, FOREST, -50*l - buffGuardOffset);
           }
           else if (abilitySilenced[when][i]) buffGuardOffset += 50*l;
@@ -2757,7 +2727,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_ORIGINS_GUARD:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Origins Guard loss of " + (40*l));
+            if( debug ) println( "     Origins Guard loss of " + (40*l));
             for ( int j = 0; j < 4; ++ j )
               applyBuffHp( own, j, -40*l - buffGuardOffset);
           }
@@ -2766,7 +2736,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
         case A_POWER_SOURCE:
           if (!abilitySilenced[when][i]) {
-            if( debug > 3 ) println( "     Power Source loss of " + (20*l));
+            if( debug ) println( "     Power Source loss of " + (20*l));
             for ( int j = 0; j < 4; ++ j )
               applyBuffAtk( own, j, -20*l - buffAttackOffset);
           }
@@ -2776,7 +2746,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_SELF_DESTRUCT:
           if ( dead  && !abilitySilenced[when][i])
           {
-            if( debug > 3 ) println( "     Self-Destruct for " + (40*l));
+            if( debug ) println( "     Self-Destruct for " + (40*l));
             for ( int j = max( 0, pos - 1); j <= min( op.board.length - 1, pos + 1 ); ++ j )
               if ( op.board[ j ] != null ) op.board[ j ].attackedSpell( op, own, 40*l, this, FIRE, 0 );
           }
@@ -2788,7 +2758,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
             {
               if ( divineProtect[ j ] != null )
               {
-              if( debug > 3 ) println( "     Divine Protection loss on " + divineProtect[ j ].toStringNoHp());
+              if( debug ) println( "     Divine Protection loss on " + divineProtect[ j ].toStringNoHp());
                 divineProtect[ j ].hpBuff -= divineProVal;
                 divineProtect[ j ].hpCurr = min( divineProtect[ j ].hpCurr, divineProtect[ j ].hpBuff );
               }
@@ -2802,7 +2772,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
         switch( a )
         {
         case A_IMMUNITY:
-          if( debug > 3 ) println( "     Immunity");
+          if( debug ) println( "     Immunity");
           dmgTaken = 0;
           break;
 
@@ -2810,13 +2780,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
           int d = dmgTaken;
           if(effect != MANA_CORRUPTION && effect != NO_REFLECT) { // magic shield disabled if corruption damage
             dmgTaken = min( dmgTaken, 160 - 10*l );
-            if( debug > 3 && d > dmgTaken ) println( "       " + toStringNoHp() + "'s Magic Shield reduces to maximum of " + (160 - 10*l));
+            if( debug && d > dmgTaken ) println( "       " + toStringNoHp() + "'s Magic Shield reduces to maximum of " + (160 - 10*l));
           }
           break;
 
         case A_REFLECTION:
           if (effect != NO_REFLECT && effect != TRAPPED) {
-            if( debug > 3 ) println( "     " + toStringNoHp() + "'s Reflection");
+            if( debug ) println( "     " + toStringNoHp() + "'s Reflection");
             dmgTaken = 30*l;
             reflective = true;
           }
@@ -2862,14 +2832,14 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   void weakenAll( Player own, Player target, int amount )
   {
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug ) println("       No Targets");
     for ( Card c : target.inPlay )
     {
       if ( !c.immune ) {
         c.atk = max( 0, c.atk - amount );
-        if (debug > 3) println("       " + c.toStringNoHp() + " looses " + amount + " attack due to weaken");
+        if (debug) println("       " + c.toStringNoHp() + " looses " + amount + " attack due to weaken");
       }
-      else if (debug > 3) println("       Immunity prevented weaken on " + c);
+      else if (debug) println("       Immunity prevented weaken on " + c);
       
     }
   }
@@ -2878,7 +2848,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   {
     int ret = 0;
 
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     for ( int i = 0; i < 40; ++ i )
     {
       Card c = target.board[ i ];
@@ -2892,7 +2862,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int damageAll( Player own, Player target, int dmgMin, int dmgMax, int effect, int chance )
   {
     int ret = 0;
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     for ( int i = 0; i < 40; ++ i )
     {
       Card c = target.board[ i ];
@@ -2909,7 +2879,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     int list[] = { 
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 3, target.playSize() ); ++ i )
@@ -2931,7 +2901,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     int list[] = { 
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 4, target.playSize() ); ++ i )
@@ -2953,7 +2923,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     int list[] = { 
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 5, target.playSize() ); ++ i )
@@ -2975,7 +2945,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
     int list[] = { 
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
     };
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     ArrayList< Card > targets = new ArrayList< Card >();
     for ( int i = 0; i < min( 3, target.playSize() ); ++ i )
     {
@@ -2994,7 +2964,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   void damageRandom2( Player own, Player target, int dmgMin, int dmgMax, int effect, int chance )
   {
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     if ( !target.inPlay.isEmpty() )
     {
       int dmg = (int)random( dmgMin, dmgMax );
@@ -3013,7 +2983,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   void damageRandom2( Player own, Player target, int dmg, int effect, int chance )
   {    
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     if ( !target.inPlay.isEmpty() )
     {
       int index = (int)random( target.playSize() );
@@ -3031,7 +3001,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
   int damageRandom1( Player own, Player target, int dmgMin, int dmgMax, int effect, int chance )
   {
     int dmg = (int)random( dmgMin, dmgMax );
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     if ( !target.inPlay.isEmpty() )
       return target.inPlay.get( (int)random( target.playSize() ) ).attackedSpell( target, own, dmg, this, effect, chance );
     return 0;
@@ -3039,7 +3009,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   int damageRandom1( Player own, Player target, int dmg, int effect, int chance )
   {
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     if ( !target.inPlay.isEmpty() )
       return target.inPlay.get( (int)random( target.playSize() ) ).attackedSpell( target, own, dmg, this, effect, chance );
     return 0;
@@ -3047,7 +3017,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   int damageLowest1( Player own, Player target, int dmg, int effect, int chance )
   {
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     Card lowest = null;
     for ( int i = 0; i < target.playSize(); ++ i )
     {
@@ -3060,7 +3030,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   int damageLowest2( Player own, Player target, int dmg, int effect, int chance )
   {
-    if (target.playSize() == 0 && debug > 2) println("       No Targets");
+    if (target.playSize() == 0 && debug) println("       No Targets");
     Card lowest1 = null;
     Card lowest2 = null;
     int dmgDone = 0;
@@ -3090,7 +3060,7 @@ Seperate Variables: BURNED, POISON, immune, resist,
 
   String toString()
   {
-    if ( isRun && debug > 0 )
+    if ( isRun && debug )
     {
       if( evo == AType.A_NONE )
         return type.name + " (" + lvl + ") " + "[Attack: "+atk+" / " + atkMax +", Health: "+ hpCurr+" / " + hpMax + "]";

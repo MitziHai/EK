@@ -169,7 +169,7 @@ class Player
     if ( deck.size() > 0 && handSize() < 5 && (hp > 0 || invul) && (op.hp > 0 || op.invul))
     {
       Card c = deck.remove( deck.size() - 1 );
-      if(debug>0)
+      if(debug)
         println("   Draw:"+c);
       c.resetAll(this);
       addToHand( c );
@@ -308,7 +308,7 @@ class Player
   {
     if ( guards.size() > 0 )
     {
-      if( debug > 2 ) println("       Player attacked with " + guards.size() + " guard cards in play.");
+      if( debug ) println("       Player attacked with " + guards.size() + " guard cards in play.");
       for ( int i = 0; i < guards.size() && dmg > 0; ++ i )
       {
         Card c = guards.get( i );
@@ -321,13 +321,13 @@ class Player
         dmg = max( 0, dmg - mitigate );
         c.subtractHealth( this, op, mitigate );
         if( c.dead ) -- i;
-        if( debug > 2 ) println("       " + c.toStringNoHp() + "'s guard mitigated " + mitigate + " and " + dmg + " remains");
+        if( debug ) println("       " + c.toStringNoHp() + "'s guard mitigated " + mitigate + " and " + dmg + " remains");
       }
     }
     if ( dmg > 0 && hp > 0)
     {
       hp -= dmg;
-      if( debug > 2 ) println("       Player took " + dmg + " damage.");
+      if( debug ) println("       Player took " + dmg + " damage.");
       if( !belowZero )
       {
         hp = max( hp, 0 );
@@ -380,7 +380,7 @@ class Player
   // IN PLAY
   void addToPlay( Card c )
   {
-    if( debug > 3 ) println( "   Enter Play: " + c);
+    if( debug ) println( "   Enter Play: " + c);
     c.pos = inPlay.isEmpty() ? 0 : inPlay.get( inPlay.size() - 1 ).pos + 1;
     inPlay.add( c );
     cardCount[ PLAY ][ c.faction ] += 1;
@@ -396,25 +396,14 @@ class Player
         cardBeforeMe.divineProtect[ 2 ] = c;
         c.hpCurr += cardBeforeMe.divineProVal;
         c.hpBuff += cardBeforeMe.divineProVal;
-        if (debug > 3) println("     Divine Protection on " + c.toStringNoHp() + " by coming in next to " + cardBeforeMe.toStringNoHp() + " for " + cardBeforeMe.divineProVal);
+        if (debug ) println("     Divine Protection on " + c.toStringNoHp() + " by coming in next to " + cardBeforeMe.toStringNoHp() + " for " + cardBeforeMe.divineProVal);
       }
     }
   }
-  
-  // Do not do this, it messes up the positions!
-  /*void addToPlay( Card c, int i )
-  {
-    c.pos = i;
-    inPlay.add( i, c );
-    cardCount[ PLAY ][ c.type.faction ] += 1;
-    board[ c.pos ] = c;
-    c.resetAll(this);
-    if( debug > 3 ) println( "   Enter Play: " + c);
-  }*/
-  
+
   void removeFromPlay( Card c )
   {
-    if( debug > 3 ) println( "     Leave Play: " + c);
+    if( debug ) println( "     Leave Play: " + c);
     int index = inPlay.indexOf( c );
     if( index != -1 )
     {
@@ -438,7 +427,7 @@ class Player
   {
     Card c = board[ i ];
     if( c == null ) return null;
-    if( debug > 3 ) println( "   Leave Play: " + c);
+    if( debug ) println( "   Leave Play: " + c);
     inPlay.remove( c );
     cardCount[ PLAY ][ c.faction ] -= 1;
     board[ i ] = null;
@@ -452,7 +441,7 @@ class Player
 
   void addToSummoned( Card c )
   {
-    if( debug > 3 ) println( "       Removed from Game: " + c);
+    if( debug ) println( "       Removed from Game: " + c);
     c.buffSummonedOffset = 0;
     summoned.add( c );
   }
@@ -462,7 +451,7 @@ class Player
   // GRAVE
   void addToGrave( Card c )
   {
-    if( debug > 3 ) println( "       Enter Grave: " + c);
+    if( debug ) println( "       Enter Grave: " + c);
     grave.add( c );
     if( c.type.canReanim ) graveReanim.add( c );
     cardCount[ GRAVE ][ c.faction ] += 1;
@@ -472,7 +461,7 @@ class Player
   {
     if( grave.remove( c ) )
     {
-      if( debug > 3 ) println( "       Leave Grave: " + c);
+      if( debug ) println( "       Leave Grave: " + c);
       cardCount[ GRAVE ][ c.faction ] -= 1;
       if( c.type.canReanim ) graveReanim.remove( c );
     }
@@ -481,7 +470,7 @@ class Player
   Card removeFromGrave( int i )
   {
     Card c = grave.remove( i );
-    if( debug > 3 ) println( "     Leave Grave: " + c);
+    if( debug ) println( "     Leave Grave: " + c);
     cardCount[ GRAVE ][ c.faction ] -= 1;
     if( c.type.canReanim ) graveReanim.remove( c );
     return c;
