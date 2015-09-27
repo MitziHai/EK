@@ -1,3 +1,41 @@
+2015.09.27
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Fixed bug with sometimes when not on Arena tab sim thought it was in arena mode
+    - Fixed bug where sometimes when on Arena/FOH tab sim thought it was in demon mode
+    - Fixed delete key/remove cards sometimes removing the incorrect cards from decklist
+
+  Known bugs
+    - THere are a number of things that are wierd with summoning that are not totally implemented like the game but for the most part it works
+    - Possible that some effects with corruption (guard/force) are not properly done in sim, more in game testing needed.
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
 2015.09.26b
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing

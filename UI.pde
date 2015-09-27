@@ -1224,22 +1224,12 @@ class Button extends Control
         break;
 
       case BUTTON_REMOVE_CARD_1:
-        for ( int j = deckList[0].current.size() - 1; j >= 0 ; -- j )
-        {
-          deckList[0].listItems.remove( (int)deckList[0].current.get(j) );
-        }
-        deckList[0].current.clear();
-        if (deckList[0].listItems.size() <= deckList[0].h/deckList[0].lineSize) {deckList[0].scroll = 0;}
+        RemoveCards(0);
         showDeckCost( 0, true );
         break;
 
       case BUTTON_REMOVE_CARD_2:
-        for ( int j = deckList[1].current.size() - 1; j >= 0 ; -- j )
-        {
-          deckList[1].listItems.remove( (int)deckList[1].current.get(j) );
-        }
-        deckList[1].current.clear();
-        if (deckList[1].listItems.size() <= deckList[1].h/deckList[1].lineSize) {deckList[1].scroll = 0;}
+        RemoveCards(1);
         showDeckCost( 1, true );
         break;
 
@@ -1351,24 +1341,40 @@ class Button extends Control
         if (isRun) {
           butgo.text = "    Go!";
           StopMe = true;
+          ArenaSim = false;
+          FOHSim = false;
         }
         else {
           butgo.text = "   Stop!"; //<>//
           if (uiTab == 4 && FOHDownload) {
             FOHSim = true;
+            RadioButton it = radall.setStart;
+            while ( it != null )
+            {
+              it.checked = false;
+              it = it.setNext;
+            }
+            radall.checked = true;
             if (FOHRound == 1) FOHMatch = 4;
             else if (FOHRound == 2) FOHMatch = 2;
             else FOHMatch = 1;
-            new Thread(new RunSim()).start();          
+            new Thread(new RunSim()).start();
           }
           else if (uiTab == 4) {
             listresult.listItems.clear();
             listresult.listItems.add( "Please select a server and Get FOH Info before attempting to sim!");
             butgo.text = "    Go!";
           }
-          if (uiTab == 6 && ArenaDownload) {
+          else if (uiTab == 6 && ArenaDownload) {
             ArenaSim = true;
-            new Thread(new RunSim()).start();          
+            RadioButton it = radall.setStart;
+            while ( it != null )
+            {
+              it.checked = false;
+              it = it.setNext;
+            }
+            radall.checked = true;
+            new Thread(new RunSim()).start();
           }
           else if (uiTab == 6) {
             listresult.listItems.clear();
@@ -2607,17 +2613,10 @@ class ListBox extends Control
     }
     if ( keyCode == DELETE )
     {
-      for ( int i = 0; i < 2; ++ i )
-      {
-        for ( int j = deckList[i].current.size() - 1; j >= 0 ; -- j )
-        {
-          deckList[i].listItems.remove( (int)deckList[i].current.get(j) );
-        }
-        deckList[i].current.clear();
-        if (deckList[i].listItems.size() <= h/lineSize) {scroll = 0;}
-      }
-      showDeckCost(0,true);
-      showDeckCost(1,false);
+      RemoveCards(0);
+      RemoveCards(1);
+      showDeckCost( 0, true );
+      showDeckCost( 1, false);    
     }
   }
 }
@@ -2718,6 +2717,15 @@ void drawEKnumber( PGraphics pg, int num, int x, int y, boolean whiteFont, float
     pg.translate( (whiteFont?26:25)*scale, 0 );
   }
   pg.popMatrix();
+}
+
+void RemoveCards(int listID)
+{
+  for (int j =  deckList[listID].listItems.size() - 1; j >= 0;j--){
+    if (deckList[listID].current.contains(j)) deckList[listID].listItems.remove(j);
+  }
+  deckList[listID].current.clear();
+  if (deckList[listID].listItems.size() <= deckList[listID].h/deckList[listID].lineSize) {deckList[listID].scroll = 0;}
 }
 
 void saveResults(File selection) {

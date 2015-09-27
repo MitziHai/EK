@@ -595,6 +595,7 @@ class RunSim implements Runnable
       resultsTracked = null;
     }
     isRun = false;
+    ArenaSim = false;
     FOHSim = false;
     butgo.text = "    Go!";
   }
