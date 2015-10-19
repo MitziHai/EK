@@ -1,3 +1,72 @@
+2015.10.18
+
+All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
+
+  Fixes:
+    - Fixed bug with last chance not dying during retalation attack
+    - Fixed last chance to reset during beginning of turn after last chance activated
+    - Fixed bug with arena giving opponents incorrect hps.
+    - Fixed bug with tied initative not doing alternate opponents going first
+    - Added hps and costs up to level 150
+    - Added following abilities
+	Apocalypse
+	Cerberus
+	Crazy (not yet implemented)
+	Death Marker - Assume comes off after cards actions, but not sure.
+	Demon Skin (not yet implemented)
+	Diana's Protection (not yet implemented)
+	Divine Shield (not yet implemented)
+	Double Wings
+	Dying Strike (not yet implemented)
+	Field of Chaos (not yet implemented)
+	Mana Burn
+	Plague Blast (not yet implemented)
+	Plague Maid (not yet implemented)
+	Spine (not yet implemented)
+	Teffor Roar (not yet implemented)
+    - Added following cards:
+	Angra Mainyu
+	Flamereaper
+	Giant Frost Toad
+	Infernal Simian
+	Medusa
+	Prohphet
+	Scavenger Griffin
+	Soul Stomper
+	Thunder Warhawk
+	Virgo
+	Voyager
+	Vulcan
+
+  Known bugs
+    - THere are a number of things that are wierd with summoning that are not totally implemented like the game but for the most part it works
+    - Possible that some effects with corruption (guard/force) are not properly done in sim, more in game testing needed.
+    - Snipe and Devils Blade not working as per EK for cards with same hp, but no one know proper algo 
+    - Retaliation seems to activate in log after a dodge, but it DOESN'T DO DAMAGE!
+    - Sometimes Cooldown does not calculate correctly
+
+  Possible Bugs Check these:
+    - Find best deck may not work in new hydra mode
+    - KW resets and buff/rune carry overs
+    - if d_prayer or d_reanimation +qs_prayer brings player above 0 during opponents turn player continues to fight
+    - mouse wheel occasionally ignored in lists
+    - If a card with D:reanimation dies during a blizzard or other damage all attack does the card reanimated get hit by attack
+
+  Enhancement Requests 
+    - Move best deck to new tab
+    - Add search function for abilities
+    - hit a letter key in the evolution list to scroll to evolutions beginning with that letter
+    - search field for saved decks list
+    - left/right arrow key support to move cursor in text fields
+    - automated regression tests to verify functionality of every rune and ability
+    - settings tab to provide these options: debug/verbose mode output, amount of debug output, 
+         post mortem option to show turn sequence for lowest merit hit
+         show recently used cards at top of  cards list, 
+         clear saved decks list, ignore player deck cost maximum
+    - update help text for new graphing mode and other new features
+    - CTRL-Z to undo last change
+    - Tabs to move from one object to another
+
 2015.09.27b
 
 All Versions in this Folder: https://drive.google.com/folderview?id=0BwAutaRhEs_9c0xaY2hiSkFBZFE&usp=sharing
