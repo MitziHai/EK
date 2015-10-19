@@ -1,22 +1,6 @@
-import servconn.dto.user.*;
-import servconn.dto.rune.*;
-import servconn.sim.*;
-import servconn.dto.card.*;
-import ekdao.*;
-import ekdao.dao.*;
-import servconn.client.*;
-import servconn.dto.arena.*;
-import ekutils.*;
-import servconn.dto.mapstage.*;
-import ekdao.util.*;
-import servconn.dto.friend.*;
-import servconn.dto.league.*;
-import org.eclipse.jdt.internal.jarinjarloader.*;
-import servconn.dto.skill.*;
-import ekdao.dto.*;
-import servconn.util.*;
-import servconn.dto.login.*;
-import servconn.dto.battle.*;
+ //<>//
+
+
 
 
 
@@ -135,7 +119,7 @@ void setup()
   loadDecks("decks_Demons.txt",false,DemondecksList);
   loadDecks("decks_Thiefs.txt",false,ThiefdecksList);
   loadDecks(DecksFileName,true,DemondecksList);
-  frame.setResizable(true);
+  surface.setResizable(true);
 
   Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
     public void run () {
@@ -355,7 +339,7 @@ class RunSim implements Runnable
 
     int cR = 0; 
     
-    boolean cardsDone = false; //<>//
+    boolean cardsDone = false;
 
     if( multideck )
     {
@@ -643,7 +627,7 @@ class RunSim implements Runnable
   {
     // Setup counters
     player1 = new Player( hpPerLevel[ (FOHSim?d1.level:(int)textLevel[ 0 ].lastNum )] );
-    player2 = new Player( hpPerLevel[ (FOHSim?d2.level:(int)textLevel[ 1 ].lastNum )] );
+    player2 = new Player( hpPerLevel[ (FOHSim?d2.level:(ArenaSim?d2.level:(int)textLevel[ 1 ].lastNum ))] );
     totalmpm = totalroundsAvg = 0;
     totalmeritMax = totalroundsMax = 0;
     totalmeritMin = totalroundsMin = 9999999999L;

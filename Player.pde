@@ -79,6 +79,22 @@ class Player
         cs.summoned = true;
         summoned.add(cs);
       }
+      if (c2.type.abilities[0] == AType.A_DOUBLE_WINGS || c2.type.abilities[1] == AType.A_DOUBLE_WINGS || c2.type.abilities[2] == AType.A_DOUBLE_WINGS || c2.evo == AType.A_DOUBLE_WINGS) {
+        c  = cardFromString("Nuriel");
+        Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+        c  = cardFromString("Winged Exile");
+        cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
+        cs.lvl = c.lvl;
+        cs.resetAll(this);
+        cs.summoner = c2;
+        cs.summoned = true;
+        summoned.add(cs);
+      }
       if (c2.type.abilities[0] == AType.A_DONS_BODYGUARD || c2.type.abilities[1] == AType.A_DONS_BODYGUARD || c2.type.abilities[2] == AType.A_DONS_BODYGUARD || c2.evo == AType.A_DONS_BODYGUARD) {
         c  = cardFromString("Behemoth");
         Card cs = new Card(c.type, c.lvl, c.evo, c.evoLevel,c.cost);
@@ -232,8 +248,10 @@ class Player
     // Last, dead cards again and compact the board.
     removeDeadCards( op );
     checkDead();
-    for( Card c : inPlay )
+    for( Card c : inPlay ) {
       c.status[LAST_CHANCE] = false;
+      c.status[DEATH_MARKER] = false;
+    }
   }
   
   void removeDeadCards(Player op)
@@ -500,9 +518,9 @@ static final int hpPerLevel[] = {
   15400, 15560, 15720, 15880, 16040, 16200, 16360, 16520, 16680, 16840, 
   17000, 17160, 17320, 17480, 17640, 17800, 17960, 18120, 18280, 18440, 
   18600, 18760, 18920, 19080, 19240, 19400, 19560, 19720, 19880, 20040, 
-  23800, 23990, 24180, 24370, 24560, 24750, 24940, 25130, 25320, 25510, 
-  27000, 27200, 27400, 27600, 27800, 28000, 28200, 28400, 28600, 28800, 
-  30400, 30610, 30820, 31030, 31240, 31450, 31660, 31870, 32080, 32290,
+  20200, 20360, 20520, 20680, 20840, 21000, 21160, 21320, 21480, 21640, 
+  21800, 21960, 22120, 22280, 22440, 22600, 22760, 22920, 23080, 23240, 
+  23400, 23560, 23720, 23880, 24040, 24200, 24360, 24520, 24680, 24840,
 };
 
 
@@ -519,7 +537,7 @@ static final int costPerLevel[] = {
   171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 
   181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 
   191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 
-  201, 23990, 24180, 24370, 24560, 24750, 24940, 25130, 25320, 25510, 
-  27000, 27200, 27400, 27600, 27800, 28000, 28200, 28400, 28600, 28800, 
-  30400, 30610, 30820, 31030, 31240, 31450, 31660, 31870, 32080, 32290,
+  201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 
+  211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 
+  221, 222, 223, 224, 225, 226, 227, 228, 229, 230,
 };

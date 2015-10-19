@@ -35,10 +35,11 @@ void GetCardListDifferences()
       hp = card.getHpArray().toString();
       atk = card.getAttackArray().toString();
       
+ 
       if (!card.getSkill().equals("") && !card.getSkill().equals("8106")) skill1 = skillMap.get(card.getSkill()).getName().trim();
       else skill1 = " ";
 
-      if (card.getLockSkill1().equals("") || card.getLockSkill1().equals("1905")) {
+      if (card.getLockSkill1().equals("") ) {
         skill2 = " ";
         skill5 = " ";
       }
@@ -51,7 +52,7 @@ void GetCardListDifferences()
         if (card.getLockSkill1().substring(card.getLockSkill1().indexOf("_")+1,card.getLockSkill1().length()).equals("10344")) skill5 = "";
         else skill5 = skillMap.get(card.getLockSkill1().substring(card.getLockSkill1().indexOf("_")+1,card.getLockSkill1().length())).getName().trim();
       }
-      if (card.getLockSkill2().equals("") || card.getLockSkill2().equals("1906") || card.getLockSkill2().equals("1903")) {
+      if (card.getLockSkill2().equals("")) {
         skill3 = " ";
         skill4 = " ";
       }
@@ -70,13 +71,14 @@ void GetCardListDifferences()
       skill1 = skill1.replace("[Quick Strike]", "QS: ");
       if (skill1.equals("Core of Magic") || skill1.equals("X'mas Elf") || skill1.equals("Lavish Dinner") || skill1.equals("X'mas Atmosphere") || skill1.equals("X'mas Magic") || skill1.equals("Force of Flame") || 
           skill1.equals("Spirit of Evilness") || skill1.equals("Ancient Meteorite") || skill1.equals("Remains of Dragon") || skill1.equals("Unexpected gains") || skill1.equals("Source of Life") || skill1.equals("Legendary Wood") || 
-          skill1.equals("X'mas Bell") || skill1.equals("X'mas Hat") || skill1.equals("Call of the Wanderer") || skill1.equals("Lucky Clover") || skill1.equals(" ")
+          skill1.equals("X'mas Bell") || skill1.equals("X'mas Hat") || skill1.equals("Call of the Wanderer") || skill1.equals("Lucky Clover") || skill1.equals(" ") || skill1.equals("Cancer")
           ) skill1 = "None";
       skill2 = skill2.replace("Desperation: Destroy", "D: Destroy");
       skill2 = skill2.replace("Desperation: Reanimation", "D: Reanimation");
       skill2 = skill2.replace("Desperation: ", "D:");
       skill2 = skill2.replace("Quick Strike:", "QS:");
       skill2 = skill2.replace("[Quick Strike]", "QS: ");
+      skill2 = skill2.replace("spine", "Spine");
       if (skill2.equals("Core of Magic") || skill2.equals("X'mas Elf") || skill2.equals("Lavish Dinner") || skill2.equals("X'mas Atmosphere") || skill2.equals("X'mas Magic") || skill2.equals("Force of Flame") || 
           skill2.equals("Spirit of Evilness") || skill2.equals("Ancient Meteorite") || skill2.equals("Remains of Dragon") || skill2.equals("Unexpected gains") || skill2.equals("Source of Life") || skill2.equals("Legendary Wood") || 
           skill2.equals("X'mas Bell") || skill2.equals("X'mas Hat") || skill2.equals("Call of the Wanderer") || skill2.equals("Lucky Clover") || skill2.equals(" ")

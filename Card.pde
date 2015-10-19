@@ -159,6 +159,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_APOCALYPSE: 
+    when = BEFORE_ATTACK; 
+    when2 = NEVER; 
+    break;
   case A_ARCTIC_POLLUTION: 
     when = ON_ATTACK_CARD; 
     when2 = NEVER; 
@@ -194,6 +198,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
   case A_BLIZZARD: 
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
+    break;
+  case A_CERBERUS: 
+    when = BEFORE_ATTACK; 
+    when2 = ON_ATTACKED; 
     break;
   case A_CHAIN_ATTACK: 
     when = ON_ATTACK_CARD; 
@@ -258,6 +266,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
+  case A_DEATH_MARKER: 
+    when = BEFORE_ATTACK; 
+    when2 = NEVER; 
+    break;
   case A_DESTROY: 
     when = BEFORE_ATTACK; 
     when2 = NEVER; 
@@ -289,6 +301,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_DONS_BODYGUARD: 
     when = ON_DEATH; 
+    when2 = NEVER; 
+    break;
+  case A_DOUBLE_WINGS: 
+    when = ON_ENTER; 
     when2 = NEVER; 
     break;
   case A_DREAD_ROAR: 
@@ -407,6 +423,10 @@ AbilityWhen2 getAbilityWhen( AType ability )
     break;
   case A_MAGIC_SHIELD: 
     when = ON_ATTACKED_SPELL; 
+    when2 = NEVER; 
+    break;
+  case A_MANA_BURN: 
+    when = BEFORE_ATTACK; 
     when2 = NEVER; 
     break;
   case A_MANA_CORRUPTION: 
@@ -747,7 +767,7 @@ static final int ON_ATTACKED_SPELL = 7;
 static final int BEGIN_TURN = 8;
 static final int NUM_WHEN = 9;
 
-static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "dread roar", "last chance", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
+static final String statusNames[] = {"frozen", "shocked", "trapped", "confused", "silenced", "reanimated sickness", "lacerated", "stunned", "corrupted", "dread roar", "last chance", "death marker", "heal","healing mist","destroy", "snipe", "non-reflectable","poison","fire","blood","none","mana corruption"};
 static final int FROZEN = 0;
 static final int SHOCKED = 1;
 static final int TRAPPED = 2;
@@ -759,18 +779,19 @@ static final int STUNNED = 7;
 static final int CORRUPT = 8;
 static final int DREAD_ROAR = 9;
 static final int LAST_CHANCE = 10;
-static final int HEAL = 11;
-static final int HEAL_MIST = 12;
-static final int DESTROY = 13;
-static final int NO_IMMUNE = 14;
-static final int NO_REFLECT = 15;
-static final int POISONED = 16;
-static final int FIRE = 17;
-static final int BLOOD = 18;
-static final int NONE = 19;
-static final int MANA_CORRUPTION = 20;
+static final int DEATH_MARKER = 11;
+static final int HEAL = 12;
+static final int HEAL_MIST = 13;
+static final int DESTROY = 14;
+static final int NO_IMMUNE = 15;
+static final int NO_REFLECT = 16;
+static final int POISONED = 17;
+static final int FIRE = 18;
+static final int BLOOD = 19;
+static final int NONE = 20;
+static final int MANA_CORRUPTION = 21;
 
-static final int STATUS_SIZE = 11;
+static final int STATUS_SIZE = 12;
 static final int COMBUST_SIZE = 11;
 
 class Card
@@ -1052,6 +1073,10 @@ class Card
       if( burn > 0 ) println( "     " + toStringNoHp() + " takes " + burn + " burn damage." );
     }
     poison = 0;
+    if (fireGod[0] == true) {
+      fireGod[0] = false;
+      burn -= 200;
+    }
     if (status[CORRUPT]) {
       own.cardCount[ PLAY ][ faction ] -= 1;
       faction = type.faction;
@@ -1117,12 +1142,13 @@ class Card
                 break;
             }
           }
-          if (!dex) {
+          if (!dex && !op.board[i].status[LAST_CHANCE]) {
             if (debug) println("       " + op.board[i] + " takes " + retaliate[j] + " damage.");
             if ((radewboss.checked || raddi.checked) && own.isP1) own.merit += retaliate[j]; 
             op.board[ i ].subtractHealth( op, own, retaliate[ j ] );
           }
-          else if (debug) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
+          else if (debug && dex) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to dexterity."); 
+          else if (debug) println("       " + op.board[i] + " avoids " + retaliate[j] + " damage due to last chance."); 
         }
       }
       atk += craze;
@@ -1191,13 +1217,13 @@ Seperate Variables: BURNED, POISON, immune, resist,
     {
       if ( effect == NO_IMMUNE )
       {
-        dmgTaken = subtractHealth( own, op, dmg );
         if (debug) println("       " + dmg + " unavoidable damage  to " + toStringNoHp());
+        dmgTaken = subtractHealth( own, op, dmg );
       }
       else if (effect == MANA_CORRUPTION)  // Mana Corruption deals chance * dmg damage to card
       {
         dmgTaken = subtractHealth( own, op, dmg * (immune ? chance : 1) );
-        if( debug ) println("       Mana corruption dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
+        if( debug ) println("       Mana corruption/Burn/Cerberus dealt " + dmg*(immune ? chance : 1) + " to " + (immune ? "immune " : "") + "card " + toStringNoHp() );
       }
       else if (debug ) // all other damages should be prevented by immunity
       {
@@ -1248,9 +1274,10 @@ Seperate Variables: BURNED, POISON, immune, resist,
       return 0;
     }
     else if (effect == NO_REFLECT) {  // abilities that are not affected by reflection and/or magic shield
-      if (debug) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
 
       dmgTaken = subtractHealth( own, op, dmg );
+
+      if (debug) println("       " + dmgTaken + " " + statusNames[effect] + " damage to " + toStringNoHp() );
 
       if ( (raddi.checked || radewboss.checked) && !own.isP1 )
         op.merit += dmgTaken;
@@ -1352,6 +1379,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
     if (destroyed) checkAbilities(own, op, ON_DEATH,DESTROY);
     else checkAbilities(own,op,ON_DEATH,-1);
     if (!status[LAST_CHANCE]) {
+      if (status[DEATH_MARKER]) {
+        if (debug ) println("       Death Marker on dying card");
+        if (own.board[pos+1] != null ) own.board[pos+1].attackedSpell(own,op,300,this,NO_REFLECT,0);
+        if (pos > 0 && own.board[pos-1] != null ) own.board[pos-1].attackedSpell(own,op,300,this,NO_REFLECT,0);
+      }
       if (status[CORRUPT]) 
       {        
         status[CORRUPT] = false;
@@ -1391,6 +1423,19 @@ Seperate Variables: BURNED, POISON, immune, resist,
           }
           break;
 
+        case A_APOCALYPSE:
+          if( debug ) println( "     Apocolypse for " + (150+(60*op.playSize())) + " plus 200 burn");
+          damageAll( own, op, (150+(60*op.playSize())), FIRE, 0 );
+          for ( Card c : op.inPlay )
+          {
+            if (!c.immune ) {
+              c.fireGod[0] = true;
+              c.burn += 200;
+            }
+          }
+          break;
+
+
         case A_BITE:
           if( debug ) println( "     Bite for " + (20*l));
           hpCurr = min( hpCurr + damageRandom1( own, op, 20*l, BLOOD, 0 ), hpBuff );
@@ -1399,6 +1444,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_BLIZZARD:
           if( debug ) println( "     Blizzard for " + (20*l));
           damageAll( own, op, 20*l, FROZEN, 30 );
+          break;
+
+        case A_CERBERUS:
+          if( debug ) println( "     Cerberus for 120");
+          damageRandom3( own, op, 120, MANA_CORRUPTION, 3 );
           break;
 
         case A_CHAIN_LIGHTNING:
@@ -1432,6 +1482,18 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_DAMNATION:
           if( debug ) println( "     Damnation for " + (20*l*op.playSize()));
           op.attacked(20*l*op.playSize(), own, true);
+          break;
+
+        case A_DEATH_MARKER:
+          if ( op.board[ pos ] != null && !op.board[pos].immune)
+          {
+            Card c = op.board[ pos ];
+            if( c != null )
+            {
+              if( debug ) println( "     Death Marker placed on " + c.toStringNoHp());
+              c.status[DEATH_MARKER] = true;
+            }
+          }
           break;
 
         case A_DESTROY:
@@ -1594,6 +1656,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
         case A_MANA_CORRUPTION:
           if( debug ) println( "     Mana corruption for " + (20*l));
           damageRandom1( own, op, 20*l, MANA_CORRUPTION, 3 );
+          break;
+
+        case A_MANA_BURN:
+          if( debug ) println( "     Mana Burn for " + (20*l));
+          damageRandom3( own, op, 20*l, MANA_CORRUPTION, 3 );
           break;
 
         case A_MANIA:
@@ -1986,6 +2053,11 @@ Seperate Variables: BURNED, POISON, immune, resist,
         if (!abilitySilenced[when][i]) 
         switch( a )
         {
+        case A_CERBERUS:
+          if( debug ) println( "     " + toStringNoHp() + "'s Cerberus reduces damage by 30%");
+          dmgMult *= 0.7;
+          break;
+
         case A_COUNTERATTACK:
           if( debug ) println( "     " + toStringNoHp() + " Counterattack for " + (30*l));
           retaliate[ 1 ] += 30 * l;
@@ -2091,16 +2163,56 @@ Seperate Variables: BURNED, POISON, immune, resist,
       {
         switch( a )
         {
+        case A_DOUBLE_WINGS:
+          boolean failed = false;
+          for ( Card c : own.inPlay )
+          {
+            if (c.summoner == this && c.type.name.equals("Nuriel")) {
+              if( debug ) println( "     Gang Up! fails due to a Nuriel already being on the field for this card");
+              failed = true;
+            }
+            if (c.summoner == this && c.type.name.equals("Winged Exile")) {
+              if( debug ) println( "     Gang Up! fails due to a Winged Exile already being on the field for this card");
+              failed = true;
+            }
+          }
+          if (!failed) 
+          {
+            if( debug ) println( "     Double Wings summons Nuriel and a Winged Exile");
+            for ( int k = 0; k < own.summoned.size(); ++ k )
+            {
+              Card c = own.summoned.get( k );
+              if ( c.summoner == this && c.type.name.equals("Nuriel"))
+              {
+                c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
+                own.addToPlay( c );
+                own.removeFromSummoned( k -- );
+                c.checkAbilities(own, op, ON_ENTER, -1);
+                if (this.status[ SICK ]) c.status[SICK] = true;
+              }
+              if ( c.summoner == this && c.type.name.equals("Winged Exile"))
+              {
+                c.hpCurr = c.hpBuff = c.hpMax + own.hpBuff[ c.faction ] - c.buffGuardOffset;
+                c.atk = c.atkBuff = c.atkMax + own.atkBuff[ c.faction ] - c.buffAttackOffset + c.buffSummonedOffset;
+                own.addToPlay( c );
+                own.removeFromSummoned( k -- );
+                c.checkAbilities(own, op, ON_ENTER, -1);
+                if (this.status[ SICK ]) c.status[SICK] = true;
+              }
+            }
+          }
+         break;
         case A_GUARD:
           if( debug ) println( "     Guard enter play");
           own.guards.add( this );
           break;
         case A_SUMMON_DRAGON:
-          boolean failed = false;
+          failed = false;
           for ( Card c : own.inPlay )
           {
             if (c.summoner == this && c.type.name.equals("Thunder Dragon")) {
-              if( debug ) println( "     Summon Dragon fails due to Omniscient Dragon already being on the field for this card");
+              if( debug ) println( "     Summon Dragon fails due to Thunder Dragon already being on the field for this card");
               failed = true;
             }
           }

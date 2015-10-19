@@ -69,7 +69,10 @@ void populateArenaDeck(int deck)
   int TheDonCount = 0;
   int DragonSummonerCount = 0;
   int SwampRiderCount = 0;
+  int VulcanCount = 0;
+  int NurielCount = 0;
   int BehemothCount = 0;
+  int WingedExileCount = 0;
   int ThunderDragonCount = 0;
   String[] deckList = ArenaDecks.split("\n");
   listArenaDecks.listItems.clear();
@@ -86,9 +89,12 @@ void populateArenaDeck(int deck)
     }
     else if (CurrentLine > 2  && CurrentDeck == deck) {
       if (line.contains("The Don")) TheDonCount++;
+      if (line.contains("Vulcan")) VulcanCount++;
       if (line.contains("Dragon Summoner")) DragonSummonerCount++;
       if (TheDonCount > 0 && line.contains("Swamp Rider;10;0") && SwampRiderCount < 2*TheDonCount) SwampRiderCount++;
       else if (TheDonCount > 0 && line.contains("Behemoth;10;0") && BehemothCount < TheDonCount) BehemothCount++;
+      else if (VulcanCount > 0 && line.contains("Nuriel;10;0") && NurielCount < VulcanCount) NurielCount++;
+      else if (VulcanCount > 0 && line.contains("Winged Exile;10;0") && WingedExileCount < VulcanCount) WingedExileCount++;
       else if (DragonSummonerCount > 0 && line.contains("Thunder Dragon;10;0") && ThunderDragonCount < DragonSummonerCount) ThunderDragonCount++;
       else listArenaDecks.listItems.add(line.substring(0,line.length() - 1));
     }
@@ -104,6 +110,9 @@ Deck deckFromArena( int opponent )
   int CurrentLine = 0;
   int CurrentDeck = 0;
   int TheDonCount = 0;
+  int VulcanCount = 0;
+  int NurielCount = 0;
+  int WingedExileCount = 0;
   int DragonSummonerCount = 0;
   int SwampRiderCount = 0;
   int BehemothCount = 0;
@@ -119,16 +128,18 @@ Deck deckFromArena( int opponent )
     }
     else if (CurrentLine == 1 && CurrentDeck == opponent) {
        d.name = line.substring(0,line.length() - 1);
-;
     }
     else if (CurrentLine == 2 && CurrentDeck == opponent) {
       d.level = Integer.parseInt(line.substring(0,line.length() - 1).replaceAll("\\s",""));
     }
     else if (CurrentLine > 2  && CurrentDeck == opponent) {
       if (line.contains("The Don")) TheDonCount++;
+      if (line.contains("Vulcan")) VulcanCount++;
       if (line.contains("Dragon Summoner")) DragonSummonerCount++;
       if (TheDonCount > 0 && line.contains("Swamp Rider;10;0") && SwampRiderCount < 2*TheDonCount) SwampRiderCount++;
       else if (TheDonCount > 0 && line.contains("Behemoth;10;0") && BehemothCount < TheDonCount) BehemothCount++;
+      else if (VulcanCount > 0 && line.contains("Nuriel;10;0") && NurielCount < VulcanCount) NurielCount++;
+      else if (VulcanCount > 0 && line.contains("Winged Exile;10;0") && WingedExileCount < VulcanCount) WingedExileCount++;
       else if (DragonSummonerCount > 0 && line.contains("Thunder Dragon;10;0") && ThunderDragonCount < DragonSummonerCount) ThunderDragonCount++;
       else if (line.contains("Rune: ")) {
         Rune r = runeFromString( line.substring(0,line.length() - 1) );
